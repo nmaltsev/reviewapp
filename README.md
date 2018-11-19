@@ -1,6 +1,6 @@
-# SolidApp
+# Review App
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+PFE project "A Privacy-Preserving Social Networking Application"
 
 ## Development server
 
@@ -37,6 +37,3 @@ Go to tsconfig.app.json into paths add the following data :
       "stream": ["node_modules/jszip/dist/jszip.min.js"]
     }
 ```
-# reviewapp
-
-PFE project "A Privacy-Preserving Social Networking Application"
