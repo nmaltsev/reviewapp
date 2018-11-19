@@ -28,9 +28,15 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Extra steps
 
-Go to tsconfig.app.json into paths add the following data : "paths": {
+Go to tsconfig.app.json into paths add the following data : 
+``` json
+"paths": {
       "zlib": ["node_modules/browserify-zlib/lib/index.js"],
       "http": ["node_modules/@angular/http"],
       "https": ["node_modules/@angular/http"],
       "stream": ["node_modules/jszip/dist/jszip.min.js"]
     }
+```
+# reviewapp
+
+PFE project "A Privacy-Preserving Social Networking Application"
