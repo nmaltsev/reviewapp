@@ -1,3 +1,11 @@
+html {
+  font: 13px/15px 'Roboto', Arial, sans-serif;
+  color: #333;
+}
+body {
+  margin: 0;
+}
+
 /* You can add global styles to this file, and also import other style files */
 button.wide-button {
   width: 360px;

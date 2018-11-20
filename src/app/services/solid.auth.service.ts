@@ -44,14 +44,14 @@ export class AuthService {
    * without leaving the current page
    * This is recommended if you don't want to leave the current workflow.
    */
-  solidLoginPopup = async () => {
+  solidLoginPopup = async (redirectPath: string): Promise<void> => {
     try {
       await solid.auth.popupLogin({ popupUri: './login-popup'});
       // Check if session is valid to avoid redirect issues
       await this.isSessionActive();
 
-      // popupLogin success redirect to profile
-      this.router.navigate(['/dashboard']);
+      // popupLogin success redirect to destination page
+      this.router.navigate([redirectPath]);
     } catch (error) {
       console.log(`Error: ${error}`);
     }
@@ -71,7 +71,7 @@ export class AuthService {
       console.log(`Error: ${error}`);
     }
   }
-
+  // TODO change any
   saveOldUserData = (profile: any) => {
     if (!localStorage.getItem('oldProfileData')) {
       localStorage.setItem('oldProfileData', JSON.stringify(profile));
@@ -87,12 +87,12 @@ export class AuthService {
   *  is populated by the getIdentityProviders() function call. It currently requires a callback url and a storage option or else
   *  the call will fail.
   */
-  solidLogin = async (idp: string) => {
-    // todo REWRITE DAS
+  solidLogin = async (idp: string, redirectPath: string): Promise<void> => {
 
+    // Attention: callbackUri must include target domain!
     await solid.auth.login(idp, {
-      callbackUri: `${window.location.href}dashboard`,
-      // callbackUri: `/dashboard`,
+      // Example: callbackUri: `${window.location.origin}/dashboard`,
+      callbackUri: window.location.origin + redirectPath,
       storage: localStorage,
     });
   }
