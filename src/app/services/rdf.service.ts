@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SolidSession } from '../models/solid-session.model';
-declare let solid: any;
+import { ISolidRoot } from '../models/solid-api';
+declare let solid: ISolidRoot;
 declare let $rdf: any;
 //import * as $rdf from 'rdflib'
 

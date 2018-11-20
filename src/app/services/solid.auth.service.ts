@@ -3,7 +3,9 @@ import { Router } from '@angular/router';
 import { Observable, from } from 'rxjs';
 import { RdfService } from './rdf.service';
 import { SolidProvider } from '../models/solid-provider.model';
-declare let solid: any;
+import { ISolidRoot } from '../models/solid-api'; 
+
+declare let solid: ISolidRoot;
 
 interface SolidSession {
   accessToken: string;
@@ -49,7 +51,7 @@ export class AuthService {
       await this.isSessionActive();
 
       // popupLogin success redirect to profile
-      this.router.navigate(['/card']);
+      this.router.navigate(['/dashboard']);
     } catch (error) {
       console.log(`Error: ${error}`);
     }
@@ -86,8 +88,11 @@ export class AuthService {
   *  the call will fail.
   */
   solidLogin = async (idp: string) => {
+    // todo REWRITE DAS
+
     await solid.auth.login(idp, {
-      callbackUri: `${window.location.href}card`,
+      callbackUri: `${window.location.href}dashboard`,
+      // callbackUri: `/dashboard`,
       storage: localStorage,
     });
   }

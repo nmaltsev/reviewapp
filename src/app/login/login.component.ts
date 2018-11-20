@@ -23,9 +23,11 @@ export class LoginComponent implements OnInit {
   customProviderUrl: string;
 
   ngOnInit() {
+
+    console.log('OnInit %s', localStorage.getItem('solid-auth-client'));
     // If we're authenticated, go to profile
     if (localStorage.getItem('solid-auth-client')) {
-      this.router.navigateByUrl('/card');
+      this.router.navigateByUrl('/dashboard');
     }
 
     this.identityProviders = this.auth.getIdentityProviders();
