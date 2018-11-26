@@ -88,11 +88,10 @@ export class AuthService {
   *  the call will fail.
   */
   solidLogin = async (idp: string, redirectPath: string): Promise<void> => {
-
     // Attention: callbackUri must include target domain!
     await solid.auth.login(idp, {
       // Example: callbackUri: `${window.location.origin}/dashboard`,
-      callbackUri: window.location.origin + redirectPath,
+      callbackUri: window.location.origin + (window.location.pathname != '/' ? window.location.pathname : '') + redirectPath,
       storage: localStorage,
     });
   }
