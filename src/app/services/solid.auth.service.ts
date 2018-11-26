@@ -87,11 +87,11 @@ export class AuthService {
   *  is populated by the getIdentityProviders() function call. It currently requires a callback url and a storage option or else
   *  the call will fail.
   */
-  solidLogin = async (idp: string, redirectPath: string): Promise<void> => {
+  solidLogin = async (idp: string, redirectUrl: string): Promise<void> => {
     // Attention: callbackUri must include target domain!
     await solid.auth.login(idp, {
       // Example: callbackUri: `${window.location.origin}/dashboard`,
-      callbackUri: window.location.origin + (window.location.pathname != '/' ? window.location.pathname : '') + redirectPath,
+      callbackUri: redirectUrl,
       storage: localStorage,
     });
   }

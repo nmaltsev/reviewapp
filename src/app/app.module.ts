@@ -46,7 +46,7 @@ const routes: Routes = [
     path: 'register',
     component: RegisterComponent
   },
-  { path: '**', redirectTo: '' } // fallback
+  { path: '**', redirectTo: 'dashboard' } // fallback if page not found
 ];
 
 @NgModule({
@@ -61,7 +61,7 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     FormsModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, {useHash: true}),
     NgSelectModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule //required for toastr
