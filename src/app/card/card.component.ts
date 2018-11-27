@@ -36,6 +36,7 @@ export class CardComponent implements OnInit  {
     try {
       this.loadingProfile = true;
       const profile = await this.rdf.getProfile();
+
       if (profile) {
         this.profile = profile;
         this.auth.saveOldUserData(profile);

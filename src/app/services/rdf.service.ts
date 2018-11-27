@@ -53,6 +53,9 @@ export class RdfService {
    */
   getSession = async() => {
     this.session = await solid.auth.currentSession(localStorage);
+
+    console.log('GET session');
+    console.dir(this)
   }
 
   /**

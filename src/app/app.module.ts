@@ -7,6 +7,7 @@ import {LoginPopupComponent} from './login-popup/login-popup.component';
 import {LoginComponent} from './login/login.component';
 import { CardComponent } from './card/card.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { LegendComponent } from './pages/legend/legend.component';
 
 // Services
 import { AuthService } from './services/solid.auth.service';
@@ -46,6 +47,10 @@ const routes: Routes = [
     path: 'register',
     component: RegisterComponent
   },
+  {
+    path: 'legend',
+    component: LegendComponent
+  },
   { path: '**', redirectTo: 'dashboard' } // fallback if page not found
 ];
 
@@ -56,12 +61,13 @@ const routes: Routes = [
     LoginPopupComponent,
     DashboardComponent,
     CardComponent,
-    RegisterComponent
+    RegisterComponent,
+    LegendComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    RouterModule.forRoot(routes, {useHash: true}),
+    RouterModule.forRoot(routes/*, {useHash: true}*/),
     NgSelectModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule //required for toastr
