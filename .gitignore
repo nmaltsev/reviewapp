@@ -62,3 +62,7 @@ typings/
 
 # Angular compiled files
 dist/
+
+#IDE Folder
+
+.idea/
