@@ -8,22 +8,27 @@ export class Review {
     property: Property;
     author: SolidProfile;
     rating: number = 0;
+    creationDate: Date;
 
     constructor (id:string, summary: string, text: string) {
         this.id = id;
         this.summary = summary;
         this.text = text;
     }
-    setProperty(property: Property) {
+    setProperty(property: Property): Review {
         this.property = property;
         return this;
     }
-    setAuthor(profile: SolidProfile) {
+    setAuthor(profile: SolidProfile): Review {
         this.author = profile;
         return this;
     }
-    setRating(rating: number) {
+    setRating(rating: number): Review {
         this.rating = rating;
+        return this;
+    }
+    setCreation(date: Date): Review {
+        this.creationDate = date;
         return this;
     }
 }

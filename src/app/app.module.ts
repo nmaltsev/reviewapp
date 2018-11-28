@@ -20,6 +20,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TopNavComponent } from './ui/top-nav/top-nav.component';
 import { LegendProfileCardComponent } from './ui/legend-profile-card/legend-profile-card.component';
 import { ReviewComponent } from './ui/review/review.component';
+import { TimePassedPipe } from './utils/time-passed.pipe';
 
 
 
@@ -68,7 +69,8 @@ const routes: Routes = [
     LegendComponent,
     TopNavComponent,
     LegendProfileCardComponent,
-    ReviewComponent
+    ReviewComponent,
+    TimePassedPipe
   ],
   imports: [
     BrowserModule,

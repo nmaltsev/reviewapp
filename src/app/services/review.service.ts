@@ -22,6 +22,7 @@ export class ReviewService {
         new Property(PropertyType.hotel, 'Hotel Gounod Nice', new Address('France', 'Nice'))
       )
       .setAuthor(profile)
+      .setCreation(new Date(Date.now() - ~~(Math.random() * 100000000)))
       .setRating(3.5),
       new Review(
         '#1.2',
@@ -30,6 +31,7 @@ export class ReviewService {
       )
       .setProperty(new Property(PropertyType.hotel, 'Ibis Styles Nice Airport Arenas', new Address('France', 'Nice'))) 
       .setAuthor(profile)
+      .setCreation(new Date(Date.now() - ~~(Math.random() * 100000)))
       .setRating(4.2),
     ];
   }
