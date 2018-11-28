@@ -1,22 +1,4 @@
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <h1 class="text-center">DASHBOARD</h1>
-        </div>
-    </div>
-    <div class="menu-item" [routerLink]="['/card']">
-        <div>
-            <i class="fas fa-sliders-h"></i>
-        </div>
-        Profile
-    </div>
-    <div class="menu-item" (click)="onSignOut()">
-        <div>
-            <i class="fas fa-sliders-h"></i>
-        </div>
-        Signout
-    </div>
-    
     <h1>Dashboard</h1>
     <p>[TODO something like in a facebook newsfeed]</p>
     <ol>
@@ -24,7 +6,4 @@
             <a [routerLink]="['/legend']" [queryParams]="{ webId: webId }">{{webId}}</a>
         </li>
     </ol>
-
-    
-
 </div>
