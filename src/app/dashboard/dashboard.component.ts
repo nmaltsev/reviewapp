@@ -1,15 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-// import { currentSession } from 'solid-auth-client';
-
 // Services
 import { AuthService } from '../services/solid.auth.service';
-
-class Session {
-  constructor() {}
-
-  webId: string;
-}
+import { RdfService } from '../services/rdf.service';
+import { SolidSession } from '../models/solid-session.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,18 +11,30 @@ class Session {
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  session: Session = new Session();
 
-  constructor(private auth: AuthService, private route: ActivatedRoute) {}
+  private profileLinks: string[];
 
-  ngOnInit() {
-    this.loadSession();
+  constructor(
+    private auth: AuthService, 
+    private route: ActivatedRoute,
+    private rdfService: RdfService
+  ) {}
+
+  async ngOnInit() {
+    let session:SolidSession = await this.rdfService.getSession();
+
+    if (session) {
+      let profileLinks:string[] = await this.rdfService.getFriendsOf(session.webId);
+
+      profileLinks.push(this.rdfService.session.webId);
+      
+      this.profileLinks = profileLinks.map(encodeURIComponent);
+    } else {
+      this.profileLinks = [];
+    }
   }
 
-  loadSession = async () => {
-    // this.session = await currentSession();
-  }
-
+  
   onSignOut = () => {
     this.auth.solidSignOut();
   }

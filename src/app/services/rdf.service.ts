@@ -10,6 +10,7 @@ declare let $rdf: RDF.IRDF;
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { SolidProfile } from '../models/solid-profile.model';
+import { IAddress } from '../models/address.model';
 
 const VCARD:RDF.Namespace = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
 const FOAF:RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
@@ -55,11 +56,9 @@ export class RdfService {
   /**
    * Fetches the session from Solid, and store results in localStorage
    */
-  getSession = async() => {
+  async getSession(): Promise<SolidSession> {
     this.session = await solid.auth.currentSession(localStorage);
-
-    console.log('GET session');
-    console.dir(this)
+    return this.session;
   }
 
   /**
@@ -264,13 +263,13 @@ export class RdfService {
     }
   };
 
-  getAddress = () => {
-    const linkedUri = this.getValueFromVcard('hasAddress');
+  getAddress(webId?:string):IAddress {
+    const linkedUri = this.getValueFromVcard('hasAddress', webId);
 
     if (linkedUri) {
       return {
         locality: this.getValueFromVcard('locality', linkedUri),
-        country_name: this.getValueFromVcard('country-name', linkedUri),
+        countryName: this.getValueFromVcard('country-name', linkedUri),
         region: this.getValueFromVcard('region', linkedUri),
         street: this.getValueFromVcard('street-address', linkedUri),
       };
@@ -280,8 +279,8 @@ export class RdfService {
   };
 
   //Function to get email. This returns only the first email, which is temporary
-  getEmail = () => {
-    const linkedUri = this.getValueFromVcard('hasEmail');
+  getEmail(webId?:string):string {
+    const linkedUri = this.getValueFromVcard('hasEmail', webId);
 
     if (linkedUri) {
       return this.getValueFromVcard('value', linkedUri).split('mailto:')[1];
@@ -291,8 +290,8 @@ export class RdfService {
   }
 
   //Function to get phone number. This returns only the first phone number, which is temporary. It also ignores the type.
-  getPhone = () => {
-    const linkedUri = this.getValueFromVcard('hasTelephone');
+  getPhone(webId?:string):string {
+    const linkedUri = this.getValueFromVcard('hasTelephone', webId);
 
     if(linkedUri) {
       return this.getValueFromVcard('value', linkedUri).split('tel:+')[1];
@@ -325,13 +324,14 @@ export class RdfService {
 
   public async collectProfileData (webId: string): Promise<SolidProfile> {
     if (!this.parsedProfileCache[webId]) {
+      console.log('[CollectProfileData] %s fn: %s', webId, this.getValueFromVcard('fn'));
       await this.fetcher.load(webId);
       this.parsedProfileCache[webId] = {
-        fn : this.getValueFromVcard('fn'),
-        company : this.getValueFromVcard('organization-name'),
+        fn : this.getValueFromVcard('fn', webId),
+        company : this.getValueFromVcard('organization-name', webId),
         phone: this.getPhone(),
-        role: this.getValueFromVcard('role'),
-        image: this.getValueFromVcard('hasPhoto'),
+        role: this.getValueFromVcard('role', webId),
+        image: this.getValueFromVcard('hasPhoto', webId),
         address: this.getAddress(),
         email: this.getEmail(),
       };
@@ -353,7 +353,8 @@ export class RdfService {
    * @param {string?} webId The webId URL (e.g. https://yourpod.solid.community/profile/card#me) 
    */
   private getValueFromNamespace(node: string, namespace: RDF.Namespace, webId?: string): string | any {
-    const store: RDF.ITerm = this.store.any($rdf.sym(webId || this.session.webId), namespace(node));
+    const id: string = webId || this.session && this.session.webId;
+    const store: RDF.ITerm = id && this.store.any($rdf.sym(id), namespace(node));
 
     if (store) {
       return store.value;
@@ -365,5 +366,11 @@ export class RdfService {
     const list:RDF.ITerm[] = this.store.each($rdf.sym(webId), namespace(node));
 
     return list;
+  }
+  
+  public async getFriendsOf(webId: string): Promise<string[]> {
+    await this.fetcher.load(webId);
+    return (this.getCollectionFromNamespace('knows', FOAF, webId) || []).
+      map((item: RDF.ITerm) => item.value);
   }
 }

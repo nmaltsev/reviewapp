@@ -29,5 +29,11 @@
 
   <h1>Dashboard</h1>
   <p>[TODO something like in a facebook newsfeed]</p>
-  <p>Your webId is {{ session.webId }}</p>
+  <ol>
+    <li *ngFor="let webId of profileLinks">
+      <a [routerLink]="['/legend']" [queryParams]="{ webId: webId }">{{webId}}</a>
+    </li>
+  </ol>
+
+
 </div>
