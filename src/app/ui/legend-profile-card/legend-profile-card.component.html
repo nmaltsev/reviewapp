@@ -1,7 +1,8 @@
-<div>
-  <img src=""/>
-  <h2></h2>
-  <p></p>
+<div *ngIf="userProfile">
+  <!-- TODO fix image url -->
+  <img src="{{userProfile.image || 'assets/images/profile.png'}}"/>
+  <h2>{{userProfile.fn}}</h2>
+  <p>{{userProfile.role || 'not defined'}}</p>
   <button>Follow</button>
-  <p>Following <span>0</span></p>
+  <p>Following <span>{{userProfile.following}}</span></p>
 </div>

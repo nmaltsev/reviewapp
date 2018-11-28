@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { SolidProfile } from '../../models/solid-profile.model';
 
 @Component({
   selector: 'legend-profile-card',
@@ -6,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./legend-profile-card.component.css']
 })
 export class LegendProfileCardComponent implements OnInit {
-
+  @Input() userProfile: SolidProfile; 
   constructor() { }
 
   ngOnInit() {
