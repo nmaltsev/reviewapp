@@ -1,16 +1,18 @@
 import { Injectable } from '@angular/core';
 import { SolidSession } from '../models/solid-session.model';
 import { ISolidRoot } from '../models/solid-api';
+import * as RDF from '../models/rdf.model';
+
 declare let solid: ISolidRoot;
-declare let $rdf: any;
-//import * as $rdf from 'rdflib'
+declare let $rdf: RDF.IRDF;
 
 // TODO: Remove any UI interaction from this service
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { SolidProfile } from '../models/solid-profile.model';
 
-const VCARD = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
-const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
+const VCARD:RDF.Namespace = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
+const FOAF:RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 
 /**
  * A service layer for RDF data manipulation using rdflib.js
@@ -22,7 +24,9 @@ const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 export class RdfService {
 
   session: SolidSession;
-  store = $rdf.graph();
+  store:RDF.IStore = $rdf.graph();
+
+  private parsedProfileCache: {[key: string]: SolidProfile} = {};
 
   /**
    * A helper object that connects to the web, loads data, and saves it back. More powerful than using a simple
@@ -31,7 +35,7 @@ export class RdfService {
    * as your query makes its way across the web.
    * @see http://linkeddata.github.io/rdflib.js/doc/Fetcher.html
    */
-  fetcher = $rdf.Fetcher;
+  fetcher:RDF.IFetcher /*= $rdf.Fetcher*/;
 
   /**
    * The UpdateManager allows you to send small changes to the server to “patch” the data as your user changes data in
@@ -39,7 +43,7 @@ export class RdfService {
    * upstream and downstream changes, and signaling any conflict between them.
    * @see http://linkeddata.github.io/rdflib.js/doc/UpdateManager.html
    */
-  updateManager = $rdf.UpdateManager;
+  updateManager:RDF.IUpdateManager/* = $rdf.UpdateManager*/;
 
   constructor (private toastr: ToastrService) {
     const fetcherOptions = {};
@@ -295,13 +299,14 @@ export class RdfService {
     }
   };
 
-  getProfile = async () => {
+  getProfile = async (): Promise<SolidProfile> => {
 
     if (!this.session) {
       await this.getSession();
     }
 
     try {
+      // This method will return profile from cache
       await this.fetcher.load(this.session.webId);
 
       return {
@@ -318,17 +323,47 @@ export class RdfService {
     }
   };
 
+  public async collectProfileData (webId: string): Promise<SolidProfile> {
+    if (!this.parsedProfileCache[webId]) {
+      await this.fetcher.load(webId);
+      this.parsedProfileCache[webId] = {
+        fn : this.getValueFromVcard('fn'),
+        company : this.getValueFromVcard('organization-name'),
+        phone: this.getPhone(),
+        role: this.getValueFromVcard('role'),
+        image: this.getValueFromVcard('hasPhoto'),
+        address: this.getAddress(),
+        email: this.getEmail(),
+      };
+
+      let friends: RDF.ITerm[] = this.getCollectionFromNamespace('knows', FOAF, webId);
+      
+      if (friends) {
+        this.parsedProfileCache[webId].following = friends.length;
+      }
+    }
+
+    return this.parsedProfileCache[webId];
+  }
+
   /**
    * Gets any resource that matches the node, using the provided Namespace
    * @param {string} node The name of the predicate to be applied using the provided Namespace 
    * @param {$rdf.namespace} namespace The RDF Namespace
    * @param {string?} webId The webId URL (e.g. https://yourpod.solid.community/profile/card#me) 
    */
-  private getValueFromNamespace(node: string, namespace: any, webId?: string): string | any {
-    const store = this.store.any($rdf.sym(webId || this.session.webId), namespace(node));
+  private getValueFromNamespace(node: string, namespace: RDF.Namespace, webId?: string): string | any {
+    const store: RDF.ITerm = this.store.any($rdf.sym(webId || this.session.webId), namespace(node));
+
     if (store) {
       return store.value;
     }
     return '';
+  }
+
+  private getCollectionFromNamespace(node: string, namespace: RDF.Namespace, webId: string) {
+    const list:RDF.ITerm[] = this.store.each($rdf.sym(webId), namespace(node));
+
+    return list;
   }
 }

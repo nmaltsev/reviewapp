@@ -2,6 +2,7 @@
 
 PFE project "A Privacy-Preserving Social Networking Application"
 
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
@@ -9,6 +10,14 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+
+### New page components
+
+`ng generate component pages/<page name>`
+
+### New UI component
+
+`ng generate component ui/<component name>`
 
 ## Build
 

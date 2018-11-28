@@ -7,6 +7,7 @@
     "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
+    "clean": "rm -rf dist/*",
     "e2e": "ng e2e"
   },
   "browser": {

@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { RegisterComponent } from './register/register.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LegendProfileCardComponent } from './ui/legend-profile-card/legend-profile-card.component';
 
 
 
@@ -62,7 +63,8 @@ const routes: Routes = [
     DashboardComponent,
     CardComponent,
     RegisterComponent,
-    LegendComponent
+    LegendComponent,
+    LegendProfileCardComponent
   ],
   imports: [
     BrowserModule,
