@@ -1,0 +1,22 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" [routerLink]="['/home']">Solid Social App</a>
+    <button class="navbar-toggler" type="button"
+            (click)="toggleCollapse()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse"
+         [class.show]="show">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item" *ngFor="let item of links">
+          <a class="nav-link" [routerLink]="item.route" [routerLinkActive]="['active']">
+            {{item.name}}</a>
+        </li>
+        <li class="nav-item" *ngIf="isLogged">
+          <a class="nav-link" href="" (click)="logout()">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
