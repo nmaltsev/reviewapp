@@ -3,6 +3,8 @@ import { ActivatedRoute, Params } from "@angular/router";
 import { Subscription} from 'rxjs';
 import { RdfService } from '../../services/rdf.service';
 import { SolidProfile } from '../../models/solid-profile.model';
+import { ReviewService } from 'src/app/services/review.service';
+import { Review } from 'src/app/models/review.model';
 
 
 @Component({
@@ -19,15 +21,16 @@ export class LegendComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private rdfService: RdfService
+    private rdfService: RdfService,
+    private reviewService: ReviewService,
   ) {
     this.authorizedWebId = this.rdfService.session ? this.rdfService.session.webId : '';
   }
 
-  ngOnInit() {
-    // http://localhost:4200/legend?webId=https%3A%2F%2Fnmaltsev.inrupt.net%2Fprofile%2Fcard%23me
+  private reviews: Review[] = [];
 
-    // Extract WebId from url query
+  ngOnInit() {
+    // Extract WebId from url query http://localhost:4200/legend?webId=https%3A%2F%2Fnmaltsev.inrupt.net%2Fprofile%2Fcard%23me
     this.sub = this.route
       .queryParams
       .subscribe(async (params: Params) => {
@@ -38,6 +41,8 @@ export class LegendComponent implements OnInit {
 
         console.log('profileData');
         console.dir(this.profileData);
+        this.reviews = this.reviewService.getReviews(this.profileData);
+        
       });
   }
 

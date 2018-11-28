@@ -309,6 +309,7 @@ export class RdfService {
       await this.fetcher.load(this.session.webId);
 
       return {
+        webId: this.session.webId,
         fn : this.getValueFromVcard('fn'),
         company : this.getValueFromVcard('organization-name'),
         phone: this.getPhone(),
@@ -327,6 +328,7 @@ export class RdfService {
       console.log('[CollectProfileData] %s fn: %s', webId, this.getValueFromVcard('fn'));
       await this.fetcher.load(webId);
       this.parsedProfileCache[webId] = {
+        webId,
         fn : this.getValueFromVcard('fn', webId),
         company : this.getValueFromVcard('organization-name', webId),
         phone: this.getPhone(),

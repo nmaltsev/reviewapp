@@ -19,6 +19,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TopNavComponent } from './ui/top-nav/top-nav.component';
 import { LegendProfileCardComponent } from './ui/legend-profile-card/legend-profile-card.component';
+import { ReviewComponent } from './ui/review/review.component';
 
 
 
@@ -66,7 +67,8 @@ const routes: Routes = [
     RegisterComponent,
     LegendComponent,
     TopNavComponent,
-    LegendProfileCardComponent
+    LegendProfileCardComponent,
+    ReviewComponent
   ],
   imports: [
     BrowserModule,

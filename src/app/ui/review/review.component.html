@@ -1,0 +1,4 @@
+<img src="model.image || 'assets/images/profile.png'"/>
+<p><span>{{model.author.fn}}</span> rated <a href="#">{{model.property.name}}</a><span *ngIf="model.property.adress"> in <a href="#">{{model.property.adress.getLocality()}}</a></span></p>
+<h3>{{model.summary}}</h3>
+<p>{{model.text}}</p>
