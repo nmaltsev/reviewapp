@@ -1,33 +1,7 @@
-<div class="dashboard">
-  <div class="topnav">
-    <div class="logo">Solid</div>
-    <div class="menu-item">
-      <div>
-        <i class="far fa-compass"></i>
-      </div>
-      Menu Item 1
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center">DASHBOARD</h1>
+        </div>
     </div>
-    <div class="menu-item">
-      <div>
-        <i class="far fa-comment"></i>
-      </div>
-      Menu Item 2
-    </div>
-    <div class="menu-item" [routerLink]="['/card']">
-      <div>
-        <i class="fas fa-sliders-h"></i>
-      </div>
-      Profile
-    </div>
-    <div class="menu-item" (click)="onSignOut()">
-      <div>
-        <i class="fas fa-sliders-h"></i>
-      </div>
-      Signout
-    </div>
-  </div>
-
-  <h1>Dashboard</h1>
-  <p>[TODO something like in a facebook newsfeed]</p>
-  <p>Your webId is {{ session.webId }}</p>
 </div>
