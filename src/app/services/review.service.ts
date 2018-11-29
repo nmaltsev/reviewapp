@@ -57,10 +57,8 @@ export class ReviewService {
 		return ~~((1 << n *10) * Math.random());
   }
   
-  async fetchPublicTypeIndex (webId: string, isForce: boolean = false): Promise<Review[]> {
+  async fetchPublicTypeIndex (webId: string, isForce: boolean = false): Promise<RDF.ITerm> {
     await this.rdf.fetcher.load(webId);
-
-    
 
 		this.publicTypeIndex[webId] = this.rdf.fetcher.store.any(
 			$rdf.sym(webId), 
@@ -84,7 +82,7 @@ export class ReviewService {
       this.reviewTypeRegistration[webId] 
       && this.reviewTypeRegistration[webId].value
     ) {
-			this.reviewInstance[webId] = this.rdf.fetcher.store.any(
+			return this.reviewInstance[webId] = this.rdf.fetcher.store.any(
 				this.reviewTypeRegistration[webId], 
 				SOLID('instance')
       );
@@ -94,18 +92,18 @@ export class ReviewService {
 			// 	console.log('Reviews updated');
 			// 	this.fetchReviews(true);
       // });
-
-			return await this.fetchReviews(webId);
-    } else { // There is no reviews.ttl, create it
+    } else { // There is no reviews.ttl
       if (this.rdf.session && this.rdf.session.webId == webId) {
         // If it is your own POD, you can create file
-        let r: SolidAPI.IResponce = await this.createReviewFile(webId);
+        const r: SolidAPI.IResponce = await this.createReviewFile(webId);
 
         console.log('DOCUMENT created');
         console.dir(r);
+
+        if (r.status == 200) {
+          return await this.fetchPublicTypeIndex(webId, true);
+        }
       }
-			
-      return [];
 		}
   }
 
@@ -200,7 +198,6 @@ export class ReviewService {
 		}
 	}
 
-
   private getFakeData(profile:SolidProfile): Review[] {
     return [
       new Review(
@@ -234,9 +231,67 @@ export class ReviewService {
     if (
       !this.reviews[webId] || !this.publicTypeIndex[webId] || isForce
     ) {
-      return await this.fetchPublicTypeIndex(webId, isForce);
+      if (await this.fetchPublicTypeIndex(webId, isForce)) {
+        return await this.fetchReviews(webId, true);
+      } else {
+        return [];
+      }
     } else {
       return this.reviews[webId];
+    }
+  }
+
+  private escape4rdf(property: string): string {
+		return property.replace(/\"/g, '\'');
+	}
+
+  async saveReview(review: Review): Promise<SolidAPI.IResponce> {
+    let reviewInstance: RDF.ITerm = await this.fetchPublicTypeIndex(review.author.webId);
+
+    console.log('[CALL saveReview]')
+    console.dir(review);
+    console.dir(reviewInstance);
+
+    if (reviewInstance) { // else we have not got opportunity to save anything
+      const date_s:string = new Date().toISOString();
+      const source:string = reviewInstance.value;
+      const query:string = `INSERT DATA {
+        @prefix schema: <https://schema.org/> .
+        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+        @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+  
+        <${review.id}> a schema:Review ;
+        foaf:maker <${review.author.webId}>;
+        schema:author ""^^xsd:string ;
+        schema:datePublished "${date_s}"^^schema:dateTime ;
+        schema:description """${this.escape4rdf(review.text)}"""^^xsd:string ;
+        schema:name """${this.escape4rdf(review.summary)}"""^^xsd:string ;
+        schema:reviewRating [
+          a schema:Rating ;
+          schema:bestRating "5"^^xsd:string ;
+          schema:ratingValue "${review.rating}"^^xsd:string ;
+          schema:worstRating "1"^^xsd:string
+        ] ;
+        schema:hotel [
+          a schema:Hotel ;
+          schema:name """${this.escape4rdf(review.property.name)}"""^^xsd:string ;
+          schema:address [
+            a schema:PostalAddress ;
+            schema:addressCountry "${this.escape4rdf(review.property.adress.countryName)}"^^xsd:string ;
+            schema:addressLocality "${this.escape4rdf(review.property.adress.locality)}"^^xsd:string ;
+            schema:addressRegion "${review.property.adress.region}"^^xsd:string ;
+            schema:postalCode ""^^xsd:string ;
+            schema:streetAddress "${review.property.adress.street}"^^xsd:string
+          ] ;
+        ] .
+      }`;
+      // Send a PATCH request to update the source
+      return await solid.auth.fetch(source, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/sparql-update' },
+        body: query,
+        credentials: 'include',
+      });
     }
   }
 }

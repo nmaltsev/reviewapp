@@ -13,8 +13,8 @@ export class Address implements IAddress {
     constructor(countryName?: string, locality?: string, region?: string, street?: string) {
         this.countryName = countryName;
         this.locality = locality;
-        this.region = region;
-        this.street = street;
+        this.region = region || '';
+        this.street = street || '';
     }
     getLocality(): string {
         return this.locality + ', ' + this.countryName;

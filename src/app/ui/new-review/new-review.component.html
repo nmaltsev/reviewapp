@@ -3,18 +3,18 @@
     <div class="col-sm-8 col-md-7 mx-auto">
       <div class="card">
         <div class="card-body">
-          <form #f="ngForm" (submit)="onSubmit()">
+          <form #f="ngForm" (submit)="onSubmit(f)" (reset)="onReset()" ngNativeValidate>
             <div class="form-group">
               <label for="country">Country</label>
-              <input type="text" id="country" class="form-control" name="country" placeholder="e.g. France" [(ngModel)]="newReview.property.adress.countryName" />
+              <input type="text" id="country" class="form-control" name="country" placeholder="e.g. France" [(ngModel)]="newReview.property.adress.countryName" required/>
             </div>
             <div class="form-group">
               <label for="city">City</label>
-              <input type="text" id="city" class="form-control" name="city" placeholder="e.g. Paris" [(ngModel)]="newReview.property.adress.locality" />
+              <input type="text" id="city" class="form-control" name="city" placeholder="e.g. Paris" [(ngModel)]="newReview.property.adress.locality" required />
             </div>
             <div class="form-group">
               <label for="hotel">Hotel</label>
-              <input type="text" id="hotel" class="form-control" name="hotel" placeholder="e.g. Maison Souquet" [(ngModel)]="newReview.property.name" />
+              <input type="text" id="hotel" class="form-control" name="hotel" placeholder="e.g. Maison Souquet" [(ngModel)]="newReview.property.name" required />
             </div>
             <div class="form-group">
               <label for="rate">Rate:</label>
@@ -24,11 +24,16 @@
               </select>
             </div>
             <div class="form-group">
+                <label for="body">Summary:</label>
+                <input class="form-control" id="body" name="body" [(ngModel)]="newReview.summary" required />
+              </div>
+            <div class="form-group">
               <label for="body">Text:</label>
-              <textarea class="form-control" id="body" name="body" [(ngModel)]="newReview.text"></textarea>
+              <textarea class="form-control" id="body" name="body" [(ngModel)]="newReview.text" required ></textarea>
             </div>
             <div class="text-center">
               <button class="btn btn-success" type="submit">Add review</button>
+              <button class="btn" type="reset">Reset</button>
             </div>
           </form>
         </div>

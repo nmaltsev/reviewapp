@@ -5,6 +5,7 @@ import {SolidProfile} from '../../models/solid-profile.model';
 import {RdfService} from '../../services/rdf.service';
 import {Property, PropertyType} from '../../models/property.model';
 import {Address} from '../../models/address.model';
+import { ReviewService } from 'src/app/services/review.service';
 
 @Component({
   selector: 'app-new-review',
@@ -17,7 +18,10 @@ export class NewReviewComponent implements OnInit {
     rates = [];
     @ViewChild('frm') reviewForm: NgForm;
 
-  constructor(private rdfService: RdfService) { }
+  constructor(
+    private rdfService: RdfService,
+    private reviewService: ReviewService
+  ) { }
 
   async ngOnInit() {
     // TODO replace with "stars"
@@ -28,15 +32,20 @@ export class NewReviewComponent implements OnInit {
         {rate: 2, desc: 'Poor'},
         {rate: 1, desc: 'Terrible'},
     ];
-    this.newReview = new Review(Date.now().toString(), '', '');
+    this.newReview = new Review(this.reviewService.generateDocumentUID(), '', '');
     let newProp = new Property(PropertyType.hotel, '', new Address());
     this.newReview.setProperty(newProp);
     this.authUser = await this.rdfService.getProfile();
     this.newReview.setAuthor(this.authUser);
   }
 
-  onSubmit() {
-    // TODO create new review
+  onSubmit(f: NgForm) {
+    this.reviewService.saveReview(this.newReview).then(() => {
+      f.resetForm();
+      alert('Success');
+    });
   }
-
+  onReset() {
+    console.log('Reset');
+  }
 }
