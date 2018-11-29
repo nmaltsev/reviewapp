@@ -325,8 +325,8 @@ export class RdfService {
 
   public async collectProfileData (webId: string): Promise<SolidProfile> {
     if (!this.parsedProfileCache[webId]) {
-      // console.log('[CollectProfileData] %s fn: %s', webId, this.getValueFromVcard('fn'));
       await this.fetcher.load(webId);
+
       this.parsedProfileCache[webId] = {
         webId,
         fn : this.getValueFromVcard('fn', webId),

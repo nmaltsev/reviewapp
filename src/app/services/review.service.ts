@@ -6,22 +6,48 @@ import { Address } from '../models/address.model';
 import { SolidProfile } from '../models/solid-profile.model';
 import * as RDF from '../models/rdf.model';
 import { SolidSession } from '../models/solid-session.model';
+import * as SolidAPI  from '../models/solid-api';
 
 declare let $rdf: RDF.IRDF;
-const SCHEMAORG:RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
+declare let solid: SolidAPI.ISolidRoot;
+
+interface IHash<type> {
+  [key: string]: type;
+}
+
+const SCHEMAORG:RDF.Namespace = $rdf.Namespace('https://schema.org/');
+const SOLID:RDF.Namespace = $rdf.Namespace('http://www.w3.org/ns/solid/terms#');
+const REVIEW:RDF.Namespace = $rdf.Namespace('https://schema.org/Review#');
+const RDFns: RDF.Namespace = $rdf.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 
 @Injectable({
   providedIn: 'root'
 })
 export class ReviewService {
   private sessionToken: number;
+  
+  private reviews: IHash<Review[]> = {};
+  private publicTypeIndex: IHash<RDF.ITerm> = {};
+  private reviewTypeRegistration: IHash<RDF.ITerm> = {};
+  private reviewInstance: IHash<RDF.ITerm> = {};
+  
 
   constructor(private rdf: RdfService) {
     this.sessionToken = this.generateRandToken(2);
 
     this.rdf.getSession().then((session: SolidSession) => {
-      console.log('Session ready for ReviewService');
+      console.log('Session ready for ReviewService %s', session.webId);
+      console.dir(session);
+      // this.fetchPublicTypeIndex(session.webId);
     });
+
+    window['model'] = this;
+    window['ns'] = {
+      RDF: RDFns,
+      SCHEMAORG,
+      REVIEW,
+      SOLID
+    }
   }
 
   generateDocumentUID (): string {
@@ -31,42 +57,149 @@ export class ReviewService {
 		return ~~((1 << n *10) * Math.random());
   }
   
-  /*async fetchPublicTypeIndex () {
-		this.publicTypeIndex = this.fetcher.store.any(
-			$rdf.sym(this.webId), 
-			this.namespace.solid('publicTypeIndex'), 
-			null, 
-			$rdf.sym(this.webId.split('#')[0]));
+  async fetchPublicTypeIndex (webId: string, isForce: boolean = false): Promise<Review[]> {
+    await this.rdf.fetcher.load(webId);
 
+    
+
+		this.publicTypeIndex[webId] = this.rdf.fetcher.store.any(
+			$rdf.sym(webId), 
+			SOLID('publicTypeIndex'), 
+			null, 
+      $rdf.sym(webId.split('#')[0]));
+      
 		// Load the person's data into the store
-		await this.fetcher.load(this.publicTypeIndex);
+		await this.rdf.fetcher.load(this.publicTypeIndex[webId], {force: isForce});
 
   	// Get review details
-		this.reviewTypeRegistration = this.fetcher.store.any(
+		this.reviewTypeRegistration[webId] = this.rdf.fetcher.store.any(
 			null, 
-			this.namespace.solid('forClass'), 
-			// this.namespace.schemaOrg('Review')
-			this.namespace.review('Review')
-		);
+			SOLID('forClass'), 
+      // this.namespace.schemaOrg('Review')
+      REVIEW('Review'),
+      this.publicTypeIndex[webId] // null
+    );
 
-		if (this.reviewTypeRegistration && this.reviewTypeRegistration.value) {
-			this.reviewInstance = this.fetcher.store.any(
-				this.reviewTypeRegistration, 
-				this.namespace.solid('instance')
-			);			
-
+    if (
+      this.reviewTypeRegistration[webId] 
+      && this.reviewTypeRegistration[webId].value
+    ) {
+			this.reviewInstance[webId] = this.rdf.fetcher.store.any(
+				this.reviewTypeRegistration[webId], 
+				SOLID('instance')
+      );
+      
 			// Subscribe on updation
-			this.updater.addDownstreamChangeListener(this.reviewInstance.doc(), async () => {
-				console.log('Reviews updated');
-				this.fetchReviews(true);
-			});
+			// this.updater.addDownstreamChangeListener(this.reviewInstance.doc(), async () => {
+			// 	console.log('Reviews updated');
+			// 	this.fetchReviews(true);
+      // });
 
-			await this.fetchReviews();
-		} else { // There is no reviews.ttl, create it
-			this.createReviewFile();
-			this.reviews = [];
+			return await this.fetchReviews(webId);
+    } else { // There is no reviews.ttl, create it
+      if (this.rdf.session && this.rdf.session.webId == webId) {
+        // If it is your own POD, you can create file
+        let r: SolidAPI.IResponce = await this.createReviewFile(webId);
+
+        console.log('DOCUMENT created');
+        console.dir(r);
+      }
+			
+      return [];
 		}
-  }*/
+  }
+
+  private async createReviewFile(webId: string): Promise<any> {
+    const query: string = `INSERT DATA {
+      <#Review> a <http://www.w3.org/ns/solid/terms#TypeRegistration> ;
+        <http://www.w3.org/ns/solid/terms#forClass> <https://schema.org/Review> ;
+        <http://www.w3.org/ns/solid/terms#instance> </public/reviews.ttl> .
+        <> <http://purl.org/dc/terms/references> <#Review> .
+      }`;
+    // Send a PATCH request to update the source
+    console.log('sending PATCH query to', this.publicTypeIndex[webId].value ,query)
+    return await solid.auth.fetch(this.publicTypeIndex[webId].value, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/sparql-update' },
+      body: query,
+      credentials: 'include',
+    });
+  } 
+
+  async fetchReviews (webId: string, isForce: boolean = false): Promise<Review[]> {
+    let reviews: Review[];
+    
+    try {
+      // console.warn('[FetchReview] %s',webId);
+      // console.dir(this.reviewInstance[webId])
+
+			await this.rdf.fetcher.load(this.reviewInstance[webId], {force: isForce});
+
+      reviews = this.extractReviews(await this.rdf.collectProfileData(webId));
+		} catch (e) {
+      // Attention: there is strange backend behaviour. File may exists in the public index, but it doesn't exist on file system. 
+      
+      console.log('Errors');
+      console.dir(e);
+			this.createReviewFile(webId);
+			reviews = [];
+    } finally {
+      return this.reviews[webId] = reviews;
+    }
+  }
+  
+  extractReviews(profile: SolidProfile): Review[] {
+		const reviewStore: RDF.IState[] = this.rdf.fetcher.store.statementsMatching(
+			null, 
+			RDFns('type'), 
+			SCHEMAORG('Review')
+    );
+
+		if (reviewStore && reviewStore.length) {
+			let reviews: Review[] = [];
+
+			for (var i = 0; i < reviewStore.length; i++) {
+				let subject: RDF.ITerm = reviewStore[i].subject;
+        // TODO
+        let description:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('description'));
+        let summary:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('name'));
+        let datePublished:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('datePublished'));
+        let hotelInstance:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('hotel'));
+
+        let review: Review = new Review(
+          this.generateDocumentUID(),
+          summary ? summary.value : '',
+          description ? description.value : '',
+        )
+        .setAuthor(profile)
+        .setCreation(datePublished.value ? new Date(datePublished.value) : null);
+
+				if (hotelInstance) {
+					let hotelName:RDF.ITerm = this.rdf.fetcher.store.any(hotelInstance, SCHEMAORG('name'));
+					let addressInstance:RDF.ITerm = this.rdf.fetcher.store.any(hotelInstance, SCHEMAORG('address'));
+
+          review.setProperty(
+            new Property(PropertyType.hotel, hotelName ? hotelName.value : '', new Address())
+          )
+	
+					if (addressInstance) {
+						let country:RDF.ITerm = this.rdf.fetcher.store.any(addressInstance, SCHEMAORG('addressCountry'));
+						let locality:RDF.ITerm = this.rdf.fetcher.store.any(addressInstance, SCHEMAORG('addressLocality'));
+            review.property.adress = new Address(
+              locality ? locality.value : '',
+              country ? country.value : ''
+            );
+					}
+				}
+				reviews.push(review);
+			}
+
+			return reviews;
+		} else {
+			return [];
+		}
+	}
+
 
   private getFakeData(profile:SolidProfile): Review[] {
     return [
@@ -93,8 +226,17 @@ export class ReviewService {
     ];
   }
 
-  getReviews(profile:SolidProfile): Review[] {
-    // TODO Do some magic
-    return this.getFakeData(profile);
+  // getReviews(profile:SolidProfile): Review[] {
+  //   // TODO Do some magic
+  //   return this.getFakeData(profile);
+  // }
+  async getReviews(webId: string, isForce:boolean = false): Promise<Review[]> {
+    if (
+      !this.reviews[webId] || !this.publicTypeIndex[webId] || isForce
+    ) {
+      return await this.fetchPublicTypeIndex(webId, isForce);
+    } else {
+      return this.reviews[webId];
+    }
   }
 }

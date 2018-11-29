@@ -28,24 +28,18 @@ export class LegendComponent implements OnInit {
   }
 
   private reviews: Review[] = [];
+  private reviewsAreLoading: boolean = false;
 
   ngOnInit() {
-    // TODO in parallel!
-    // this.rdfService.getSession()
-
     // Extract WebId from url query http://localhost:4200/usertimeline?webId=https%3A%2F%2Fnmaltsev.inrupt.net%2Fprofile%2Fcard%23me
     this.sub = this.route
       .queryParams
       .subscribe(async (params: Params) => {
         this.webId = decodeURIComponent(params['webId']) || this.authorizedWebId;
-        console.log('[INIT legend page] WebId: %s, this.authorizedWebId: %s', this.webId, this.authorizedWebId);
-
         this.profileData = await this.rdfService.collectProfileData(this.webId);
-
-        console.log('profileData');
-        console.dir(this.profileData);
-        this.reviews = this.reviewService.getReviews(this.profileData);
-        
+        this.reviewsAreLoading = true;
+        this.reviews = await this.reviewService.getReviews(this.webId);
+        this.reviewsAreLoading = false;
       });
   }
 
