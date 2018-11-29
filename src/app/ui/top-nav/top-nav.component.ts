@@ -19,6 +19,7 @@ export class TopNavComponent implements OnInit {
     if (this.isLogged) {
         this.links = [
             {route: '/dashboard', name: 'Dashboard'},
+            {route: '/create-review', name: 'Create'},
             {route: '/card', name: 'Profile Settings'}
         ];
     } else {
