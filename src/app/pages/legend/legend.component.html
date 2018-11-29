@@ -1,7 +1,11 @@
 <div class="container">
-    <legend-profile-card [userProfile]="profileData"></legend-profile-card>
-    <div>
-      <app-review *ngFor="let reviewModel of reviews" [model]="reviewModel"></app-review>
+    <div class="row">
+      <div class="col-sm-6 col-md-5">
+        <legend-profile-card [userProfile]="profileData"></legend-profile-card>
+      </div>
+      <div class="col-sm-6 col-md-7">
+        <app-review *ngFor="let reviewModel of reviews" [model]="reviewModel"></app-review>
+      </div>
     </div>
 </div>
 

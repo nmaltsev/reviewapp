@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 // Services
 import { AuthService } from '../services/solid.auth.service';
 import { RdfService } from '../services/rdf.service';
@@ -15,6 +15,7 @@ import {Subscription} from 'rxjs';
 export class DashboardComponent implements OnInit {
 
   private profileLinks: string[];
+  private query: string = '';
   userProfile: SolidProfile;
   paramWebId: string;
   authId: string;
@@ -33,19 +34,23 @@ export class DashboardComponent implements OnInit {
       let profileLinks: string[] = await this.rdfService.getFriendsOf(session.webId);
 
       profileLinks.push(this.rdfService.session.webId);
+      profileLinks.push('https://ruben.verborgh.org/profile/#me');
+      profileLinks.push('https://www.w3.org/People/Berners-Lee/card#i');
+
       this.profileLinks = profileLinks.map(encodeURIComponent);
 
-      this.loadProfile();
+      this.handleOfParams();
     } else {
       this.profileLinks = [];
     }
   }
 
-    async loadProfile() {
-      this.route.queryParams.subscribe(async params => {
+  private handleOfParams() {
+      this.route.queryParams.subscribe(async (params: Params) => {
           this.paramWebId = params.webId ? decodeURIComponent(params.webId) : null;
-          this.userProfile = this.paramWebId ? await this.rdfService.collectProfileData(this.paramWebId)
-              : this.userProfile = await this.rdfService.collectProfileData(this.authId);
+          this.userProfile = await this.rdfService.collectProfileData(this.paramWebId ? this.paramWebId : this.authId);
+
+          this.query = params.query ? decodeURIComponent(params.query) : '';
       });
   }
 
