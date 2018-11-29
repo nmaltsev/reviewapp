@@ -30,16 +30,10 @@ export class ReviewService {
   private publicTypeIndex: IHash<RDF.ITerm> = {};
   private reviewTypeRegistration: IHash<RDF.ITerm> = {};
   private reviewInstance: IHash<RDF.ITerm> = {};
-  
 
   constructor(private rdf: RdfService) {
     this.sessionToken = this.generateRandToken(2);
-
-    this.rdf.getSession().then((session: SolidSession) => {
-      console.log('Session ready for ReviewService %s', session.webId);
-      console.dir(session);
-      // this.fetchPublicTypeIndex(session.webId);
-    });
+    this.rdf.getSession();
 
     window['model'] = this;
     window['ns'] = {
@@ -47,7 +41,7 @@ export class ReviewService {
       SCHEMAORG,
       REVIEW,
       SOLID
-    }
+    };
   }
 
   generateDocumentUID (): string {

@@ -93,6 +93,7 @@ export class AuthService {
       // Example: callbackUri: `${window.location.origin}/generaltimeline`,
       // TODO test on gh-pages!
       callbackUri: window.location.origin + window.location.pathname.slice(0, -1) + redirectpath,
+      // callbackUri: window.location.origin + redirectpath,
       storage: localStorage,
     });
   }
