@@ -1,5 +1,8 @@
-<img src="{{ model.author.image || 'assets/images/profile.png'}}" style="width: 32px; border-radius: 50%;"/>
-<p><span>{{model.author.fn}}</span> rated <a [routerLink]="['/generaltimeline']" [queryParams]="{ query: model.property.name}">{{model.property.name}}</a><span *ngIf="model.property.adress"> in <a [routerLink]="['/generaltimeline ']" [queryParams]="{ query: model.property.adress.getLocality()}">{{model.property.adress.getLocality()}}</a></span></p>
-<p>{{model.creationDate | timePassed}}</p>
-<h3>{{model.summary}}</h3>
-<p>{{model.text}}</p>
+<div class="review-box">
+    <img src="{{ model.author.image || 'assets/images/profile.png'}}" class="review-box_avatar"/>
+    <p class="review-box_author-name">{{model.author.fn}}</p>
+    <p class="review-box_header">Rated <a [routerLink]="['/generaltimeline']" [queryParams]="{ query: model.property.name}">{{model.property.name}}</a><span *ngIf="model.property.adress"> in <a [routerLink]="['/generaltimeline ']" [queryParams]="{ query: model.property.adress.getLocality()}">{{model.property.adress.getLocality()}}</a></span></p>
+    <p class="review-box_creation-date">{{model.creationDate | timePassed}}</p>
+    <h4 class="review-box_summary">{{model.summary}}</h4>
+    <p class="review-box_text">{{model.text}}</p>
+</div>

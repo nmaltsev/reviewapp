@@ -5,8 +5,10 @@
 }
 
 .card{
-    /*padding: 1rem 0.5rem;*/
     border-radius: 2px;
+    position: sticky;
+    top: 5.5rem;
+    margin: 0 0 2rem 0;
 }
 
 .card-follow{
@@ -17,4 +19,5 @@
 
 .card-follow .value{
     font-size: 1.8rem;
+    margin-left: 4%;
 }
