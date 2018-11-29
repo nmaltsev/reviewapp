@@ -4,7 +4,7 @@
  * @see VCARD
  */
 export interface SolidProfile {
-    webId;
+    webId: string;
     address: {
         street?: string;
         // TODO: Add the missing address fields

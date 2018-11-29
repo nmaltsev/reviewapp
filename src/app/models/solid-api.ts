@@ -1,9 +1,11 @@
+import { SolidSession } from "./solid-session.model";
+
 // Declaration of public Api
 
 // TODO change any on normal definitions!
 
 interface ISolidAuth {
-    currentSession(Storage?): any;
+    currentSession(Storage?): Promise<SolidSession>;
     fetch(...any): Promise<any>;
     login(...any): any;
     logout(): Promise<any>;
