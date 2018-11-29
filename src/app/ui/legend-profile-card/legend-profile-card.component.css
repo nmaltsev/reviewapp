@@ -1,0 +1,20 @@
+
+.profile-pic{
+    max-width: 100px;
+    margin: 1rem auto;
+}
+
+.card{
+    /*padding: 1rem 0.5rem;*/
+    border-radius: 2px;
+}
+
+.card-follow{
+    text-transform: uppercase;
+    font-weight: 300;
+    font-size: 1rem;
+}
+
+.card-follow .value{
+    font-size: 1.8rem;
+}

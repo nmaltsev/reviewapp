@@ -25,7 +25,7 @@ const FOAF:RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 export class RdfService {
 
   session: SolidSession;
-  store:RDF.IStore = $rdf.graph();
+  store: RDF.IStore = $rdf.graph();
 
   private parsedProfileCache: {[key: string]: SolidProfile} = {};
 
@@ -325,7 +325,7 @@ export class RdfService {
 
   public async collectProfileData (webId: string): Promise<SolidProfile> {
     if (!this.parsedProfileCache[webId]) {
-      console.log('[CollectProfileData] %s fn: %s', webId, this.getValueFromVcard('fn'));
+      // console.log('[CollectProfileData] %s fn: %s', webId, this.getValueFromVcard('fn'));
       await this.fetcher.load(webId);
       this.parsedProfileCache[webId] = {
         webId,
@@ -339,7 +339,7 @@ export class RdfService {
       };
 
       let friends: RDF.ITerm[] = this.getCollectionFromNamespace('knows', FOAF, webId);
-      
+
       if (friends) {
         this.parsedProfileCache[webId].following = friends.length;
       }
@@ -369,10 +369,11 @@ export class RdfService {
 
     return list;
   }
-  
+
   public async getFriendsOf(webId: string): Promise<string[]> {
     await this.fetcher.load(webId);
     return (this.getCollectionFromNamespace('knows', FOAF, webId) || []).
       map((item: RDF.ITerm) => item.value);
   }
+
 }

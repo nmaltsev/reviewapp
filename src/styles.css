@@ -1,6 +1,14 @@
 @import "assets/styles/bootstrap.min.css";
 
 /* You can add global styles to this file, and also import other style files */
+body{
+  background-color: #eeeeee;
+}
+
+img{
+  max-width: 100%;
+}
+
 button.wide-button {
   width: 300px;
   height: 40px;

@@ -17,4 +17,5 @@ export interface SolidProfile {
     role: string;
     organization?: string;
     following?: number;
+    followed?: number;
 }

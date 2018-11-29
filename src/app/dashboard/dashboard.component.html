@@ -1,9 +1,22 @@
 <div class="container">
-    <h1>Dashboard</h1>
-    <p>[TODO something like in a facebook newsfeed]</p>
-    <ol>
-        <li *ngFor="let webId of profileLinks">
-            <a [routerLink]="['/legend']" [queryParams]="{ webId: webId }">{{webId}}</a>
-        </li>
-    </ol>
+    <div class="row">
+        <div class="col-sm-6 col-md-5">
+            <legend-profile-card [userProfile]="userProfile"></legend-profile-card>
+        </div>
+        <div class="col-sm-6 col-md-7">
+            <!--REVIEW LIST GOES HERE-->
+            <p>*[temporary] Other Profile Links</p>
+            <ul>
+                <li *ngFor="let webId of profileLinks; index as i;" >
+                    <a [routerLink]="['/dashboard']" [queryParams]="{ webId: webId }">Profile {{i}}</a>
+                </li>
+                <li>
+                    <a [routerLink]="['/dashboard']" [queryParams]="{ webId: 'https:%2F%2Fruben.verborgh.org%2Fprofile%2F%23me' }">Ruben Verborgh</a>
+                </li>
+                <li>
+                    <a [routerLink]="['/dashboard']" [queryParams]="{ webId: 'https%3A%2F%2Fwww.w3.org%2FPeople%2FBerners-Lee%2Fcard%23i' }">Timothy Berners-Lee</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>

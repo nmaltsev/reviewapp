@@ -10,7 +10,8 @@ export interface ITerm {
 export interface IStore {
     any(any, string): ITerm;
     each(any, string): ITerm[];
-};
+}
+
 export interface IFetcherProperties {
     force?: boolean; // Force loading data from POD
 }
