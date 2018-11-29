@@ -18,7 +18,7 @@ export class TopNavComponent implements OnInit {
     this.isLogged = !(localStorage.getItem('solid-auth-client') === null);
     if (this.isLogged) {
         this.links = [
-            {route: '/dashboard', name: 'Dashboard'},
+            {route: '/generaltimeline', name: 'Timeline'},
             {route: '/create-review', name: 'Create'},
             {route: '/card', name: 'Profile Settings'}
         ];

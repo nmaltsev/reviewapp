@@ -12,7 +12,7 @@
             <p>*[temporary] Other Profile Links</p>
             <ol>
                 <li *ngFor="let webId of profileLinks; index as i;" >
-                    <a [routerLink]="['/legend']" [queryParams]="{ webId: webId }">Profile {{i}}</a>
+                    <a [routerLink]="['/usertimeline']" [queryParams]="{ webId: webId }">Profile {{i}}</a>
                 </li>
             </ol>
         </div>

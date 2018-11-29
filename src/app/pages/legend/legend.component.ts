@@ -30,7 +30,7 @@ export class LegendComponent implements OnInit {
   private reviews: Review[] = [];
 
   ngOnInit() {
-    // Extract WebId from url query http://localhost:4200/legend?webId=https%3A%2F%2Fnmaltsev.inrupt.net%2Fprofile%2Fcard%23me
+    // Extract WebId from url query http://localhost:4200/usertimeline?webId=https%3A%2F%2Fnmaltsev.inrupt.net%2Fprofile%2Fcard%23me
     this.sub = this.route
       .queryParams
       .subscribe(async (params: Params) => {

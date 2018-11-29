@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
   identityProviders: SolidProvider[];
   selectedProviderUrl: string;
   customProviderUrl: string;
-  private MAIN_PAGE: string = '/dashboard';
+  private MAIN_PAGE: string = '/generaltimeline';
 
   ngOnInit() {
 

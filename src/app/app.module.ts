@@ -39,7 +39,7 @@ const routes: Routes = [
     component: LoginPopupComponent
   },
   {
-    path: 'dashboard',
+    path: 'generaltimeline',
     component: DashboardComponent,
     canActivate: [AuthGuard],
   },
@@ -53,14 +53,14 @@ const routes: Routes = [
     component: RegisterComponent
   },
   {
-    path: 'legend',
+    path: 'usertimeline',
     component: LegendComponent
   },
   {
     path: 'create-review',
     component: NewReviewComponent
   },
-  { path: '**', redirectTo: 'dashboard' } // fallback if page not found
+  { path: '**', redirectTo: 'generaltimeline' } // fallback if page not found
 ];
 
 @NgModule({

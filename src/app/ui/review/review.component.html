@@ -1,5 +1,5 @@
 <img src="{{ model.author.image || 'assets/images/profile.png'}}" style="width: 32px; border-radius: 50%;"/>
-<p><span>{{model.author.fn}}</span> rated <a [routerLink]="['/dashboard']" [queryParams]="{ query: model.property.name}">{{model.property.name}}</a><span *ngIf="model.property.adress"> in <a [routerLink]="['/dashboard']" [queryParams]="{ query: model.property.adress.getLocality()}">{{model.property.adress.getLocality()}}</a></span></p>
+<p><span>{{model.author.fn}}</span> rated <a [routerLink]="['/generaltimeline']" [queryParams]="{ query: model.property.name}">{{model.property.name}}</a><span *ngIf="model.property.adress"> in <a [routerLink]="['/generaltimeline ']" [queryParams]="{ query: model.property.adress.getLocality()}">{{model.property.adress.getLocality()}}</a></span></p>
 <p>{{model.creationDate | timePassed}}</p>
 <h3>{{model.summary}}</h3>
 <p>{{model.text}}</p>
