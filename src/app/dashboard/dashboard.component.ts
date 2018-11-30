@@ -36,6 +36,7 @@ export class DashboardComponent implements OnInit {
       profileLinks.push(this.rdfService.session.webId);
       profileLinks.push('https://ruben.verborgh.org/profile/#me');
       profileLinks.push('https://www.w3.org/People/Berners-Lee/card#i');
+      profileLinks.push('https://nmaltsev.inrupt.net/profile/card#me');
 
       this.profileLinks = profileLinks.map(encodeURIComponent);
 
