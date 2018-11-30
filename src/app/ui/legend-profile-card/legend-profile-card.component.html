@@ -5,8 +5,8 @@
            alt="{{ userProfile.fn + ' profile picture'}}" />
     </div>
     <div class="text-center mb-4">
-      <h2 class="fn">{{userProfile.fn}}</h2>
-      <p>{{userProfile.role}}</p>
+      <h2 class="fn">{{userProfile.fn || 'Name is not defined'}}</h2>
+      <p *ngIf="userProfile.role">{{userProfile.role}}</p>
       <div *ngIf="authWebId === userProfile.webId">
         <button class="btn btn-warning" [routerLink]="['/card']">
           <i class="fas fa-cogs"></i> Edit</button>

@@ -5,7 +5,7 @@ import { AuthService } from '../services/solid.auth.service';
 import { RdfService } from '../services/rdf.service';
 import { SolidSession } from '../models/solid-session.model';
 import {SolidProfile} from '../models/solid-profile.model';
-import {Subscription} from 'rxjs';
+
 
 @Component({
   selector: 'app-dashboard',

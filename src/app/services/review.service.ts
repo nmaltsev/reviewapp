@@ -91,12 +91,12 @@ export class ReviewService {
         // If it is your own POD, you can create file
         const r: SolidAPI.IResponce = await this.createReviewFile(webId);
 
-        console.log('DOCUMENT created');
-        console.dir(r);
+        // console.log('DOCUMENT created');
+        // console.dir(r);
 
-        if (r.status == 200) {
-          return await this.fetchPublicTypeIndex(webId, true);
-        }
+        // if (r.status == 200) {
+        //   return await this.fetchPublicTypeIndex(webId, true);
+        // }
       }
 		}
   }
