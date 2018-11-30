@@ -4,11 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod --base-href \"\"",
+    "build": "ng build --prod --base-href \"/\"",
     "test": "ng test",
     "lint": "ng lint",
     "clean": "rm -rf dist/*",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "runprod": "./node_modules/.bin/pushstate-server \"./dist/solid-app/\" 9061"
   },
   "browser": {
     "crypto": false,
@@ -62,6 +63,7 @@
     "karma-jasmine": "~1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "^5.4.1",
+    "pushstate-server": "^3.0.1",
     "ts-node": "~5.0.1",
     "tslint": "~5.9.1",
     "typescript": "~3.1.6"

@@ -58,7 +58,8 @@ const routes: Routes = [
   },
   {
     path: 'create-review',
-    component: NewReviewComponent
+    component: NewReviewComponent,
+    canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: 'generaltimeline' } // fallback if page not found
 ];
@@ -81,7 +82,8 @@ const routes: Routes = [
   imports: [
     BrowserModule,
     FormsModule,
-    RouterModule.forRoot(routes/*, {useHash: true}*/),
+    RouterModule.forRoot(routes),
+    // RouterModule.forRoot(routes, {useHash: true}),
     NgSelectModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule //required for toastr
