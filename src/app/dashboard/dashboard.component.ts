@@ -14,8 +14,8 @@ import {Subscription} from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
 
-  private profileLinks: string[];
-  private query: string = '';
+  profileLinks: string[];
+  query: string = '';
   userProfile: SolidProfile;
   paramWebId: string;
   authId: string;

@@ -17,7 +17,9 @@ export class LegendComponent implements OnInit {
   private sub: Subscription;
   private webId: string;
   private authorizedWebId: string;
-  private profileData: SolidProfile;
+  profileData: SolidProfile;
+  reviews: Review[] = [];
+  reviewsAreLoading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,9 +29,7 @@ export class LegendComponent implements OnInit {
     this.authorizedWebId = this.rdfService.session ? this.rdfService.session.webId : '';
   }
 
-  private reviews: Review[] = [];
-  private reviewsAreLoading: boolean = false;
-
+  
   ngOnInit() {
     // Extract WebId from url query http://localhost:4200/usertimeline?webId=https%3A%2F%2Fnmaltsev.inrupt.net%2Fprofile%2Fcard%23me
     this.sub = this.route
