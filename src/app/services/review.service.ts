@@ -242,7 +242,7 @@ export class ReviewService {
   async saveReview(review: Review): Promise<SolidAPI.IResponce> {
     let reviewInstance: RDF.ITerm = await this.fetchPublicTypeIndex(review.author.webId);
 
-    console.log('[CALL saveReview]')
+    console.log('[CALL saveReview]');
     console.dir(review);
     console.dir(reviewInstance);
 

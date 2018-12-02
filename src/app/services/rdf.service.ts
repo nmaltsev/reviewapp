@@ -6,6 +6,7 @@ import * as RDF from '../models/rdf.model';
 declare let solid: ISolidRoot;
 declare let $rdf: RDF.IRDF;
 
+
 // TODO: Remove any UI interaction from this service
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -26,7 +27,6 @@ export class RdfService {
 
   session: SolidSession;
   store: RDF.IStore = $rdf.graph();
-
   private parsedProfileCache: {[key: string]: SolidProfile} = {};
 
   /**
@@ -376,4 +376,27 @@ export class RdfService {
       map((item: RDF.ITerm) => item.value);
   }
 
+  public async updateFollowingList(follow: Array<string>, unfollow: Array<string>) {
+    const foafKnows = FOAF('knows');
+    const authUser = await this.getProfile();
+    // Symbol term types
+    const meSym = $rdf.sym(authUser.webId);
+    const doc = $rdf.sym(authUser.webId.split('#')[0]);
+    const insertions = [];
+    const deletions = [];
+    follow.forEach(function(webId) {
+      insertions.push($rdf.st(meSym, foafKnows, $rdf.sym(webId), doc));
+    });
+    unfollow.forEach(function (webId) {
+      deletions.push($rdf.st(meSym, foafKnows, $rdf.sym(webId), doc));
+    });
+
+    this.updateManager.update(deletions, insertions, (response, success, message) => {
+        if (success) {
+            this.toastr.success('Your Following List has been successfully updated', 'Success!');
+        } else {
+            this.toastr.error('Message: ' + message, 'An error has occurred');
+        }
+    });
+  }
 }
