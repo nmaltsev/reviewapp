@@ -20,7 +20,7 @@ export class LegendProfileCardComponent implements OnInit {
   set userProfile(userProfile: SolidProfile) {
       this._userProfile = userProfile;
   }
-  
+
   constructor(private rdfService: RdfService) { }
 
   async ngOnInit() {
@@ -38,9 +38,12 @@ export class LegendProfileCardComponent implements OnInit {
     });
   }
 
-  followToggle(): void {
-    // TODO add/remove friends
+  async followToggle() {
       this.isFriend = !this.isFriend;
-    console.log('Not Working Yet');
+      if (this.isFriend) {
+          await this.rdfService.updateFollowingList([this._userProfile.webId], []);
+      } else {
+          await this.rdfService.updateFollowingList([], [this._userProfile.webId]);
+      }
   }
 }
