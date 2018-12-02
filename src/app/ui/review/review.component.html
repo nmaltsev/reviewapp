@@ -1,7 +1,7 @@
 <div class="review-box">
     <img src="{{ model.author.image || 'assets/images/profile.png'}}" class="review-box_avatar"/>
     <p class="review-box_author-name">{{model.author.fn}}</p>
-    <p class="review-box_header">Rated <a [routerLink]="['/generaltimeline']" [queryParams]="{ query: model.property.name}">{{model.property.name}}</a><span *ngIf="model.property.adress"> in <a [routerLink]="['/generaltimeline ']" [queryParams]="{ query: model.property.adress.getLocality()}">{{model.property.adress.getLocality()}}</a></span></p>
+    <p class="review-box_header">Rated <a [routerLink]="['/generaltimeline']" [queryParams]="{ query: model.property.name}">{{model.property.name}}</a><span *ngIf="model.property.address"> in <a [routerLink]="['/generaltimeline ']" [queryParams]="{ query: model.property.address.getLocality()}">{{model.property.address.getLocality()}}</a></span></p>
     <p class="review-box_creation-date">{{model.creationDate | timePassed}}</p>
     <h4 class="review-box_summary">{{model.summary}}</h4>
     <p class="review-box_text">{{model.text}}</p>

@@ -19,4 +19,7 @@ export class Address implements IAddress {
     getLocality(): string {
         return this.locality + ', ' + this.countryName;
     }
+    clone():Address {
+        return new Address(this.countryName, this.locality, this.region, this.street);
+    }
 }

@@ -8,15 +8,19 @@ export enum PropertyType {
 export class Property {
     public type:PropertyType;
     public name:string;
-    public adress:Address;
+    public address:Address;
 
     constructor(
         type: PropertyType, 
         name: string, 
-        adress?: Address
+        address?: Address
     ) {
         this.type = type;
         this.name = name;
-        this.adress = adress;
+        this.address = address;
+    }
+
+    clone(): Property {
+        return new Property(this.type, this.name, this.address.clone());
     }
 }

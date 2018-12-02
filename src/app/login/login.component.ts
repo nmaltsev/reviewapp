@@ -24,8 +24,6 @@ export class LoginComponent implements OnInit {
   private MAIN_PAGE: string = '/generaltimeline';
 
   ngOnInit() {
-
-    console.log('OnInit %s', localStorage.getItem('solid-auth-client'));
     // If we're authenticated, go to profile
     if (localStorage.getItem('solid-auth-client')) {
       this.router.navigateByUrl(this.MAIN_PAGE);

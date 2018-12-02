@@ -10,10 +10,13 @@ export class Review {
     rating: number = 0;
     creationDate: Date;
 
-    constructor (id:string, summary: string, text: string) {
+    constructor (id:string) {
         this.id = id;
+    }
+    setContent(summary: string, text: string): Review {
         this.summary = summary;
         this.text = text;
+        return this;
     }
     setProperty(property: Property): Review {
         this.property = property;
@@ -30,5 +33,13 @@ export class Review {
     setCreation(date: Date): Review {
         this.creationDate = date;
         return this;
+    }
+    clone(id: string): Review {
+        return new Review(id || this.id)
+            .setContent(this.summary, this.text)
+            .setAuthor(this.author)
+            .setCreation(this.creationDate ? new Date(this.creationDate) : new Date())
+            .setRating(this.rating)
+            .setProperty(this.property.clone());
     }
 }

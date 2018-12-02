@@ -4,6 +4,8 @@ import { Observable, from } from 'rxjs';
 import { RdfService } from './rdf.service';
 import { SolidProvider } from '../models/solid-provider.model';
 import { ISolidRoot } from '../models/solid-api'; 
+import { SolidProfile } from '../models/solid-profile.model';
+import { ReviewService } from './review.service';
 
 declare let solid: ISolidRoot;
 
@@ -28,7 +30,11 @@ export class AuthService {
     body: '',
   };
 
-  constructor(private router: Router, private rdf: RdfService) {
+  constructor(
+    private router: Router, 
+    private rdf: RdfService,
+    private reviewService: ReviewService
+  ) {
     this.isSessionActive();
   }
 
@@ -61,24 +67,26 @@ export class AuthService {
   * Signs out of Solid in this app, by calling the logout function and clearing the localStorage token
   */
   solidSignOut = async () => {
+    this.reviewService.clean();
     try {
       await solid.auth.logout();
       // Remove localStorage
       localStorage.removeItem('solid-auth-client');
+      localStorage.removeItem('oldProfileData');
       // Redirect to login page
       this.router.navigate(['/']);
     } catch (error) {
       console.log(`Error: ${error}`);
     }
   }
-  // TODO change any
-  saveOldUserData = (profile: any) => {
+  
+  saveOldUserData(profile: SolidProfile): void {
     if (!localStorage.getItem('oldProfileData')) {
       localStorage.setItem('oldProfileData', JSON.stringify(profile));
     }
   }
 
-  getOldUserData = () => {
+  getOldUserData(): SolidProfile {
     return JSON.parse(localStorage.getItem('oldProfileData'));
   }
 
@@ -87,7 +95,7 @@ export class AuthService {
   *  is populated by the getIdentityProviders() function call. It currently requires a callback url and a storage option or else
   *  the call will fail.
   */
-  solidLogin = async (idp: string, redirectUrl: string): Promise<void> => {
+  async solidLogin(idp: string, redirectUrl: string): Promise<void> {
     // Attention: callbackUri must include target domain!
     await solid.auth.login(idp, {
       // Example: callbackUri: `${window.location.origin}/generaltimeline`,
