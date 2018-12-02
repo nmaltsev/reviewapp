@@ -53,10 +53,18 @@ export class LegendComponent implements OnInit {
     this.webId = webId;
     this.profileIsLoaded = true;
 
-    this.profileData = await this.rdfService.collectProfileData(webId);
+    this.profileData = await this.rdfService.collectProfileData(this.webId);
     this.reviewsAreLoading = true;
-    this.reviews = await this.reviewService.getReviews(webId, true);
-    this.reviewsAreLoading = false;
+    
+    try {
+      this.reviews = await this.reviewService.getReviews(this.webId, true);
+    } catch(e) {
+      console.log('Failed to load reviews');
+      console.dir(e);
+    } finally {
+      this.reviewsAreLoading = false;
+    }
+    
   }
 
 }
