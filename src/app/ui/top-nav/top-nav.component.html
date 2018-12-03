@@ -8,13 +8,39 @@
 
     <div class="collapse navbar-collapse"
          [class.show]="show">
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item" *ngFor="let item of links">
-          <a class="nav-link" [routerLink]="item.route" [routerLinkActive]="['active']">
-            {{item.name}}</a>
+      <ul class="navbar-nav ml-auto" *ngIf="isLogged">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="'/generaltimeline'" [routerLinkActive]="['active']">
+            Timeline</a>
         </li>
-        <li class="nav-item" *ngIf="isLogged">
-          <a class="nav-link" href="" (click)="logout()">Logout</a>
+        <li class="nav-item dropdown" ngbDropdown placement="bottom-right">
+          <a class="nav-link dropdown-toggle" [routerLink]="" ngbDropdownToggle>
+            Create
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" [routerLink]="'/create-review'" [routerLinkActive]="['active']">
+              Hotel Review</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown" ngbDropdown placement="bottom-right">
+          <a class="nav-link dropdown-toggle" [routerLink]="" ngbDropdownToggle>
+            My Profile
+          </a>
+          <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
+            <a class="dropdown-item" [routerLink]="'/usertimeline'" [routerLinkActive]="['active']">
+              <i class="fas fa-user-circle"></i> My Profile</a>
+            <a class="dropdown-item" [routerLink]="'/card'" [routerLinkActive]="['active']">
+              <i class="fas fa-cogs"></i> Settings</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="" (click)="logout()">
+              <i class="fas fa-sign-out-alt"></i> Logout</a>
+          </div>
+        </li>
+      </ul>
+      <ul class="navbar-nav ml-auto" *ngIf="!isLogged">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="'/login'" [routerLinkActive]="['active']">
+            Login</a>
         </li>
       </ul>
     </div>

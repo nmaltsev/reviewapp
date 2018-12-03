@@ -23,7 +23,7 @@ import { ReviewComponent } from './ui/review/review.component';
 import { TimePassedPipe } from './utils/time-passed.pipe';
 import { NewReviewComponent } from './ui/new-review/new-review.component';
 
-
+import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
 
 const routes: Routes = [
   {
@@ -86,7 +86,8 @@ const routes: Routes = [
     // RouterModule.forRoot(routes, {useHash: true}),
     NgSelectModule,
     ToastrModule.forRoot(),
-    BrowserAnimationsModule //required for toastr
+    BrowserAnimationsModule, //required for toastr
+    NgbDropdownModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]
