@@ -24,6 +24,7 @@ import { TimePassedPipe } from './utils/time-passed.pipe';
 import { NewReviewComponent } from './ui/new-review/new-review.component';
 
 import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
+import { PopupRootComponent } from './ui/popup-root/popup-root.component';
 
 const routes: Routes = [
   {
@@ -77,7 +78,8 @@ const routes: Routes = [
     LegendProfileCardComponent,
     ReviewComponent,
     TimePassedPipe,
-    NewReviewComponent
+    NewReviewComponent,
+    PopupRootComponent
   ],
   imports: [
     BrowserModule,

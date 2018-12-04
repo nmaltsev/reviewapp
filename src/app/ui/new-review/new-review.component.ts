@@ -8,6 +8,7 @@ import {Address} from '../../models/address.model';
 import { ReviewService } from 'src/app/services/review.service';
 import * as SolidAPI  from '../../models/solid-api';
 import { Router } from '@angular/router';
+import { PopupService } from 'src/app/services/popup.service';
 
 @Component({
   selector: 'app-new-review',
@@ -23,7 +24,8 @@ export class NewReviewComponent implements OnInit {
   constructor(
     private rdfService: RdfService,
     private reviewService: ReviewService,
-    private router: Router
+    private router: Router,
+    private popupService: PopupService
   ) { }
 
   async ngOnInit() {
@@ -50,9 +52,13 @@ export class NewReviewComponent implements OnInit {
       if (e.status == 200) {
         f.resetForm();
 
-        if (confirm('Review was saved. Open the review list?')) {
+        // if (confirm('Review was saved. Open the review list?')) {
+        //   this.router.navigate(['/usertimeline']);
+        // }
+        this.popupService.confirm('Review was saved. Open the review list?', () => {
           this.router.navigate(['/usertimeline']);
-        }
+        });
+        // TODO
       } else if (e.status == 401) { // You are not authorized
         // Strange: when I have caught that error, the application after reloding did not show me authorization page
         // So, that behaviour must be rechecked
