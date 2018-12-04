@@ -130,13 +130,13 @@ export class ReviewService {
 
   async fetchReviews (webId: string, isForce: boolean = false): Promise<Review[]> {
     let reviews: Review[];
-    
+
     try {
       // console.warn('[FetchReview] %s',webId);
       // console.dir(this.reviewInstance[webId])
 
       await this.rdf.fetcher.load(this.reviewInstance[webId], {force: isForce});
-      reviews = this.extractReviews(await this.rdf.collectProfileData(webId));
+      reviews = this.extractReviews(await this.rdf.collectProfileData(webId), this.reviewInstance[webId]);
 		} catch (error) {
       // Attention: there is strange backend behaviour. File may exists in the public index, but it doesn't exist on file system.
       if ((<IHttpError<SolidAPI.IResponce>>error).status == 404) {
@@ -150,21 +150,24 @@ export class ReviewService {
       }
 			reviews = [];
     } finally {
-      return this.reviews[webId] = reviews;
+      return this.reviews[webId] = reviews.sort(
+        (a: Review, b: Review) => a.creationDate > b.creationDate ? -1 : a.creationDate < b.creationDate ? 1 : 0
+      );
     }
   }
   
-  extractReviews(profile: SolidProfile): Review[] {
+  private extractReviews(profile: SolidProfile, reviewInstance: RDF.ITerm): Review[] {
 		const reviewStore: RDF.IState[] = this.rdf.fetcher.store.statementsMatching(
-			null, 
+      null, 
 			RDFns('type'), 
-			SCHEMAORG('Review')
+      SCHEMAORG('Review'),
+      reviewInstance
     );
 
 		if (reviewStore && reviewStore.length) {
       let reviews: Review[] = [];
-      console.warn('reviewStore');
-      console.dir(reviewStore);
+      // console.warn('reviewStore %s', reviewInstance.value);
+      // console.dir(reviewStore);
 
 			for (var i = 0; i < reviewStore.length; i++) {
 				let subject:RDF.ITerm = reviewStore[i].subject;
@@ -206,6 +209,7 @@ export class ReviewService {
 	}
 
   async getReviews(webId: string, isForce:boolean = false): Promise<Review[]> {
+    // console.log('[getReviews] webId: %s', webId);
     if (
       !this.reviews[webId] || !this.publicTypeIndex[webId] || isForce
     ) {

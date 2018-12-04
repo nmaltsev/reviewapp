@@ -18,7 +18,7 @@ export interface IState {
 export interface IStore {
     any(a1:ITerm, a2:string, a3?:string|ITerm, a4?:ITerm): ITerm;
     each(any, string): ITerm[];
-    statementsMatching(a1?:string, a2?:string, a3?:string, a4?:string): IState[];
+    statementsMatching(a1?:ITerm, a2?:string, a3?:string, a4?:ITerm): IState[];
 }
 
 export interface IFetcherProperties {
