@@ -2,7 +2,7 @@
   <div class="card-body">
     <div class="profile-pic">
       <img src="{{userProfile.image || './assets/images/profile.png'}}"
-           alt="{{ userProfile.fn + ' profile picture'}}" />
+           alt="{{ userProfile.fn + ' profile picture'}}" class="rounded-circle" />
     </div>
     <div class="text-center mb-4">
       <h2 class="fn">{{userProfile.fn || 'Name is not defined'}}</h2>
@@ -12,25 +12,27 @@
           <i class="fas fa-cogs"></i> Edit</button>
       </div>
       <div>
-        <button 
-          *ngIf="authWebId !== userProfile.webId && isFriend"
-          class="btn btn-warning" 
-          (click)="followToggle()"
+        <button
+            *ngIf="authWebId !== userProfile.webId && isFriend"
+            class="btn btn-warning"
+            (click)="followToggle()"
         >Unfollow</button>
-        <button 
-          *ngIf="authWebId !== userProfile.webId && !isFriend"
-          class="btn btn-success" 
-          (click)="followToggle()"
+        <button
+            *ngIf="authWebId !== userProfile.webId && !isFriend"
+            class="btn btn-success"
+            (click)="followToggle()"
         >Follow</button>
       </div>
     </div>
     <div class="row text-center">
       <div class="col-sm-6">
-        <p class="card-follow text-muted"><span class="align-middle">Following</span>
+        <p class="card-follow text-muted">
+          <span class="align-middle">Following</span><br>
           <span class="value align-middle">{{userProfile.following || 0}}</span></p>
       </div>
       <div class="col-sm-6">
-        <p class="card-follow text-muted"><span class="align-middle">Followed</span>
+        <p class="card-follow text-muted">
+          <span class="align-middle">Followed</span><br>
           <span class="value align-middle">{{userProfile.followed || 0}}</span></p>
       </div>
     </div>

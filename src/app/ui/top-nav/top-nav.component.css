@@ -4,3 +4,27 @@ nav{
 i{
     margin-right: 0.5rem;
 }
+a:hover{
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.thumb{
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+}
+
+.thumb img{
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+.nav-link{
+    line-height: 30px;
+    text-align: center;
+}

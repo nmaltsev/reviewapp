@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {AuthService} from '../../services/solid.auth.service';
+import {RdfService} from '../../services/rdf.service';
+import {SolidProfile} from '../../models/solid-profile.model';
 
 @Component({
   selector: 'app-top-nav',
@@ -10,18 +12,15 @@ export class TopNavComponent implements OnInit {
   show = false;
   links: Array<Object>;
   isLogged: boolean;
+  authUser: SolidProfile;
 
-  constructor(private auth: AuthService) { }
+  constructor(private auth: AuthService, private rdfService: RdfService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     // TODO Change the way we check if user is authenticated
     this.isLogged = !(localStorage.getItem('solid-auth-client') === null);
     if (this.isLogged) {
-        this.links = [
-            {route: '/generaltimeline', name: 'Timeline'},
-            {route: '/create-review', name: 'Create'},
-            {route: '/card', name: 'Profile Settings'}
-        ];
+      this.authUser = await this.rdfService.getProfile();
     } else {
         this.links = [
             {route: '/login', name: 'Login'}
