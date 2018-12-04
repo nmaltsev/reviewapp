@@ -24,10 +24,10 @@
         </li>
         <li class="nav-item dropdown" ngbDropdown placement="bottom-right">
           <a class="nav-link dropdown-toggle" ngbDropdownToggle>
-            My Profile
+            <div class="thumb"><img src="{{ authUser && authUser.image ? authUser.image : 'assets/images/profile.png'}}" class="rounded-circle"></div>
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <a class="dropdown-item" [routerLink]="'/usertimeline'" [routerLinkActive]="['active']">
+            <a class="dropdown-item" [routerLink]="'/usertimeline'" [queryParams]="{webId: authUser? authUser.webId : null}" [routerLinkActive]="['active']">
               <i class="fas fa-user-circle"></i> My Profile</a>
             <a class="dropdown-item" [routerLink]="'/card'" [routerLinkActive]="['active']">
               <i class="fas fa-cogs"></i> Settings</a>

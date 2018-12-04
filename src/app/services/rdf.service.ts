@@ -314,7 +314,7 @@ export class RdfService {
         company : this.getValueFromVcard('organization-name'),
         phone: this.getPhone(),
         role: this.getValueFromVcard('role'),
-        image: this.getValueFromVcard('hasPhoto'),
+        image: this.getValueFromFoaf('depiction') || this.getValueFromFoaf('img') || this.getValueFromVcard('hasPhoto'),
         address: this.getAddress(),
         email: this.getEmail(),
       };
@@ -333,7 +333,7 @@ export class RdfService {
         company : this.getValueFromVcard('organization-name', webId),
         phone: this.getPhone(),
         role: this.getValueFromVcard('role', webId),
-        image: this.getValueFromVcard('hasPhoto', webId),
+        image: this.getValueFromFoaf('depiction', webId) || this.getValueFromFoaf('img', webId) || this.getValueFromVcard('hasPhoto'),
         address: this.getAddress(),
         email: this.getEmail(),
       };
