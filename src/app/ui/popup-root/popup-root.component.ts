@@ -24,3 +24,4 @@ export class PopupRootComponent implements OnInit, AfterViewInit {
     this.popupService.setRootViewContainerRef(this.viewContainerRef);
   }
 }
+
