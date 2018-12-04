@@ -86,3 +86,11 @@ input[type=text].wide-text {
 }
 
 .btn-line > .btn:not(:last-child) { margin-right: 16px; }
+
+.search-input_wrap {
+  display: block;
+  position: sticky;
+  margin: 0 0 12px 0;
+  top: 3.9rem;
+  z-index: 10;
+}

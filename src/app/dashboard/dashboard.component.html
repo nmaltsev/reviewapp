@@ -1,20 +1,18 @@
 <div class="container">
-    <div>
-        <p>*[temporary] Filter of a reviews</p>
-        <input type="text" placeholder="Filter" value="{{query}}"/>
-    </div>
+    <search-input  class="search-input_wrap" [query]="queryParam" (queryChange)="onquerychange($event)"></search-input>
     <div class="row">
         <div class="col-sm-6 col-md-5">
-            
+            <p>TODO For something interesting</p>
         </div>
         <div class="col-sm-6 col-md-7">
+            <h3 *ngIf="reviewsAreLoading">Loading...</h3>
             <!--REVIEW LIST GOES HERE-->
-            <p>*[temporary] Other Profile Links</p>
-            <ol>
+            <app-review *ngFor="let reviewModel of reviews | reviewFilter:filterQuery" [model]="reviewModel"></app-review>
+            <!-- <ol>
                 <li *ngFor="let webId of profileLinks; index as i;" >
                     <a [routerLink]="['/usertimeline']" [queryParams]="{ webId: webId }">Profile {{i}}</a>
                 </li>
-            </ol>
+            </ol> -->
         </div>
     </div>
 </div>

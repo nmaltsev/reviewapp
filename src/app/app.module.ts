@@ -25,6 +25,8 @@ import { NewReviewComponent } from './ui/new-review/new-review.component';
 
 import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
 import { PopupRootComponent } from './ui/popup-root/popup-root.component';
+import { SearchInputComponent } from './ui/search-input/search-input.component';
+import { ReviewFilterPipe } from './utils/review-filter.pipe';
 
 const routes: Routes = [
   {
@@ -79,7 +81,9 @@ const routes: Routes = [
     ReviewComponent,
     TimePassedPipe,
     NewReviewComponent,
-    PopupRootComponent
+    PopupRootComponent,
+    SearchInputComponent,
+    ReviewFilterPipe
   ],
   imports: [
     BrowserModule,
