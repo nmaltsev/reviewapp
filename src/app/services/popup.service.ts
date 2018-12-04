@@ -63,7 +63,7 @@ export class PopupService {
       template: `<dialog #root class="m3-modal" open>
         <form class="m3-modal_inner _size-a" (submit)="onsubmit($event)" (reset)="onreset($event)">
           <p>${title}</p>
-          <div>
+          <div class="btn-line">
             <button type="submit" class="btn btn-success">Yes</button>
             <button type="reset" class="btn">No</button>
           </div>

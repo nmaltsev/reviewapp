@@ -84,3 +84,5 @@ input[type=text].wide-text {
   top: 0;
   z-index: 10;
 }
+
+.btn-line > .btn:not(:last-child) { margin-right: 16px; }
