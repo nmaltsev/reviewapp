@@ -1,8 +1,45 @@
-<div class="review-box">
-    <img src="{{ model.author.image || 'assets/images/profile.png'}}" class="review-box_avatar"/>
-    <p class="review-box_author-name">{{model.author.fn}}</p>
-    <p class="review-box_header">Rated <a [routerLink]="['/generaltimeline']" [queryParams]="{ query: model.property.name}">{{model.property.name}}</a><span *ngIf="model.property.address"> in <a [routerLink]="['/generaltimeline ']" [queryParams]="{ query: model.property.address.getLocality()}">{{model.property.address.getLocality()}}</a></span></p>
-    <p class="review-box_creation-date">{{model.creationDate | timePassed}}</p>
-    <h4 class="review-box_summary">{{model.summary}}</h4>
-    <p class="review-box_text">{{model.text}}</p>
+<div class="card">
+  <div class="card-body">
+    <div class="close-icon"><button class="btn btn-link" type="button"> <i class="fas fa-times"></i></button></div>
+    <div class="row">
+      <div class="col">
+        <div class="float-left thumb">
+          <img src="{{ model.author.image || 'assets/images/profile.png'}}" class="rounded-circle" />
+        </div>
+        <div class="review-action mb-3">
+          <a [routerLink]="'/usertimeline'" [queryParams]="{webId: model.author.webId }">{{ model.author.fn }}</a>
+          <span class="review-object">
+            rated <a [routerLink]="['/generaltimeline']"
+                                        [queryParams]="{query: model.property.name}">
+            {{model.property.name}}</a>
+            <span *ngIf="model.property.address"> in <a [routerLink]="['/generaltimeline']"
+            [queryParams]="{ query: model.property.address.getLocality()}">
+            {{model.property.address.getLocality()}}</a></span>
+          </span>
+          <p class="small text-muted">{{model.creationDate | timePassed}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h5 class="text-center">{{model.summary}}</h5>
+        <p>{{model.text}}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p class="text-warning text-center">
+          <span *ngFor="let number of [1,2,3,4,5]">
+            <i [class]="model.rating >= number? 'fas fa-star': 'far fa-star'"></i>
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-sm-6"><h6 class="text-danger m-sm-0">Average:</h6></div>
+      <div class="col-sm-6"><h6 class="text-info text-sm-right m-sm-0">N friends were there</h6></div>
+    </div>
+  </div>
 </div>
