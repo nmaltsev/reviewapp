@@ -176,6 +176,7 @@ export class ReviewService {
         let summary:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('name'));
         let datePublished:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('datePublished'));
         let hotelInstance:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('hotel'));
+        let ratingInstance:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('reviewRating'));
 
         let review: Review = new Review(this.generateDocumentUID())
         .setContent(summary ? summary.value : '', description ? description.value : '')
@@ -198,7 +199,16 @@ export class ReviewService {
               country ? country.value : ''
             );
 					}
-				}
+        }
+        
+        if (ratingInstance) {
+          let ratingValue:RDF.ITerm = this.rdf.fetcher.store.any(ratingInstance, SCHEMAORG('ratingValue'));
+          
+          if (ratingValue) {
+            review.setRating(ratingValue.value);
+          }
+        }
+
 				reviews.push(review);
 			}
 
