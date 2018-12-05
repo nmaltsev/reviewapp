@@ -8,6 +8,8 @@ import {SolidProfile} from '../models/solid-profile.model';
 import { ReviewService } from '../services/review.service';
 import { Review } from '../models/review.model';
 import { tools } from '../utils/tools';
+import { IHttpError } from '../models/exception.model';
+import { IResponce } from '../models/solid-api';
 
 
 
@@ -73,7 +75,9 @@ export class DashboardComponent implements OnInit {
 
   private async loadReviews(profiles: string[]):Promise<Review[]> {
     return Promise
-      .all(profiles.map((webId: string) => this.reviewService.getReviews(webId)))
+      .all(profiles.map((webId: string) => this.reviewService.getReviews(webId).catch((e: IHttpError<IResponce>) => {
+        return null;
+      })))
       .then((rewiews: Review[][]) => {
         return tools.flatten(rewiews).sort(
           (a: Review, b: Review) => a.creationDate > b.creationDate ? -1 : a.creationDate < b.creationDate ? 1 : 0
