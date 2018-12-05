@@ -79,12 +79,6 @@ input[type=text].wide-text {
 
 }
 
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
 .btn-line > .btn:not(:last-child) { margin-right: 16px; }
 
 .search-input_wrap {
