@@ -1,0 +1,8 @@
+<div class="mb-3 user-item">
+    <a class="btn-sm" [routerLink]="'/usertimeline'" [queryParams]="{'webId' : profile.webId}">{{profile.fn}}</a>
+    <button
+        class="btn btn-sm float-right"
+        [ngClass]="isFriend ? 'btn-light':'btn-success'"
+        (click)="followToggle(profile.webId)"
+    >{{isFriend?'Unfollow':'Follow'}}</button>
+</div>

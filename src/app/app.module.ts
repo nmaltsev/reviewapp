@@ -13,7 +13,7 @@ import { LegendComponent } from './pages/legend/legend.component';
 import { AuthService } from './services/solid.auth.service';
 import { AuthGuard } from './services/auth.guard.service';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { RegisterComponent } from './register/register.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -27,6 +27,8 @@ import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
 import { PopupRootComponent } from './ui/popup-root/popup-root.component';
 import { SearchInputComponent } from './ui/search-input/search-input.component';
 import { ReviewFilterPipe } from './utils/review-filter.pipe';
+import { FollowingListComponent } from './ui/following/following-list/following-list.component';
+import { FollowingItemComponent } from './ui/following/following-item/following-item.component';
 
 const routes: Routes = [
   {
@@ -64,6 +66,11 @@ const routes: Routes = [
     component: NewReviewComponent,
     canActivate: [AuthGuard],
   },
+  {
+    path: 'following-list',
+    component: FollowingListComponent,
+    canActivate: [AuthGuard],
+  },
   { path: '**', redirectTo: 'generaltimeline' } // fallback if page not found
 ];
 
@@ -83,7 +90,9 @@ const routes: Routes = [
     NewReviewComponent,
     PopupRootComponent,
     SearchInputComponent,
-    ReviewFilterPipe
+    ReviewFilterPipe,
+    FollowingListComponent,
+    FollowingItemComponent
   ],
   imports: [
     BrowserModule,
@@ -93,7 +102,8 @@ const routes: Routes = [
     NgSelectModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule, //required for toastr
-    NgbDropdownModule
+    NgbDropdownModule,
+    ReactiveFormsModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]

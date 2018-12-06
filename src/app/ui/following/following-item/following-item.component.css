@@ -1,0 +1,9 @@
+.user-item {
+    background-color: #fcfcfc;
+    border: solid 1px #eee;
+    min-height: 2rem;
+}
+
+.user-item a{
+    display: inline-block;
+}
