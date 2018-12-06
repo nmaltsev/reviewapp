@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="form-group">
+        <ng-template #rt let-r="result" let-t="term">
+          <ngb-highlight [result]="formatter(r)" [term]="t"></ngb-highlight>
+        </ng-template>
+        <label for="typeahead-place">Start typing your location:</label>
+        <input id="typeahead-place" type="text" class="form-control"
+               [class.is-invalid]="searchFailed"
+               [(ngModel)]="model" [ngbTypeahead]="search" [resultTemplate]="rt"
+               [inputFormatter]="formatter" />
+
+
+        <span *ngIf="searching">searching...</span>
+        <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+      </div>
+      <hr>
+      <pre>Model: {{ model | json }}</pre>
+    </div>
+  </div>
+</div>

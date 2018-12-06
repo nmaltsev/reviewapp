@@ -23,12 +23,14 @@ import { ReviewComponent } from './ui/review/review.component';
 import { TimePassedPipe } from './utils/time-passed.pipe';
 import { NewReviewComponent } from './ui/new-review/new-review.component';
 
-import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDropdownModule, NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import { PopupRootComponent } from './ui/popup-root/popup-root.component';
 import { SearchInputComponent } from './ui/search-input/search-input.component';
 import { ReviewFilterPipe } from './utils/review-filter.pipe';
 import { FollowingListComponent } from './ui/following/following-list/following-list.component';
 import { FollowingItemComponent } from './ui/following/following-item/following-item.component';
+import { FindPlaceComponent } from './pages/find-place/find-place.component';
+import {HttpClientModule} from '@angular/common/http';
 
 const routes: Routes = [
   {
@@ -62,6 +64,11 @@ const routes: Routes = [
     component: LegendComponent
   },
   {
+    path: 'find-place',
+    component: FindPlaceComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'create-review',
     component: NewReviewComponent,
     canActivate: [AuthGuard],
@@ -92,7 +99,8 @@ const routes: Routes = [
     SearchInputComponent,
     ReviewFilterPipe,
     FollowingListComponent,
-    FollowingItemComponent
+    FollowingItemComponent,
+    FindPlaceComponent
   ],
   imports: [
     BrowserModule,
@@ -103,7 +111,9 @@ const routes: Routes = [
     ToastrModule.forRoot(),
     BrowserAnimationsModule, //required for toastr
     NgbDropdownModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
+    NgbTypeaheadModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]
