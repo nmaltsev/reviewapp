@@ -1,12 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {Review} from '../../models/review.model';
-import {SolidProfile} from '../../models/solid-profile.model';
-import {RdfService} from '../../services/rdf.service';
-import {Property, PropertyType} from '../../models/property.model';
-import {Address} from '../../models/address.model';
+import {Review} from '../../../models/review.model';
+import {SolidProfile} from '../../../models/solid-profile.model';
+import {RdfService} from '../../../services/rdf.service';
+import {Property, PropertyType} from '../../../models/property.model';
+import {Address} from '../../../models/address.model';
 import { ReviewService } from 'src/app/services/review.service';
-import * as SolidAPI  from '../../models/solid-api';
+import * as SolidAPI  from '../../../models/solid-api';
 import { Router } from '@angular/router';
 import { PopupService } from 'src/app/services/popup.service';
 

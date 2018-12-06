@@ -9,7 +9,7 @@ declare const API_URL = 'http://photon.komoot.de/api/';
   providedIn: 'root'
 })
 export class PhotonService {
-
+  chosenPlace: any;
   constructor(
       private http: HttpClient
   ) { }

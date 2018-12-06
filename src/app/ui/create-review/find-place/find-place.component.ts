@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {PhotonService} from '../../services/osm/photon.service';
+import {PhotonService} from '../../../services/osm/photon.service';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 
@@ -20,6 +20,7 @@ export class FindPlaceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.model = this._photonService.chosenPlace;
   }
 
   search = (text$: Observable<string>) =>
@@ -42,15 +43,25 @@ export class FindPlaceComponent implements OnInit {
           tap(() => this.searching = false)
       )
 
-  formatter = (x: any) => {
+  formatter = (x: {'properties': any}) => {
     let out = '';
     out += x.properties.name;
-    out += x.properties.street ? ', str. ' + x.properties.street : '';
+    // out += x.properties.street ? ', str. ' + x.properties.street : '';
     out += x.properties.city ? ', ' + x.properties.city : '';
     out += x.properties.state ? ', ' + x.properties.state : '';
     out += x.properties.country ? ', ' + x.properties.country : '';
     out += x.properties.type ? ' (' + x.properties.type + ')' : '';
     return out;
+  }
+
+  isPlaceChosen() {
+    return this.model &&
+        this.model.hasOwnProperty('properties') &&
+        this.model.properties.hasOwnProperty('osm_id');
+  }
+
+  nextStep() {
+    this._photonService.chosenPlace = this.model;
   }
 
 }

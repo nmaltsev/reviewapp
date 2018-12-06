@@ -21,7 +21,7 @@ import { TopNavComponent } from './ui/top-nav/top-nav.component';
 import { LegendProfileCardComponent } from './ui/legend-profile-card/legend-profile-card.component';
 import { ReviewComponent } from './ui/review/review.component';
 import { TimePassedPipe } from './utils/time-passed.pipe';
-import { NewReviewComponent } from './ui/new-review/new-review.component';
+import { NewReviewComponent } from './ui/create-review/new-review/new-review.component';
 
 import {NgbDropdownModule, NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import { PopupRootComponent } from './ui/popup-root/popup-root.component';
@@ -29,7 +29,7 @@ import { SearchInputComponent } from './ui/search-input/search-input.component';
 import { ReviewFilterPipe } from './utils/review-filter.pipe';
 import { FollowingListComponent } from './ui/following/following-list/following-list.component';
 import { FollowingItemComponent } from './ui/following/following-item/following-item.component';
-import { FindPlaceComponent } from './pages/find-place/find-place.component';
+import { FindPlaceComponent } from './ui/create-review/find-place/find-place.component';
 import {HttpClientModule} from '@angular/common/http';
 
 const routes: Routes = [
