@@ -263,6 +263,7 @@ export class ReviewService {
         schema:hotel [
           a schema:Hotel ;
           schema:name """${this.escape4rdf(review.property.name)}"""^^xsd:string ;
+          schema:identifier """${review.property.osm_id}"""^^xsd:string;
           schema:address [
             a schema:PostalAddress ;
             schema:addressCountry "${this.escape4rdf(review.property.address.countryName)}"^^xsd:string ;

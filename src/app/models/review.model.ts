@@ -1,5 +1,5 @@
-import { Property } from "./property.model";
-import { SolidProfile } from "./solid-profile.model";
+import { Property } from './property.model';
+import { SolidProfile } from './solid-profile.model';
 
 export class Review {
     summary: string;
@@ -7,10 +7,10 @@ export class Review {
     id: string;
     property: Property;
     author: SolidProfile;
-    rating: number = 0;
+    rating = 0;
     creationDate: Date;
 
-    constructor (id:string) {
+    constructor (id: string) {
         this.id = id;
     }
     setContent(summary: string, text: string): Review {

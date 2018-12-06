@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {Review} from '../../../models/review.model';
 import {SolidProfile} from '../../../models/solid-profile.model';
@@ -16,6 +16,10 @@ import { PopupService } from 'src/app/services/popup.service';
   styleUrls: ['./new-review.component.css']
 })
 export class NewReviewComponent implements OnInit {
+  private _place: any;
+  @Input()
+      set place(place: any) {this._place = place; }
+      get place(): any {return this._place; }
     authUser: SolidProfile;
     newReview: Review;
     rates = [];
@@ -38,7 +42,8 @@ export class NewReviewComponent implements OnInit {
         {rate: 1, desc: 'Terrible'},
     ];
     this.newReview = new Review('');
-    let newProp = new Property(PropertyType.hotel, '', new Address());
+    const pl = this.place.properties;
+    const newProp = new Property(pl.osm_value, pl.name, new Address(pl.country, pl.city, pl.state, pl.street), pl.osm_id);
     this.newReview.setProperty(newProp);
     this.authUser = await this.rdfService.getProfile();
     this.newReview.setAuthor(this.authUser);
@@ -46,12 +51,11 @@ export class NewReviewComponent implements OnInit {
 
   onSubmit(f: NgForm) {
     // We need clone() method, because resetForm() will reset this.newReview
-    const review: Review = this.newReview.clone(this.reviewService.generateDocumentUID()); 
+    const review: Review = this.newReview.clone(this.reviewService.generateDocumentUID());
 
     this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {
       if (e.status == 200) {
         f.resetForm();
-
         // if (confirm('Review was saved. Open the review list?')) {
         //   this.router.navigate(['/usertimeline']);
         // }
@@ -73,7 +77,7 @@ export class NewReviewComponent implements OnInit {
       }
     });
   }
-  
+
   onReset() {
     console.log('Reset');
   }

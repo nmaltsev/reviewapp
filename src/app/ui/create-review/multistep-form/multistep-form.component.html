@@ -1,0 +1,6 @@
+<app-find-place
+    *ngIf="showFindPlace"
+    (chosenLocation)="locationChosen($event)"
+></app-find-place>
+<app-new-review *ngIf="!showFindPlace" [place]="locationModel"
+></app-new-review>

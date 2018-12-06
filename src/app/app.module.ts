@@ -31,6 +31,7 @@ import { FollowingListComponent } from './ui/following/following-list/following-
 import { FollowingItemComponent } from './ui/following/following-item/following-item.component';
 import { FindPlaceComponent } from './ui/create-review/find-place/find-place.component';
 import {HttpClientModule} from '@angular/common/http';
+import { MultistepFormComponent } from './ui/create-review/multistep-form/multistep-form.component';
 
 const routes: Routes = [
   {
@@ -64,13 +65,8 @@ const routes: Routes = [
     component: LegendComponent
   },
   {
-    path: 'find-place',
-    component: FindPlaceComponent,
-    canActivate: [AuthGuard],
-  },
-  {
     path: 'create-review',
-    component: NewReviewComponent,
+    component: MultistepFormComponent,
     canActivate: [AuthGuard],
   },
   {
@@ -100,7 +96,8 @@ const routes: Routes = [
     ReviewFilterPipe,
     FollowingListComponent,
     FollowingItemComponent,
-    FindPlaceComponent
+    FindPlaceComponent,
+    MultistepFormComponent
   ],
   imports: [
     BrowserModule,
