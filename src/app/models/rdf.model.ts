@@ -5,8 +5,9 @@ export interface ITerm {
     termType: string;
     value: any;
     readonly uri: string; // just js getter
-    doc(): ITerm;
-    dir(): ITerm;
+    doc(): ITerm; 
+    dir(): ITerm; // get parent folder
+    site(): ITerm; // get root
 }
 
 export interface IState {
