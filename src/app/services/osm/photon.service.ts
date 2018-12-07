@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
-declare const API_URL = 'http://photon.komoot.de/api/';
+declare const API_URL = 'https://photon.komoot.de/api/';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class PhotonService {
     const params = new HttpParams()
         .set('q', query)
         .set('limit', limit.toString());
-    return this.http.get<any>('http://photon.komoot.de/api/', {'params': params});
+    return this.http.get<any>('https://photon.komoot.de/api/', {'params': params});
   }
 
 }
