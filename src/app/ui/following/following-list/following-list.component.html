@@ -1,0 +1,31 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card card-sticky">
+        <div class="card-body">
+          <form [formGroup]="findForm">
+            <div class="input-group mb-4">
+              <input type="text" class="form-control" placeholder="Web ID" formControlName="webId"
+              [class.is-invalid]="isBad">
+              <div class="input-group-append">
+                <button class="btn"
+                [ngClass]="isBad?'btn-danger':'btn-info'"
+                (click)="findFriend()">
+                  <i class="fas fa-search"></i></button>
+              </div>
+            </div>
+          </form>
+          <h6 class="mb-3">Suggested friends:</h6>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="mb-3">Following list:</h6>
+          <app-following-item *ngFor="let item of followingList;" [profile]="item"></app-following-item>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

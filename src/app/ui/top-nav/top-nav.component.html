@@ -29,6 +29,8 @@
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
             <a class="dropdown-item" [routerLink]="'/usertimeline'" [queryParams]="{webId: authUser? authUser.webId : null}" [routerLinkActive]="['active']">
               <i class="fas fa-user-circle"></i> My Profile</a>
+            <a class="dropdown-item" [routerLink]="'/following-list'" [queryParams]="{webId: authUser? authUser.webId : null}" [routerLinkActive]="['active']">
+              <i class="fas fa-users"></i> Following</a>
             <a class="dropdown-item" [routerLink]="'/card'" [routerLinkActive]="['active']">
               <i class="fas fa-cogs"></i> Settings</a>
             <div class="dropdown-divider"></div>

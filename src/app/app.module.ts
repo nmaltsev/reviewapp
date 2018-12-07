@@ -13,7 +13,7 @@ import { LegendComponent } from './pages/legend/legend.component';
 import { AuthService } from './services/solid.auth.service';
 import { AuthGuard } from './services/auth.guard.service';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { RegisterComponent } from './register/register.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -21,12 +21,17 @@ import { TopNavComponent } from './ui/top-nav/top-nav.component';
 import { LegendProfileCardComponent } from './ui/legend-profile-card/legend-profile-card.component';
 import { ReviewComponent } from './ui/review/review.component';
 import { TimePassedPipe } from './utils/time-passed.pipe';
-import { NewReviewComponent } from './ui/new-review/new-review.component';
+import { NewReviewComponent } from './ui/create-review/new-review/new-review.component';
 
-import {NgbDropdownModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbDropdownModule, NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
 import { PopupRootComponent } from './ui/popup-root/popup-root.component';
 import { SearchInputComponent } from './ui/search-input/search-input.component';
 import { ReviewFilterPipe } from './utils/review-filter.pipe';
+import { FollowingListComponent } from './ui/following/following-list/following-list.component';
+import { FollowingItemComponent } from './ui/following/following-item/following-item.component';
+import { FindPlaceComponent } from './ui/create-review/find-place/find-place.component';
+import {HttpClientModule} from '@angular/common/http';
+import { MultistepFormComponent } from './ui/create-review/multistep-form/multistep-form.component';
 
 const routes: Routes = [
   {
@@ -61,7 +66,12 @@ const routes: Routes = [
   },
   {
     path: 'create-review',
-    component: NewReviewComponent,
+    component: MultistepFormComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'following-list',
+    component: FollowingListComponent,
     canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: 'generaltimeline' } // fallback if page not found
@@ -83,7 +93,11 @@ const routes: Routes = [
     NewReviewComponent,
     PopupRootComponent,
     SearchInputComponent,
-    ReviewFilterPipe
+    ReviewFilterPipe,
+    FollowingListComponent,
+    FollowingItemComponent,
+    FindPlaceComponent,
+    MultistepFormComponent
   ],
   imports: [
     BrowserModule,
@@ -93,7 +107,10 @@ const routes: Routes = [
     NgSelectModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule, //required for toastr
-    NgbDropdownModule
+    NgbDropdownModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    NgbTypeaheadModule
   ],
   providers: [AuthService],
   bootstrap: [AppComponent]

@@ -399,4 +399,5 @@ export class RdfService {
         }
     });
   }
+
 }
