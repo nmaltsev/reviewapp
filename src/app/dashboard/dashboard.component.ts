@@ -29,9 +29,9 @@ export class DashboardComponent implements OnInit {
   filterQuery:string = '';
 
   private recommendedList: string[] = [
-    'https://ruben.verborgh.org/profile/#me',
-    'https://www.w3.org/People/Berners-Lee/card#i',
-    'https://nmaltsev.inrupt.net/profile/card#me'
+    // 'https://ruben.verborgh.org/profile/#me',
+    // 'https://www.w3.org/People/Berners-Lee/card#i',
+    // 'https://nmaltsev.inrupt.net/profile/card#me'
   ];
 
   constructor(
