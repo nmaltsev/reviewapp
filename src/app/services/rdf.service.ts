@@ -333,7 +333,9 @@ export class RdfService {
         company : this.getValueFromVcard('organization-name', webId),
         phone: this.getPhone(),
         role: this.getValueFromVcard('role', webId),
-        image: this.getValueFromFoaf('depiction', webId) || this.getValueFromFoaf('img', webId) || this.getValueFromVcard('hasPhoto'),
+        image: this.getValueFromFoaf('depiction', webId) ||
+            this.getValueFromFoaf('img', webId) ||
+            this.getValueFromVcard('hasPhoto', webId),
         address: this.getAddress(),
         email: this.getEmail(),
       };
