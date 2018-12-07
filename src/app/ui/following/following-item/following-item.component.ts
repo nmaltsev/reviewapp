@@ -9,7 +9,7 @@ import {SolidSession} from '../../../models/solid-session.model';
   styleUrls: ['./following-item.component.css']
 })
 export class FollowingItemComponent implements OnInit {
-  private isFriend = false;
+  public isFriend = false;
   private authWebId: string;
   private _profile: SolidProfile;
   @Input()
