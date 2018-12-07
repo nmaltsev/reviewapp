@@ -6,7 +6,11 @@
     <div class="row">
       <div class="col">
         <div class="float-left thumb">
-          <img src="{{ model.author.image || 'assets/images/profile.png'}}" class="rounded-circle" />
+          <img 
+            src="{{ model.author.image || 'assets/images/profile.png'}}" 
+            class="rounded-circle" 
+            default-image
+          />
         </div>
         <div class="review-action mb-3">
           <a [routerLink]="'/usertimeline'" [queryParams]="{webId: model.author.webId }">{{ model.author.fn }}</a>
