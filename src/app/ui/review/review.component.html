@@ -1,6 +1,7 @@
 <div class="card">
   <div class="card-body">
-    <div class="close-icon"><button class="btn btn-link" type="button"> <i class="fas fa-times"></i></button></div>
+    <div class="close-icon" *ngIf="authUser && model.author.webId === authUser.webId">
+      <button class="btn btn-link" type="button"> <i class="fas fa-times"></i></button></div>
     <div class="row">
       <div class="col">
         <div class="float-left thumb">

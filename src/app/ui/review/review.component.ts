@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Review } from 'src/app/models/review.model';
+import {RdfService} from '../../services/rdf.service';
+import {SolidProfile} from '../../models/solid-profile.model';
 
 @Component({
   selector: 'app-review',
@@ -7,11 +9,13 @@ import { Review } from 'src/app/models/review.model';
   styleUrls: ['./review.component.css']
 })
 export class ReviewComponent implements OnInit {
-  @Input() model: Review; 
-  constructor() { }
+  authUser: SolidProfile;
+  @Input() model: Review;
+  constructor( private rdfService: RdfService) { }
 
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.authUser = await this.rdfService.getProfile();
   }
 
 }
