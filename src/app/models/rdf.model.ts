@@ -7,6 +7,7 @@ export interface ITerm {
     readonly uri: string; // just js getter
     doc(): ITerm;
     dir(): ITerm;
+    toNT():string;
 }
 
 export interface IState {

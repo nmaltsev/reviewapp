@@ -181,8 +181,10 @@ export class ReviewService {
         let review: Review = new Review(this.generateDocumentUID())
         .setContent(summary ? summary.value : '', description ? description.value : '')
         .setAuthor(profile)
+        .setSubject(subject)
         .setCreation(datePublished.value ? new Date(datePublished.value) : null);
 
+        
 				if (hotelInstance) {
 					let hotelName:RDF.ITerm = this.rdf.fetcher.store.any(hotelInstance, SCHEMAORG('name'));
 					let addressInstance:RDF.ITerm = this.rdf.fetcher.store.any(hotelInstance, SCHEMAORG('address'));
@@ -284,6 +286,33 @@ export class ReviewService {
     } else {
       // Probably, we just created review file and now we need to create review instance  
       return await this.saveReview(review);
+    }
+  }
+
+  async removeReview(review: Review):Promise<void> {
+    if (!review.subject) {
+      console.warn('No subject in review');
+      return;
+    }
+
+    let query:string =  `DELETE DATA { ${review.subject.toNT()} }`;
+    const webId:string = review.author.webId;
+    
+    console.log(query);
+
+    await solid.auth.fetch(this.reviewInstance[webId].value, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/sparql-update' },
+			body: query,
+			credentials: 'include',
+    });
+    
+    if (this.reviews[webId]) {
+      let pos:number = this.reviews[webId].indexOf(review);
+      
+      this.reviews[webId] = this.reviews[webId].splice(pos, 1);
+    } else {
+      console.warn('That author does not have reviews');
     }
   }
 }

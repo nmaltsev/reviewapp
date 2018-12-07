@@ -32,6 +32,7 @@ import { FollowingItemComponent } from './ui/following/following-item/following-
 import { FindPlaceComponent } from './ui/create-review/find-place/find-place.component';
 import {HttpClientModule} from '@angular/common/http';
 import { MultistepFormComponent } from './ui/create-review/multistep-form/multistep-form.component';
+import { ImagerrorDirective } from './directives/imagerror.directive';
 
 const routes: Routes = [
   {
@@ -97,7 +98,8 @@ const routes: Routes = [
     FollowingListComponent,
     FollowingItemComponent,
     FindPlaceComponent,
-    MultistepFormComponent
+    MultistepFormComponent,
+    ImagerrorDirective
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,6 @@
 import { Property } from './property.model';
 import { SolidProfile } from './solid-profile.model';
+import { ITerm }  from './rdf.model';
 
 export class Review {
     summary: string;
@@ -9,6 +10,7 @@ export class Review {
     author: SolidProfile;
     rating = 0;
     creationDate: Date;
+    subject: ITerm;
 
     constructor (id: string) {
         this.id = id;
@@ -32,6 +34,10 @@ export class Review {
     }
     setCreation(date: Date): Review {
         this.creationDate = date;
+        return this;
+    }
+    setSubject(subj: ITerm): Review {
+        this.subject = subj;
         return this;
     }
     clone(id: string): Review {
