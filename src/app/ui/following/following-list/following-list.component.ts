@@ -11,6 +11,8 @@ import {Router} from '@angular/router';
 })
 export class FollowingListComponent implements OnInit {
   private USERTIMELINE = '/usertimeline';
+  authFollowingIds: string[];
+  sugestedList: SolidProfile[];
   followingList: SolidProfile[];
   authUser: SolidProfile;
   isBad = false;
@@ -27,9 +29,29 @@ export class FollowingListComponent implements OnInit {
   async getProfiles() {
     this.followingList = [];
     this.authUser = await this.rdfService.getProfile();
-    const followingIds = await this.rdfService.getFriendsOf(this.authUser.webId);
-    for (let i = 0; i < followingIds.length; i++) {
-      this.followingList.push(await this.rdfService.collectProfileData(followingIds[i]));
+    this.authFollowingIds = await this.rdfService.getFriendsOf(this.authUser.webId);
+    for (let i = 0; i < this.authFollowingIds.length; i++) {
+      this.followingList.push(await this.rdfService.collectProfileData(this.authFollowingIds[i]));
+    }
+    this.suggFriends();
+  }
+
+  async suggFriends(limit = 5) {
+    this.sugestedList = [];
+    // get friends of friends that are not my friends
+    for (let i = 0; i < this.authFollowingIds.length; i++) {
+      const fof = await this.rdfService.getFriendsOf(this.authFollowingIds[i]);
+      for (let j = 0; j < fof.length; j++) {
+        if (
+            this.authFollowingIds.indexOf(fof[j]) === -1 &&
+            fof[j] !== this.authUser.webId &&
+            !this.sugestedList.find(r => r.webId === fof[j])
+        ) {
+          this.sugestedList.push(await this.rdfService.collectProfileData(fof[j]));
+        }
+        if (limit === this.sugestedList.length) { break; }
+      }
+      if (limit === this.sugestedList.length) { break; }
     }
   }
 
@@ -44,4 +66,6 @@ export class FollowingListComponent implements OnInit {
     }
 
   }
+
+
 }
