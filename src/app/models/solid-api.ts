@@ -5,7 +5,7 @@ import { SolidSession } from "./solid-session.model";
 
 // TODO change `any` to normal definitions!
 interface IFetchProperties {
-    method: 'PATCH';
+    method: 'PATCH' | 'PUT' | 'HEAD' | 'GET' | 'POST' | 'DELETE';
     headers: {[key: string]: string},
     body: string,
     credentials?: 'include',

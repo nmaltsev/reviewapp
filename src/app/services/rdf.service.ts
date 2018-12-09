@@ -26,7 +26,7 @@ const FOAF: RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 export class RdfService {
 
   session: SolidSession;
-  store: RDF.IStore = $rdf.graph();
+  store: RDF.IGraph = $rdf.graph();
   private parsedProfileCache: {[key: string]: SolidProfile} = {};
 
   /**

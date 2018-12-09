@@ -295,18 +295,29 @@ export class ReviewService {
       return;
     }
 
-    let query:string =  `DELETE DATA { ${review.subject.toNT()} }`;
-    const webId:string = review.author.webId;
+    this.rdf.fetcher.store.removeMany(review.subject);
+    const requestBody: string = (<RDF.ISerialize>new $rdf.Serializer(this.rdf.fetcher.store)).toN3(this.rdf.fetcher.store);const webId:string = review.author.webId;
     
-    console.log(query);
+    // let query:string =  `DELETE DATA { ${review.subject.toNT()} }`;
+    // console.log(query);
 
+    // await solid.auth.fetch(this.reviewInstance[webId].value, {
+		// 	method: 'PATCH',
+		// 	headers: { 'Content-Type': 'application/sparql-update' },
+		// 	body: query,
+		// 	credentials: 'include',
+    // });
     await solid.auth.fetch(this.reviewInstance[webId].value, {
-			method: 'PATCH',
-			headers: { 'Content-Type': 'application/sparql-update' },
-			body: query,
-			credentials: 'include',
-    });
-    
+				method: 'PUT',
+				// method: 'PATCH',
+				headers: { 
+					'Content-Type': 'text/turtle',
+				},
+				credentials: 'include',
+				body: requestBody
+			}
+		);
+
     if (this.reviews[webId]) {
       let pos:number = this.reviews[webId].indexOf(review);
       
