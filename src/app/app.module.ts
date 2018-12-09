@@ -50,12 +50,12 @@ const routes: Routes = [
   {
     path: 'generaltimeline',
     component: DashboardComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'card',
     component: CardComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'register',
@@ -63,12 +63,13 @@ const routes: Routes = [
   },
   {
     path: 'usertimeline',
-    component: LegendComponent
+    component: LegendComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'create-review',
     component: MultistepFormComponent,
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'following-list',
