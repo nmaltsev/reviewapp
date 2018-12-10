@@ -63,8 +63,7 @@ const routes: Routes = [
   },
   {
     path: 'usertimeline',
-    component: LegendComponent,
-    canActivate: [AuthGuard]
+    component: LegendComponent
   },
   {
     path: 'create-review',

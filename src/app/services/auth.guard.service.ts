@@ -10,7 +10,6 @@ import { map, take, tap } from 'rxjs/operators';
 
 import { AuthService } from './solid.auth.service';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -21,16 +20,9 @@ export class AuthGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    const isLoggedIn = localStorage.getItem('solid-auth-client') ? true : false;
-
-    console.log('CANACTIVATE isLoggedIn: %s', isLoggedIn)
-    console.dir(localStorage.getItem('solid-auth-client'))
-
-    if (!isLoggedIn) {
-      this.router.navigateByUrl('/login');
-    }
-
-    return isLoggedIn; /* this.auth.session.pipe(
+    // const isLoggedIn = localStorage.getItem('solid-auth-client') ? true : false;
+    // return isLoggedIn;
+    return this.auth.session.pipe(
       take(1),
       map(session => !!session),
       tap(loggedIn => {
@@ -38,6 +30,6 @@ export class AuthGuard implements CanActivate {
           return this.router.navigate(['/']);
         }
       })
-    );*/
+    );
   }
 }
