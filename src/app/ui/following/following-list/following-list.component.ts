@@ -47,7 +47,11 @@ export class FollowingListComponent implements OnInit {
             fof[j] !== this.authUser.webId &&
             !this.sugestedList.find(r => r.webId === fof[j])
         ) {
-          this.sugestedList.push(await this.rdfService.collectProfileData(fof[j]));
+          const profile: SolidProfile = await this.rdfService.collectProfileData(fof[j]);
+          
+          if (profile) {
+            this.sugestedList.push(profile);
+          }
         }
         if (limit === this.sugestedList.length) { break; }
       }
