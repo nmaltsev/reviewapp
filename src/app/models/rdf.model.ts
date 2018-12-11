@@ -1,13 +1,16 @@
+import { stringify } from "@angular/core/src/util";
+
 // Definition of $rdf lib.
 // TODO to develop it
 
 export interface ITerm {
     termType: string;
-    value: any;
+    value: any; // may be it allways string or ITerm
     readonly uri: string; // just js getter
     doc(): ITerm; 
     dir(): ITerm; // get parent folder
     site(): ITerm; // get root
+    toNT(): string;
 }
 
 export interface IState {
@@ -16,10 +19,13 @@ export interface IState {
     object: ITerm;
 }
 
-export interface IStore {
+export interface IGraph {
     any(a1:ITerm, a2:string, a3?:string|ITerm, a4?:ITerm): ITerm;
     each(any, string): ITerm[];
     statementsMatching(a1?:ITerm, a2?:string, a3?:string, a4?:ITerm): IState[];
+    removeMany(ITerm): void;
+    statements: ITerm[];
+    add(a?:ITerm, b?:string, c?:string|ITerm|IValue);
 }
 
 export interface IFetcherProperties {
@@ -28,24 +34,37 @@ export interface IFetcherProperties {
 export interface IFetcher {
     //  Load data from POD
     load(resource: string | ITerm, p?:IFetcherProperties): Promise<void>;
-    store: IStore;
+    store: IGraph;
 };
 export interface IUpdateManager {
     update(deletions: any[], insertions: any[], cb: (response: any, success: any, message: any) => void): void;
 }
 
+export interface ISerialize {
+    toN3(IStore): string;
+}
+
 export type Namespace = (string) => string;
 export type FetcherConstructor = (Store, Object) => void;
 export type UpdateManagerConstructor = (Store) => void;
+export type SerializerConstructor = (IStore) => void;
 
+export interface IValue {
+    datatype: ITerm;
+    termType: string;
+    value: string;
+    toNT(): string;
+} 
 export interface IRDF {
     sym(string): ITerm;
     Namespace(string): Namespace;
-    graph(): IStore;
+    graph(): IGraph;
     Fetcher: FetcherConstructor;
     UpdateManager: UpdateManagerConstructor;
     st(subject:ITerm|string, predicate:ITerm|string, object:ITerm|string, why:ITerm|string): ITerm;
     NamedNode: any;
     namedNode(string): any;
     literal(a:string, b?:any): any; 
+    Serializer: SerializerConstructor;
+    term(a:Number|Boolean|String): IValue;
 }

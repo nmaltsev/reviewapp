@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <ng-template #rt let-r="result" let-t="term">
+              <ngb-highlight [result]="formatter(r)" [term]="t"></ngb-highlight>
+            </ng-template>
+            <label for="typeahead-place">Choose your location:</label>
+            <input id="typeahead-place" type="text" class="form-control"
+                   [class.is-invalid]="searchFailed"
+                   [(ngModel)]="model" [ngbTypeahead]="search" [resultTemplate]="rt"
+                   [inputFormatter]="formatter" />
+            <span *ngIf="searching">searching...</span>
+            <div class="invalid-feedback" *ngIf="searchFailed">Sorry, suggestions could not be loaded.</div>
+          </div>
+          <div class="text-right"
+               *ngIf="isPlaceChosen()">
+            <button class="btn btn-success"
+                 (click)="nextStep()">
+              Next Step
+            </button>
+          </div>
+          <!--TODO add manually if can't find-->
+          <!--<div *ngIf="!isPlaceChosen()">-->
+            <!--<span class="text-info">Can't find your location?</span>-->
+            <!--<button class="btn-sm btn-warning float-right">Add manually</button>-->
+          <!--</div>-->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

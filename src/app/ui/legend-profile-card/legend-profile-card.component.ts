@@ -9,6 +9,7 @@ import { SolidSession } from 'src/app/models/solid-session.model';
   styleUrls: ['./legend-profile-card.component.css']
 })
 export class LegendProfileCardComponent implements OnInit {
+  // TODO refactor
   private isFriend: boolean = false;
   private _userProfile: SolidProfile;
   private authWebId: string;

@@ -13,8 +13,8 @@ import { ToastrService } from 'ngx-toastr';
 import { SolidProfile } from '../models/solid-profile.model';
 import { IAddress } from '../models/address.model';
 
-const VCARD:RDF.Namespace = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
-const FOAF:RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
+const VCARD: RDF.Namespace = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
+const FOAF: RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 
 /**
  * A service layer for RDF data manipulation using rdflib.js
@@ -26,7 +26,7 @@ const FOAF:RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 export class RdfService {
 
   session: SolidSession;
-  store: RDF.IStore = $rdf.graph();
+  store: RDF.IGraph = $rdf.graph();
   private parsedProfileCache: {[key: string]: SolidProfile} = {};
 
   /**
@@ -36,7 +36,7 @@ export class RdfService {
    * as your query makes its way across the web.
    * @see http://linkeddata.github.io/rdflib.js/doc/Fetcher.html
    */
-  fetcher:RDF.IFetcher /*= $rdf.Fetcher*/;
+  fetcher: RDF.IFetcher /*= $rdf.Fetcher*/;
 
   /**
    * The UpdateManager allows you to send small changes to the server to “patch” the data as your user changes data in
@@ -44,7 +44,7 @@ export class RdfService {
    * upstream and downstream changes, and signaling any conflict between them.
    * @see http://linkeddata.github.io/rdflib.js/doc/UpdateManager.html
    */
-  updateManager:RDF.IUpdateManager/* = $rdf.UpdateManager*/;
+  updateManager: RDF.IUpdateManager/* = $rdf.UpdateManager*/;
 
   constructor (private toastr: ToastrService) {
     const fetcherOptions = {};
@@ -74,7 +74,7 @@ export class RdfService {
    */
   getValueFromVcard = (node: string, webId?: string): string | any => {
     return this.getValueFromNamespace(node, VCARD, webId);
-  };
+  }
 
   /**
    * Gets a node that matches the specified pattern using the FOAF onthology
@@ -84,8 +84,8 @@ export class RdfService {
    */
   getValueFromFoaf = (node: string, webId?: string) => {
     return this.getValueFromNamespace(node, FOAF, webId);
-  };
- 
+  }
+
   transformDataForm = (form: NgForm, me: any, doc: any) => {
     const insertions = [];
     const deletions = [];
@@ -99,15 +99,15 @@ export class RdfService {
     // These are separate codepaths because the system needs to know what to do in each case
     fields.map(field => {
 
-      let predicate = VCARD(this.getFieldName(field));
-      let subject = this.getUriForField(field, me);
-      let why = doc;
+      const predicate = VCARD(this.getFieldName(field));
+      const subject = this.getUriForField(field, me);
+      const why = doc;
 
-      let fieldValue = this.getFieldValue(form, field);
-      let oldFieldValue = this.getOldFieldValue(field, oldProfileData);
+      const fieldValue = this.getFieldValue(form, field);
+      const oldFieldValue = this.getOldFieldValue(field, oldProfileData);
 
       // if there's no existing home phone number or email address, we need to add one, then add the link for hasTelephone or hasEmail
-      if(!oldFieldValue && fieldValue && (field === 'phone' || field==='email')) {
+      if (!oldFieldValue && fieldValue && (field === 'phone' || field === 'email')) {
         this.addNewLinkedField(field, insertions, predicate, fieldValue, why, me);
       } else {
 
@@ -115,15 +115,9 @@ export class RdfService {
         if (oldProfileData[field] && form.value[field] && !form.controls[field].pristine) {
           deletions.push($rdf.st(subject, predicate, oldFieldValue, why));
           insertions.push($rdf.st(subject, predicate, fieldValue, why));
-        }
-
-        //Add a value to be deleted
-        else if (oldProfileData[field] && !form.value[field] && !form.controls[field].pristine) {
+        } else if (oldProfileData[field] && !form.value[field] && !form.controls[field].pristine) {
           deletions.push($rdf.st(subject, predicate, oldFieldValue, why));
-        }
-
-        //Add a value to be inserted
-        else if (!oldProfileData[field] && form.value[field] && !form.controls[field].pristine) {
+        } else if (!oldProfileData[field] && form.value[field] && !form.controls[field].pristine) {
           insertions.push($rdf.st(subject, predicate, fieldValue, why));
         }
       }
@@ -133,24 +127,24 @@ export class RdfService {
       insertions: insertions,
       deletions: deletions
     };
-  };
+  }
 
   private addNewLinkedField(field, insertions, predicate, fieldValue, why, me: any) {
     //Generate a new ID. This id can be anything but needs to be unique.
-    let newId = field + ':' + Date.now();
+    const newId = field + ':' + Date.now();
 
     //Get a new subject, using the new ID
-    let newSubject = $rdf.sym(this.session.webId.split('#')[0] + '#' + newId);
+    const newSubject = $rdf.sym(this.session.webId.split('#')[0] + '#' + newId);
 
     //Set new predicate, based on email or phone fields
-    let newPredicate = field === 'phone' ? $rdf.sym(VCARD('hasTelephone')) : $rdf.sym(VCARD('hasEmail'));
+    const newPredicate = field === 'phone' ? $rdf.sym(VCARD('hasTelephone')) : $rdf.sym(VCARD('hasEmail'));
 
     //Add new phone or email to the pod
     insertions.push($rdf.st(newSubject, predicate, fieldValue, why));
 
     //Set the type (defaults to Home/Personal for now) and insert it into the pod as well
     //Todo: Make this dynamic
-    let type = field === 'phone' ? $rdf.literal('Home') : $rdf.literal('Personal');
+    const type = field === 'phone' ? $rdf.literal('Home') : $rdf.literal('Personal');
     insertions.push($rdf.st(newSubject, VCARD('type'), type, why));
 
     //Add a link in #me to the email/phone number (by id)
@@ -161,16 +155,16 @@ export class RdfService {
     let uriString: string;
     let uri: any;
 
-    switch(field) {
+    switch (field) {
       case 'phone':
         uriString = this.getValueFromVcard('hasTelephone');
-        if(uriString) {
+        if (uriString) {
           uri = $rdf.sym(uriString);
         }
         break;
       case 'email':
         uriString = this.getValueFromVcard('hasEmail');
-        if(uriString) {
+        if (uriString) {
           uri = $rdf.sym(uriString);
         }
         break;
@@ -191,16 +185,16 @@ export class RdfService {
   private getFieldValue(form: NgForm, field: string): any {
     let fieldValue: any;
 
-    if(!form.value[field]) {
+    if (!form.value[field]) {
       return;
     }
 
-    switch(field) {
+    switch (field) {
       case 'phone':
-        fieldValue = $rdf.sym('tel:+'+form.value[field]);
+        fieldValue = $rdf.sym('tel:+' + form.value[field]);
         break;
       case 'email':
-        fieldValue = $rdf.sym('mailto:'+form.value[field]);
+        fieldValue = $rdf.sym('mailto:' + form.value[field]);
         break;
       default:
         fieldValue = form.value[field];
@@ -213,16 +207,16 @@ export class RdfService {
   private getOldFieldValue(field, oldProfile): any {
     let oldValue: any;
 
-    if(!oldProfile || !oldProfile[field]) {
+    if (!oldProfile || !oldProfile[field]) {
       return;
     }
 
-    switch(field) {
+    switch (field) {
       case 'phone':
-        oldValue = $rdf.sym('tel:+'+oldProfile[field]);
+        oldValue = $rdf.sym('tel:+' + oldProfile[field]);
         break;
       case 'email':
-        oldValue = $rdf.sym('mailto:'+oldProfile[field]);
+        oldValue = $rdf.sym('mailto:' + oldProfile[field]);
         break;
       default:
         oldValue = oldProfile[field];
@@ -250,20 +244,20 @@ export class RdfService {
     const data = this.transformDataForm(form, me, doc);
 
     //Update existing values
-    if(data.insertions.length > 0 || data.deletions.length > 0) {
+    if (data.insertions.length > 0 || data.deletions.length > 0) {
       this.updateManager.update(data.deletions, data.insertions, (response, success, message) => {
-        if(success) {
+        if (success) {
           this.toastr.success('Your Solid profile has been successfully updated', 'Success!');
           form.form.markAsPristine();
           form.form.markAsTouched();
         } else {
-          this.toastr.error('Message: '+ message, 'An error has occurred');
+          this.toastr.error('Message: ' + message, 'An error has occurred');
         }
       });
     }
-  };
+  }
 
-  getAddress(webId?:string):IAddress {
+  getAddress(webId?: string): IAddress {
     const linkedUri = this.getValueFromVcard('hasAddress', webId);
 
     if (linkedUri) {
@@ -276,10 +270,10 @@ export class RdfService {
     }
 
     return {};
-  };
+  }
 
   //Function to get email. This returns only the first email, which is temporary
-  getEmail(webId?:string):string {
+  getEmail(webId?: string): string {
     const linkedUri = this.getValueFromVcard('hasEmail', webId);
 
     if (linkedUri) {
@@ -290,13 +284,13 @@ export class RdfService {
   }
 
   //Function to get phone number. This returns only the first phone number, which is temporary. It also ignores the type.
-  getPhone(webId?:string):string {
+  getPhone(webId?: string): string {
     const linkedUri = this.getValueFromVcard('hasTelephone', webId);
 
-    if(linkedUri) {
+    if (linkedUri) {
       return this.getValueFromVcard('value', linkedUri).split('tel:+')[1];
     }
-  };
+  }
 
   getProfile = async (): Promise<SolidProfile> => {
 
@@ -314,18 +308,24 @@ export class RdfService {
         company : this.getValueFromVcard('organization-name'),
         phone: this.getPhone(),
         role: this.getValueFromVcard('role'),
-        image: this.getValueFromFoaf('depiction') || this.getValueFromFoaf('img') || this.getValueFromVcard('hasPhoto'),
+        image: this.getValueFromFoaf('depiction') ||
+            this.getValueFromFoaf('img') ||
+            this.getValueFromVcard('hasPhoto'),
         address: this.getAddress(),
         email: this.getEmail(),
       };
     } catch (error) {
       console.log(`Error fetching data: ${error}`);
     }
-  };
+  }
 
   public async collectProfileData (webId: string): Promise<SolidProfile> {
     if (!this.parsedProfileCache[webId]) {
-      await this.fetcher.load(webId);
+      try {
+        await this.fetcher.load(webId);
+      } catch (e) {
+        return null;
+      }
 
       this.parsedProfileCache[webId] = {
         webId,
@@ -333,12 +333,14 @@ export class RdfService {
         company : this.getValueFromVcard('organization-name', webId),
         phone: this.getPhone(),
         role: this.getValueFromVcard('role', webId),
-        image: this.getValueFromFoaf('depiction', webId) || this.getValueFromFoaf('img', webId) || this.getValueFromVcard('hasPhoto'),
+        image: this.getValueFromFoaf('depiction', webId) ||
+            this.getValueFromFoaf('img', webId) ||
+            this.getValueFromVcard('hasPhoto', webId),
         address: this.getAddress(),
         email: this.getEmail(),
       };
 
-      let friends: RDF.ITerm[] = this.getCollectionFromNamespace('knows', FOAF, webId);
+      const friends: RDF.ITerm[] = this.getCollectionFromNamespace('knows', FOAF, webId);
 
       if (friends) {
         this.parsedProfileCache[webId].following = friends.length;
@@ -350,9 +352,9 @@ export class RdfService {
 
   /**
    * Gets any resource that matches the node, using the provided Namespace
-   * @param {string} node The name of the predicate to be applied using the provided Namespace 
+   * @param {string} node The name of the predicate to be applied using the provided Namespace
    * @param {$rdf.namespace} namespace The RDF Namespace
-   * @param {string?} webId The webId URL (e.g. https://yourpod.solid.community/profile/card#me) 
+   * @param {string?} webId The webId URL (e.g. https://yourpod.solid.community/profile/card#me)
    */
   private getValueFromNamespace(node: string, namespace: RDF.Namespace, webId?: string): string | any {
     const id: string = webId || this.session && this.session.webId;
@@ -365,15 +367,18 @@ export class RdfService {
   }
 
   private getCollectionFromNamespace(node: string, namespace: RDF.Namespace, webId: string) {
-    const list:RDF.ITerm[] = this.store.each($rdf.sym(webId), namespace(node));
+    const list: RDF.ITerm[] = this.store.each($rdf.sym(webId), namespace(node));
 
     return list;
   }
 
-  public async getFriendsOf(webId: string): Promise<string[]> {
-    await this.fetcher.load(webId);
-    return (this.getCollectionFromNamespace('knows', FOAF, webId) || []).
-      map((item: RDF.ITerm) => item.value);
+  public getFriendsOf(webId: string): Promise<string[]> {
+    return this.fetcher.load(webId).then(() => {
+      return (this.getCollectionFromNamespace('knows', FOAF, webId) || []).
+        map((item: RDF.ITerm) => item.value);
+    }).catch(function(){
+      return [];
+    })
   }
 
   public async updateFollowingList(follow: Array<string>, unfollow: Array<string>) {
@@ -399,4 +404,5 @@ export class RdfService {
         }
     });
   }
+
 }

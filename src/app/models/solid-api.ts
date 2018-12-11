@@ -5,15 +5,29 @@ import { SolidSession } from "./solid-session.model";
 
 // TODO change `any` to normal definitions!
 interface IFetchProperties {
-    method: 'PATCH'|'POST'|'HEAD';
+    method: 'PATCH' | 'PUT' | 'HEAD' | 'GET' | 'POST' | 'DELETE';
     headers: {[key: string]: string},
-    body: string,
+    body?: string,
     credentials?: 'include',
 }
+/*
+	headers: { 
+					'Content-Type': 'text/turtle',
+				},
+				credentials: 'include',
+			}
+
+*/
+
+export interface IHeaders {
+    get(string): string;
+}
+
 export interface IResponce {
     body: ReadableStream;
     bodyUsed: boolean;
-    headers: {[key: string]: string};
+    // headers: {[key: string]: string};
+    headers: IHeaders;
     ok: boolean;
     redirected: boolean;
     status: number;
