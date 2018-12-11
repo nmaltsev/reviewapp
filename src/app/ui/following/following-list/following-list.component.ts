@@ -31,7 +31,10 @@ export class FollowingListComponent implements OnInit {
     this.authUser = await this.rdfService.getProfile();
     this.authFollowingIds = await this.rdfService.getFriendsOf(this.authUser.webId);
     for (let i = 0; i < this.authFollowingIds.length; i++) {
-      this.followingList.push(await this.rdfService.collectProfileData(this.authFollowingIds[i]));
+      const profile =  await this.rdfService.collectProfileData(this.authFollowingIds[i]);
+      if (profile) {
+        this.followingList.push(profile);
+      }
     }
     this.suggFriends();
   }
