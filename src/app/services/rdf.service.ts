@@ -321,7 +321,11 @@ export class RdfService {
 
   public async collectProfileData (webId: string): Promise<SolidProfile> {
     if (!this.parsedProfileCache[webId]) {
-      await this.fetcher.load(webId);
+      try {
+        await this.fetcher.load(webId);
+      } catch (e) {
+        return null;
+      }
 
       this.parsedProfileCache[webId] = {
         webId,
@@ -368,10 +372,13 @@ export class RdfService {
     return list;
   }
 
-  public async getFriendsOf(webId: string): Promise<string[]> {
-    await this.fetcher.load(webId);
-    return (this.getCollectionFromNamespace('knows', FOAF, webId) || []).
-      map((item: RDF.ITerm) => item.value);
+  public getFriendsOf(webId: string): Promise<string[]> {
+    return this.fetcher.load(webId).then(() => {
+      return (this.getCollectionFromNamespace('knows', FOAF, webId) || []).
+        map((item: RDF.ITerm) => item.value);
+    }).catch(function(){
+      return [];
+    })
   }
 
   public async updateFollowingList(follow: Array<string>, unfollow: Array<string>) {

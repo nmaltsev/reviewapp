@@ -1,5 +1,5 @@
 <div class="mb-3 user-item">
-    <a class="btn-sm" [routerLink]="'/usertimeline'" [queryParams]="{'webId' : profile.webId}">{{profile.fn}}</a>
+    <a class="btn-sm" [routerLink]="'/usertimeline'" [queryParams]="{'webId' : profile.webId}">{{profile.fn || profile.webId}}</a>
     <button
         class="btn btn-sm float-right"
         [ngClass]="isFriend ? 'btn-light':'btn-success'"
