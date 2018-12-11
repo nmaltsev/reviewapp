@@ -19,4 +19,16 @@ export class MultistepFormComponent implements OnInit {
     this.showFindPlace = false;
   }
 
+  goTo(step: number) {
+    switch (step) {
+      case 0: this.showFindPlace = true; break;
+      case 1: {
+        if (this.locationModel) {
+          this.showFindPlace = false;
+        }
+      } break;
+      default: this.showFindPlace = true; break;
+    }
+  }
+
 }

@@ -366,15 +366,14 @@ export class RdfService {
     return '';
   }
 
-  private getCollectionFromNamespace(node: string, namespace: RDF.Namespace, webId: string) {
-    const list: RDF.ITerm[] = this.store.each($rdf.sym(webId), namespace(node));
-
+  private getCollectionFromNamespace(node: string, namespace: RDF.Namespace, webId: string, sbj = null,  doc = null) {
+    const list: RDF.ITerm[] = this.store.each($rdf.sym(webId), namespace(node), sbj, doc);
     return list;
   }
 
   public getFriendsOf(webId: string): Promise<string[]> {
     return this.fetcher.load(webId).then(() => {
-      return (this.getCollectionFromNamespace('knows', FOAF, webId) || []).
+      return (this.getCollectionFromNamespace('knows', FOAF, webId, null,  $rdf.sym(webId).doc()) || []).
         map((item: RDF.ITerm) => item.value);
     }).catch(function(){
       return [];

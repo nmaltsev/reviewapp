@@ -1,7 +1,8 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {PhotonService} from '../../../services/osm/photon.service';
 import {Observable, of} from 'rxjs';
-import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, debounceTime, distinctUntilChanged, switchMap, tap} from 'rxjs/operators';
+import {PhotonInterface} from '../../../models/photon-interface.model';
 
 
 @Component({
@@ -12,7 +13,7 @@ import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} fro
 })
 export class FindPlaceComponent implements OnInit {
   @Output() chosenLocation = new EventEmitter<object>();
-  model: any;
+  model: PhotonInterface;
   searching = false;
   searchFailed = false;
 
@@ -34,7 +35,6 @@ export class FindPlaceComponent implements OnInit {
                 tap(() => {
                   this.searchFailed = false;
                 }),
-                map(resp => resp.features),
                 catchError(() => {
                   this.searchFailed = true;
                   return of([]);
@@ -44,14 +44,14 @@ export class FindPlaceComponent implements OnInit {
           tap(() => this.searching = false)
       )
 
-  formatter = (x: {'properties': any}) => {
+  formatter (x: PhotonInterface) {
     let out = '';
     out += x.properties.name;
     // out += x.properties.street ? ', str. ' + x.properties.street : '';
     out += x.properties.city ? ', ' + x.properties.city : '';
     out += x.properties.state ? ', ' + x.properties.state : '';
     out += x.properties.country ? ', ' + x.properties.country : '';
-    out += x.properties.type ? ' (' + x.properties.type + ')' : '';
+    out += x.properties.osm_value ? ' (' + x.properties.osm_value + ')' : '';
     return out;
   }
 
