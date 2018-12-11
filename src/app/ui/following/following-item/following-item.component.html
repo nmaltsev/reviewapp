@@ -1,10 +1,16 @@
 <div class="mb-3 user-item">
-    <a class="btn-sm" [routerLink]="'/usertimeline'"
-       [queryParams]="{'webId' : profile.webId}">
+  <div class="row">
+    <div class="col">
+      <a class="btn-sm" [routerLink]="'/usertimeline'"
+         [queryParams]="{'webId' : profile.webId}">
         {{profile.fn || profile.webId}}</a>
-    <button
-        class="btn btn-sm float-right"
-        [ngClass]="isFriend ? 'btn-light':'btn-success'"
-        (click)="followToggle()"
-    >{{isFriend?'Unfollow':'Follow'}}</button>
+    </div>
+    <div class="col text-right">
+      <button
+          class="btn btn-sm align-self-auto"
+          [ngClass]="isFriend ? 'btn-light':'btn-success'"
+          (click)="followToggle()"
+      >{{isFriend?'Unfollow':'Follow'}}</button>
+    </div>
+  </div>
 </div>
