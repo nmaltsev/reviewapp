@@ -17,15 +17,20 @@
       </div>
       <div>
         <button
-            *ngIf="authWebId !== userProfile.webId && isFriend"
+            *ngIf="authWebId !== userProfile.webId && isFollowed"
             class="btn btn-warning"
             (click)="followToggle()"
         >Unfollow</button>
         <button
-            *ngIf="authWebId !== userProfile.webId && !isFriend"
+            *ngIf="authWebId !== userProfile.webId && !isFollowed"
             class="btn btn-success"
             (click)="followToggle()"
         >Follow</button>
+        <button
+            *ngIf="authWebId !== userProfile.webId && !isFriend"
+            class="btn btn-success"
+            (click)="friendToggle()"
+        >Add in friend</button>
       </div>
     </div>
     <div class="row text-center">

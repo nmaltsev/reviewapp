@@ -7,7 +7,7 @@ import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-pa
 declare let $rdf: RDF_API.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
 
-const RDF:RDF_API.Namespace = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+const RDF:RDF_API.Namespace = $rdf.Namespace("http:/www.w3.org/1999/02/22-rdf-syntax-ns#");
 const SCHEMA:RDF_API.Namespace = $rdf.Namespace("https://schema.org/");
 const WAC:RDF_API.Namespace = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
 const FOAF:RDF_API.Namespace = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
@@ -19,7 +19,7 @@ const FOAF:RDF_API.Namespace = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 })
 export class QueueService {
   queueFile: string = 'queue.ttl';
-  appFolderPath: string = '/test16.app.review.social-app/';
+  appFolderPath: string = '/test23.app.review.social-app/';
   
   private sessionToken: number;
   
@@ -36,10 +36,10 @@ export class QueueService {
 		return ~~((1 << n *10) * Math.random());
   }
 
-  async sendRequestAddInFriends(webId: string) {
+  async sendRequestAddInFriends(webId: string): Promise<boolean> {
     let host: string = $rdf.sym(webId).site().value;
 
-    this.sendMessage(host, 'requestInFriends', webId);
+    return await this.sendMessage(host, 'requestInFriends', webId);
   }
 
 
@@ -106,51 +106,42 @@ export class QueueService {
     const publicSettings:RDF_API.ITerm = $rdf.sym(ns('#public'));
     const ownerSettings:RDF_API.ITerm = $rdf.sym(ns('#owner'));
 
-		g.add(publicSettings, RDF("type"), WAC("Authorization"));
-    g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
-		// g.add(publicSettings, WAC("defaultForNew"), $rdf.sym(fileUrl));
-    g.add(publicSettings, WAC('mode'), WAC('Read'));
-    g.add(publicSettings, WAC('mode'), WAC('Append'));
-    g.add(publicSettings, WAC('agentClass'), WAC('AuthenticatedAgent'));
-
-
     g.add(ownerSettings, RDF("type"), WAC("Authorization"));
     g.add(ownerSettings, WAC('agent'), $rdf.sym(webId));
     g.add(ownerSettings, WAC("accessTo"), $rdf.sym(fileUrl));
-		// g.add(ownerSettings, WAC("defaultForNew"), $rdf.sym(fileUrl));
     g.add(ownerSettings, WAC('mode'), WAC('Read'));
     g.add(ownerSettings, WAC('mode'), WAC('Write'));
     g.add(ownerSettings, WAC('mode'), WAC('Control'));
-    
+
+    g.add(publicSettings, RDF("type"), WAC("Authorization"));
+    g.add(publicSettings, WAC('agentClass'), FOAF('Agent'));
+    g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
+    g.add(publicSettings, WAC('mode'), WAC('Read'));
+    g.add(publicSettings, WAC('mode'), WAC('Append'));
 
     return new $rdf.Serializer(g).toN3(g);
   }
 
-  async sendMessage(host: string, type: string, data: string|Object): Promise<void> {
-
-    console.log('[SEND: %s]', host);
+  async sendMessage(host: string, type: string, data: string|Object): Promise<boolean> {
     const id: string = this.generateDocumentUID();
     const ns: RDF_API.Namespace = $rdf.Namespace(host);
     const g:RDF_API.IGraph = this.transfromDataToGraph(ns('#' + id), type, data, new Date());
 
     let requestBody: string = new $rdf.Serializer(g).toN3(g);
 
-    console.log('Request body: \n%s', requestBody);
-    // TODO write
     const response: SolidAPI.IResponce = await solid.auth.fetch(
 			host + this.appFolderPath + this.queueFile, 
 			{
-				// method: 'PUT',
 				method: 'PATCH',
 				headers: { 
 					'Content-Type': 'application/sparql-update',
 				},
 				credentials: 'include',
-				// body: requestBody
 				body: `INSERT DATA {${requestBody}}`
 			}
     );
-    
+
+    return response.status > 199 && response.status < 300;
   }
 
   
