@@ -23,8 +23,6 @@ export class AuthGuard implements CanActivate {
   ): Observable<boolean> | Promise<boolean> | boolean {
     const isLoggedIn = localStorage.getItem('solid-auth-client') ? true : false;
 
-    console.log('CANACTIVATE isLoggedIn: %s', isLoggedIn)
-    console.dir(localStorage.getItem('solid-auth-client'))
 
     if (!isLoggedIn) {
       this.router.navigateByUrl('/login');
