@@ -52,6 +52,7 @@ export class NewReviewComponent implements OnInit {
   onSubmit(f: NgForm) {
     // We need clone() method, because resetForm() will reset this.newReview
     const review: Review = this.newReview.clone(this.reviewService.generateDocumentUID());
+    console.log(review);
 
     this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {
       if (e.status == 200) {

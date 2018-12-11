@@ -1,6 +1,17 @@
-<app-find-place
-    *ngIf="showFindPlace"
-    (chosenLocation)="locationChosen($event)"
-></app-find-place>
-<app-new-review *ngIf="!showFindPlace" [place]="locationModel"
-></app-new-review>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-md-7 mx-auto">
+      <!--<div class="mb-3">-->
+        <!--<button class="btn btn-info" (click)="goTo(0)">find loc</button>-->
+        <!--<button class="btn btn-info" (click)="goTo(1)">add rev</button>-->
+      <!--</div>-->
+
+      <app-find-place
+          *ngIf="showFindPlace"
+          (chosenLocation)="locationChosen($event)"
+      ></app-find-place>
+      <app-new-review *ngIf="!showFindPlace" [place]="locationModel"
+      ></app-new-review>
+    </div>
+  </div>
+</div>

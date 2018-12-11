@@ -11,8 +11,8 @@ export class Address implements IAddress {
     region?: string;
     street?: string;
     constructor(countryName?: string, locality?: string, region?: string, street?: string) {
-        this.countryName = countryName;
-        this.locality = locality;
+        this.countryName = countryName || '';
+        this.locality = locality || '';
         this.region = region || '';
         this.street = street || '';
     }

@@ -20,7 +20,7 @@ export interface IState {
 
 export interface IGraph {
     any(a1:ITerm, a2:string, a3?:string|ITerm, a4?:ITerm): ITerm;
-    each(any, string): ITerm[];
+    each(subject: ITerm, predicate?: string|ITerm, object?: ITerm, graph?: ITerm): ITerm[];
     statementsMatching(a1?:ITerm, a2?:string, a3?:string, a4?:ITerm): IState[];
     removeMany(ITerm): void;
     statements: ITerm[];

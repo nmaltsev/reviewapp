@@ -236,6 +236,7 @@ export class ReviewService {
   }
 
   private escape4rdf(property: string): string {
+    console.log(property);
 		return property.replace(/\"/g, '\'');
 	}
 
