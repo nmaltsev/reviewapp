@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import * as SolidAPI  from '../../models/solid-api';
 import * as RDF_API from '../../models/rdf.model';
 import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-parser';
+import { tools } from '../../utils/tools';
 
 declare let $rdf: RDF_API.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
@@ -24,16 +25,12 @@ export class QueueService {
   private sessionToken: number;
   
   constructor () {
-    this.sessionToken = this.generateRandToken(3);
+    this.sessionToken = tools.generateRandToken(3);
 
   }
 
   private generateDocumentUID(): string {
-    return this.sessionToken + '-' + this.generateRandToken(2);
-  }
-
-  private generateRandToken(n: number): number {
-		return ~~((1 << n *10) * Math.random());
+    return this.sessionToken + '-' + tools.generateRandToken(2);
   }
 
   async sendRequestAddInFriends(webId: string): Promise<boolean> {
@@ -119,6 +116,11 @@ export class QueueService {
     g.add(publicSettings, WAC('mode'), WAC('Read'));
     g.add(publicSettings, WAC('mode'), WAC('Append'));
 
+    // TODO add in report
+    // There are mistakes in documentation (https://www.w3.org/wiki/WebAccessControl#Agents_and_classes and https://github.com/solid/web-access-control-spec#public-access-all-agents):
+    // g.add(publicSettings, WAC('agentClass'), FOAF('Agent')); delegate write access only for authorized users. So it is working as WAC('AuthenticatedAgent') from documentation
+    // g.add(publicSettings, WAC('agentClass'), WAC('AuthenticatedAgent')); - does not recognized by the Inrupt solid server
+
     return new $rdf.Serializer(g).toN3(g);
   }
 
@@ -150,26 +152,10 @@ export class QueueService {
         
     let queueTerm: RDF_API.ITerm = $rdf.sym(idUrl);
 
-		g.add(
-			queueTerm,
-			RDF('type'), 
-			SCHEMA('Message')
-    );
-    g.add(
-			queueTerm,
-      SCHEMA('identifier'),
-      $rdf.term(type)
-    );
-    g.add(
-			queueTerm,
-      SCHEMA('dateSent'),
-      $rdf.term(dateSent.toLocaleString())
-    );
-    g.add(
-      queueTerm,
-      SCHEMA('text'),
-      $rdf.term(typeof(data) != 'object' ? data: JSON.stringify(data))
-    );
+		g.add(queueTerm, RDF('type'), SCHEMA('Message'));
+    g.add(queueTerm, SCHEMA('identifier'), $rdf.term(type));
+    g.add(queueTerm, SCHEMA('dateSent'), $rdf.term(dateSent.toLocaleString()));
+    g.add(queueTerm, SCHEMA('text'), $rdf.term(typeof(data) != 'object' ? data: JSON.stringify(data)));
 
     return g;
   }

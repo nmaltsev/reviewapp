@@ -16,6 +16,9 @@ const tools = {
 
         return left;
     },
+    generateRandToken(n: number): number {
+		return ~~((1 << n *10) * Math.random());
+    },
 };
 
 export {tools};
