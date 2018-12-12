@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {PhotonService} from '../../../services/osm/photon.service';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, switchMap, tap} from 'rxjs/operators';
@@ -12,8 +12,12 @@ import {PhotonInterface} from '../../../models/photon-interface.model';
   styleUrls: ['./find-place.component.css']
 })
 export class FindPlaceComponent implements OnInit {
+  _model: PhotonInterface;
+  @Input()
+  get model() { return this._model; }
+  set model(model) { this._model = model; }
   @Output() chosenLocation = new EventEmitter<object>();
-  model: PhotonInterface;
+  // model: PhotonInterface;
   searching = false;
   searchFailed = false;
 
@@ -22,7 +26,7 @@ export class FindPlaceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.model = this._photonService.chosenPlace;
+    // this.model = this._photonService.chosenPlace;
   }
 
   search = (text$: Observable<string>) =>
