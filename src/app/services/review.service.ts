@@ -31,8 +31,11 @@ export class ReviewService {
   private publicTypeIndex: IHash<RDF.ITerm> = {};
   private reviewTypeRegistration: IHash<RDF.ITerm> = {};
   private reviewInstance: IHash<RDF.ITerm> = {};
+  private graph: RDF.IGraph = $rdf.graph();
+  private fetcher: RDF.IFetcher;
 
   constructor(private rdf: RdfService) {
+    this.fetcher = new $rdf.Fetcher(this.graph, {});
     this.sessionToken = this.generateRandToken(2);
     this.rdf.getSession();
 
@@ -60,26 +63,18 @@ export class ReviewService {
   }
   
   async fetchPublicTypeIndex (webId: string, isForce: boolean = false): Promise<RDF.ITerm> {
-    await this.rdf.fetcher.load(webId);
+    await this.fetcher.load(webId);
 
-		this.publicTypeIndex[webId] = this.rdf.fetcher.store.any(
+		this.publicTypeIndex[webId] = this.fetcher.store.any(
 			$rdf.sym(webId), 
 			SOLID('publicTypeIndex'), 
 			null, 
       $rdf.sym(webId.split('#')[0]));
       
 		// Load the person's data into the store
-		await this.rdf.fetcher.load(this.publicTypeIndex[webId], {force: isForce});
+		await this.fetcher.load(this.publicTypeIndex[webId], {force: isForce});
 
-  	// Get review details
-		// this.reviewTypeRegistration[webId] = this.rdf.fetcher.store.any(
-		// 	null, 
-		// 	SOLID('forClass'), 
-    //   // this.namespace.schemaOrg('Review')
-    //   REVIEW('Review'),
-    //   this.publicTypeIndex[webId] // null
-    // );
-    this.reviewTypeRegistration[webId] = this.rdf.fetcher.store.any(
+    this.reviewTypeRegistration[webId] = this.fetcher.store.any(
 			null, 
 			SOLID('forClass'), 
       SCHEMAORG('Review'),
@@ -90,7 +85,7 @@ export class ReviewService {
       this.reviewTypeRegistration[webId] 
       && this.reviewTypeRegistration[webId].value
     ) {
-			return this.reviewInstance[webId] = this.rdf.fetcher.store.any(
+			return this.reviewInstance[webId] = this.fetcher.store.any(
 				this.reviewTypeRegistration[webId], 
 				SOLID('instance')
       );
@@ -135,7 +130,7 @@ export class ReviewService {
       // console.warn('[FetchReview] %s',webId);
       // console.dir(this.reviewInstance[webId])
 
-      await this.rdf.fetcher.load(this.reviewInstance[webId], {force: isForce});
+      await this.fetcher.load(this.reviewInstance[webId], {force: isForce});
       reviews = this.extractReviews(await this.rdf.collectProfileData(webId), this.reviewInstance[webId]);
 		} catch (error) {
       // Attention: there is strange backend behaviour. File may exists in the public index, but it doesn't exist on file system.
@@ -157,7 +152,7 @@ export class ReviewService {
   }
   
   private extractReviews(profile: SolidProfile, reviewInstance: RDF.ITerm): Review[] {
-		const reviewStore: RDF.IState[] = this.rdf.fetcher.store.statementsMatching(
+		const reviewStore: RDF.IState[] = this.fetcher.store.statementsMatching(
       null, 
 			RDFns('type'), 
       SCHEMAORG('Review'),
@@ -172,11 +167,11 @@ export class ReviewService {
 			for (var i = 0; i < reviewStore.length; i++) {
 				let subject:RDF.ITerm = reviewStore[i].subject;
         
-        let description:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('description'));
-        let summary:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('name'));
-        let datePublished:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('datePublished'));
-        let hotelInstance:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('hotel'));
-        let ratingInstance:RDF.ITerm = this.rdf.fetcher.store.any(subject, SCHEMAORG('reviewRating'));
+        let description:RDF.ITerm = this.fetcher.store.any(subject, SCHEMAORG('description'));
+        let summary:RDF.ITerm = this.fetcher.store.any(subject, SCHEMAORG('name'));
+        let datePublished:RDF.ITerm = this.fetcher.store.any(subject, SCHEMAORG('datePublished'));
+        let hotelInstance:RDF.ITerm = this.fetcher.store.any(subject, SCHEMAORG('hotel'));
+        let ratingInstance:RDF.ITerm = this.fetcher.store.any(subject, SCHEMAORG('reviewRating'));
 
         let review: Review = new Review(this.generateDocumentUID())
         .setContent(summary ? summary.value : '', description ? description.value : '')
@@ -186,16 +181,16 @@ export class ReviewService {
 
         
 				if (hotelInstance) {
-					let hotelName:RDF.ITerm = this.rdf.fetcher.store.any(hotelInstance, SCHEMAORG('name'));
-					let addressInstance:RDF.ITerm = this.rdf.fetcher.store.any(hotelInstance, SCHEMAORG('address'));
+					let hotelName:RDF.ITerm = this.fetcher.store.any(hotelInstance, SCHEMAORG('name'));
+					let addressInstance:RDF.ITerm = this.fetcher.store.any(hotelInstance, SCHEMAORG('address'));
 
           review.setProperty(
             new Property(PropertyType.hotel, hotelName ? hotelName.value : '', new Address())
           )
 	
 					if (addressInstance) {
-						let country:RDF.ITerm = this.rdf.fetcher.store.any(addressInstance, SCHEMAORG('addressCountry'));
-						let locality:RDF.ITerm = this.rdf.fetcher.store.any(addressInstance, SCHEMAORG('addressLocality'));
+						let country:RDF.ITerm = this.fetcher.store.any(addressInstance, SCHEMAORG('addressCountry'));
+						let locality:RDF.ITerm = this.fetcher.store.any(addressInstance, SCHEMAORG('addressLocality'));
             review.property.address = new Address(
               locality ? locality.value : '',
               country ? country.value : ''
@@ -204,7 +199,7 @@ export class ReviewService {
         }
         
         if (ratingInstance) {
-          let ratingValue:RDF.ITerm = this.rdf.fetcher.store.any(ratingInstance, SCHEMAORG('ratingValue'));
+          let ratingValue:RDF.ITerm = this.fetcher.store.any(ratingInstance, SCHEMAORG('ratingValue'));
           
           if (ratingValue) {
             review.setRating(ratingValue.value);
@@ -296,8 +291,13 @@ export class ReviewService {
       return;
     }
 
-    this.rdf.fetcher.store.removeMany(review.subject);
-    const requestBody: string = (<RDF.ISerialize>new $rdf.Serializer(this.rdf.fetcher.store)).toN3(this.rdf.fetcher.store);const webId:string = review.author.webId;
+    this.fetcher.store.removeMany(review.subject);
+    const requestBody: string = (<RDF.ISerialize>new $rdf.Serializer(this.fetcher.store)).toN3(this.fetcher.store);
+    console.log('Request Body %s', requestBody);
+    console.dir(this.fetcher.store);
+    return;
+
+    const webId:string = review.author.webId;
     
     // let query:string =  `DELETE DATA { ${review.subject.toNT()} }`;
     // console.log(query);
