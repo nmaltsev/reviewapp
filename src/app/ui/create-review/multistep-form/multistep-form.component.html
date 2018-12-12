@@ -1,14 +1,22 @@
 <div class="container">
   <div class="row">
-    <div class="col-sm-8 col-md-7 mx-auto">
-      <!--<div class="mb-3">-->
-        <!--<button class="btn btn-info" (click)="goTo(0)">find loc</button>-->
-        <!--<button class="btn btn-info" (click)="goTo(1)">add rev</button>-->
-      <!--</div>-->
+    <div class="col-sm-9 col-md-8 mx-auto">
+      <div class="mb-4 text-center">
+        <button class="btn btn-info btn-circle"
+                (click)="goTo(0)"
+                [disabled]="showFindPlace"
+                [class.active]="showFindPlace"
+        ><i class="fas fa-map-marker-alt"></i></button>
+        <span class="separator"></span>
+        <button class="btn btn-info btn-circle" [class.active]="!showFindPlace" disabled>
+                <!--(click)="goTo(1)"-->
 
+        <i class="fas fa-star"></i></button>
+      </div>
       <app-find-place
           *ngIf="showFindPlace"
           (chosenLocation)="locationChosen($event)"
+          [model]="locationModel"
       ></app-find-place>
       <app-new-review *ngIf="!showFindPlace" [place]="locationModel"
       ></app-new-review>
