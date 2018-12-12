@@ -11,6 +11,17 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import { PopupService } from 'src/app/services/popup.service';
 import {Subscription} from 'rxjs';
 import {PhotonInterface} from '../../../models/photon-interface.model';
+import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
+
+enum VisibilityTypes {
+  public,
+  friends
+}
+
+interface IVisibilityOption {
+  id: VisibilityTypes;
+  label: string;
+}
 
 @Component({
   selector: 'app-new-review',
@@ -28,13 +39,19 @@ export class NewReviewComponent implements OnInit {
     newReview: Review;
     rates = [];
     @ViewChild('frm') reviewForm: NgForm;
+  public visibilityOptions: IVisibilityOption[] = [
+    {id: VisibilityTypes.public, label: 'For public'},
+    {id: VisibilityTypes.friends, label: 'For friends'}
+  ];
+  public selectedVisibility: VisibilityTypes = VisibilityTypes.public;
 
   constructor(
     private rdfService: RdfService,
     private reviewService: ReviewService,
     private router: Router,
     private route: ActivatedRoute,
-    private popupService: PopupService
+    private popupService: PopupService,
+    private privateStorage: PrivateStorageService
   ) { }
 
   async ngOnInit() {
@@ -47,6 +64,7 @@ export class NewReviewComponent implements OnInit {
         {rate: 2, desc: 'Poor'},
         {rate: 1, desc: 'Terrible'},
     ];
+    
     this.newReview = new Review('');
     const pl = this.place.properties;
     const newProp = new Property(this.placeType, pl.name, new Address(pl.country, pl.city, pl.state, pl.street), pl.osm_id);
@@ -68,35 +86,39 @@ export class NewReviewComponent implements OnInit {
         });
   }
 
-  onSubmit(f: NgForm) {
+  onSubmit(f: NgForm): void {
     // We need clone() method, because resetForm() will reset this.newReview
     const review: Review = this.newReview.clone(this.reviewService.generateDocumentUID());
-    console.log(review);
+    
+    if (this.selectedVisibility == VisibilityTypes.public) {
+      this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {
+        if (e.status == 200) {
+          f.resetForm();
 
-    this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {
-      if (e.status == 200) {
-        f.resetForm();
-        // if (confirm('Review was saved. Open the review list?')) {
-        //   this.router.navigate(['/usertimeline']);
-        // }
-        this.router.navigate(['/usertimeline']);
-        /*this.popupService.confirm('Review was saved. Open the review list?', () => {
           this.router.navigate(['/usertimeline']);
-        });*/
-        // TODO
-      } else if (e.status == 401) { // You are not authorized
-        // Strange: when I have caught that error, the application after reloding did not show me authorization page
-        // So, that behaviour must be rechecked
-        alert('Look in dev console');
-        console.warn('You have caught 401 error');
-        console.dir(e);
-        alert('continue');
-        this.router.navigate(['/login']);
-      } else {
-        console.warn('You have another troubles');
-        console.dir(e);
-      }
-    });
+          /*this.popupService.confirm('Review was saved. Open the review list?', () => {
+            this.router.navigate(['/usertimeline']);
+          });*/
+          // TODO
+        } else if (e.status == 401) { // You are not authorized
+          // Strange: when I have caught that error, the application after reloding did not show me authorization page
+          // So, that behaviour must be rechecked
+          alert('Look in dev console');
+          console.warn('You have caught 401 error');
+          console.dir(e);
+          alert('continue');
+          this.router.navigate(['/login']);
+        } else {
+          console.warn('You have another troubles');
+          console.dir(e);
+        }
+      });
+    } else if (this.selectedVisibility == VisibilityTypes.friends) {
+      // TODO save review in private storage
+      this.privateStorage.addReview(review).then((status: boolean) => {
+        console.log('Save in Private storage %s', status);
+      });
+    }
   }
 
   onReset() {

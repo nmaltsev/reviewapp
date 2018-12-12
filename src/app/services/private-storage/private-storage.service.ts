@@ -93,9 +93,9 @@ export class PrivateStorageService {
     const publicSettings:RDF_API.ITerm = $rdf.sym(ns('#public'));
     const ownerSettings:RDF_API.ITerm = $rdf.sym(ns('#owner'));
 
-    g.add(ownerSettings, RDF("type"), WAC("Authorization"));
+    g.add(ownerSettings, RDF('type'), WAC("Authorization"));
     g.add(ownerSettings, WAC('agent'), $rdf.sym(webId));
-    g.add(ownerSettings, WAC("accessTo"), $rdf.sym(fileUrl));
+    g.add(ownerSettings, WAC('accessTo'), $rdf.sym(fileUrl));
     g.add(ownerSettings, WAC('mode'), WAC('Read'));
     g.add(ownerSettings, WAC('mode'), WAC('Write'));
     g.add(ownerSettings, WAC('mode'), WAC('Control'));
@@ -113,47 +113,6 @@ export class PrivateStorageService {
   public async addReview(review: Review):Promise<boolean> {
     let host: string = $rdf.sym(review.author.webId).site().value;
     
-    const ns: RDF_API.Namespace = $rdf.Namespace(host);
-
-    // TODO generate TTL
-/*
-    const query:string = `INSERT DATA {
-      @prefix schema: <https://schema.org/> .
-      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-      @prefix foaf: <http://xmlns.com/foaf/0.1/>.
-
-      <${review.id}> a schema:Review ;
-      foaf:maker <${review.author.webId}>;
-      schema:author ""^^xsd:string ;
-      schema:datePublished "${date_s}"^^schema:dateTime ;
-      schema:description """${this.escape4rdf(review.text)}"""^^xsd:string ;
-      schema:name """${this.escape4rdf(review.summary)}"""^^xsd:string ;
-      schema:reviewRating [
-        a schema:Rating ;
-        schema:bestRating "5"^^xsd:string ;
-        schema:ratingValue "${review.rating}"^^xsd:string ;
-        schema:worstRating "1"^^xsd:string
-      ] ;
-      schema:hotel [
-        a schema:Hotel ;
-        schema:name """${this.escape4rdf(review.property.name)}"""^^xsd:string ;
-        schema:identifier """${review.property.osm_id}"""^^xsd:string;
-        schema:address [
-          a schema:PostalAddress ;
-          schema:addressCountry "${this.escape4rdf(review.property.address.countryName)}"^^xsd:string ;
-          schema:addressLocality "${this.escape4rdf(review.property.address.locality)}"^^xsd:string ;
-          schema:addressRegion "${review.property.address.region}"^^xsd:string ;
-          schema:postalCode ""^^xsd:string ;
-          schema:streetAddress "${review.property.address.street}"^^xsd:string
-        ] ;
-      ] .
-    }`;
-
-
-    const g:RDF_API.IGraph = this.transfromDataToGraph(ns(this.generateDocumentUID()), type, data, new Date());
-
-    let requestBody: string = new $rdf.Serializer(g).toN3(g);
-
     const response: SolidAPI.IResponce = await solid.auth.fetch(
 			host + this.appFolderPath + this.fileName, 
 			{
@@ -162,13 +121,11 @@ export class PrivateStorageService {
 					'Content-Type': 'application/sparql-update',
 				},
 				credentials: 'include',
-				body: `INSERT DATA {${requestBody}}`
+				body: `INSERT DATA {${review.toTTL(new Date())}}`
 			}
     );
 
     return response.status > 199 && response.status < 300;
-    */
-   return true;
   } 
 
 

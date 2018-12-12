@@ -32,6 +32,12 @@
               <label for="body">Text:</label>
               <textarea class="form-control" id="body" name="body" [(ngModel)]="newReview.text" required ></textarea>
             </div>
+            <div class="form-group">
+              <label for="visibility">Visibilty:</label>
+              <select class="form-control" id="visibility" name="visibility" [(ngModel)]="selectedVisibility">
+                <option *ngFor="let visibilityOption of visibilityOptions" [value]="visibilityOption.id">{{visibilityOption.label}}</option>
+              </select>
+            </div>
             <div class="text-center btn-line">
               <button class="btn btn-success" type="submit">Add review</button>
               <button class="btn" type="reset">Reset</button>
