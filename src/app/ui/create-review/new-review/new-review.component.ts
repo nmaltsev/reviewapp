@@ -7,8 +7,10 @@ import {Property, PropertyType} from '../../../models/property.model';
 import {Address} from '../../../models/address.model';
 import { ReviewService } from 'src/app/services/review.service';
 import * as SolidAPI from '../../../models/solid-api';
-import { Router } from '@angular/router';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 import { PopupService } from 'src/app/services/popup.service';
+import {Subscription} from 'rxjs';
+import {PhotonInterface} from '../../../models/photon-interface.model';
 
 @Component({
   selector: 'app-new-review',
@@ -16,10 +18,12 @@ import { PopupService } from 'src/app/services/popup.service';
   styleUrls: ['./new-review.component.css']
 })
 export class NewReviewComponent implements OnInit {
-  private _place: any;
+  private sub: Subscription;
+  placeType: PropertyType;
+  private _place: PhotonInterface;
   @Input()
-      set place(place: any) {this._place = place; }
-      get place(): any {return this._place; }
+      set place(place: PhotonInterface) {this._place = place; }
+      get place(): PhotonInterface {return this._place; }
     authUser: SolidProfile;
     newReview: Review;
     rates = [];
@@ -29,10 +33,12 @@ export class NewReviewComponent implements OnInit {
     private rdfService: RdfService,
     private reviewService: ReviewService,
     private router: Router,
+    private route: ActivatedRoute,
     private popupService: PopupService
   ) { }
 
   async ngOnInit() {
+    this.getParams();
     // TODO replace with "stars"
     this.rates = [
         {rate: 5, desc: 'Excellent'},
@@ -43,10 +49,23 @@ export class NewReviewComponent implements OnInit {
     ];
     this.newReview = new Review('');
     const pl = this.place.properties;
-    const newProp = new Property(pl.osm_value, pl.name, new Address(pl.country, pl.city, pl.state, pl.street), pl.osm_id);
+    const newProp = new Property(this.placeType, pl.name, new Address(pl.country, pl.city, pl.state, pl.street), pl.osm_id);
     this.newReview.setProperty(newProp);
     this.authUser = await this.rdfService.getProfile();
     this.newReview.setAuthor(this.authUser);
+  }
+
+  getParams() {
+    this.sub = this.route
+        .queryParams
+        .subscribe((params: Params) => {
+          const rType = decodeURIComponent(params['type']);
+          switch (rType) {
+            case 'hotel': this.placeType = PropertyType.hotel; break;
+            case 'restaurant': this.placeType = PropertyType.restaurant; break;
+            default: this.placeType = PropertyType.hotel; break;
+          }
+        });
   }
 
   onSubmit(f: NgForm) {

@@ -18,8 +18,14 @@
             Create
           </a>
           <div class="dropdown-menu dropdown-menu-right" ngbDropdownMenu>
-            <a class="dropdown-item" [routerLink]="'/create-review'" [routerLinkActive]="['active']">
-              Hotel Review</a>
+            <a class="dropdown-item"
+               [routerLink]="'/create-review'"
+               [queryParams]="{type: 'hotel'}"
+            >Hotel Review</a>
+            <a class="dropdown-item"
+               [routerLink]="'/create-review'"
+               [queryParams]="{type: 'restaurant'}"
+            >Restaurant Review</a>
           </div>
         </li>
         <li class="nav-item dropdown" ngbDropdown placement="bottom-right">

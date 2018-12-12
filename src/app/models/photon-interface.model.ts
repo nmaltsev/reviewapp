@@ -1,6 +1,6 @@
 
 export interface IProperties {
-  osm_id: number;
+  osm_id: string;
   osm_value: string;
   name: string;
   country: string;

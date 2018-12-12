@@ -36,7 +36,7 @@ export class RdfService {
    * as your query makes its way across the web.
    * @see http://linkeddata.github.io/rdflib.js/doc/Fetcher.html
    */
-  fetcher: RDF.IFetcher /*= $rdf.Fetcher*/;
+  fetcher: RDF.IFetcher;
 
   /**
    * The UpdateManager allows you to send small changes to the server to “patch” the data as your user changes data in
