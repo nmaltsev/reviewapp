@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-
 import * as SolidAPI  from '../../models/solid-api';
 import * as RDF_API from '../../models/rdf.model';
 import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-parser';
 import { tools } from '../../utils/tools';
+import { Review } from 'src/app/models/review.model';
 
 declare let $rdf: RDF_API.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
@@ -14,37 +14,28 @@ const WAC:RDF_API.Namespace = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
 const FOAF:RDF_API.Namespace = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 
 
-// Message queue
 @Injectable({
   providedIn: 'root'
 })
-export class QueueService {
-  queueFile: string = 'queue.ttl';
-  appFolderPath: string = '/test23.app.review.social-app/';
-  
+export class PrivateStorageService {
+  fileName: string = 'reviews4friends.ttl';
+  // Attention: all root folders/files starts with first slash! 
+  appFolderPath: string = '/' + 'test23.app.review.social-app/';
   private sessionToken: number;
-  
-  constructor () {
-    this.sessionToken = tools.generateRandToken(3);
 
+  constructor() {
+    this.sessionToken = tools.generateRandToken(3);
   }
 
   private generateDocumentUID(): string {
-    return this.sessionToken + '-' + tools.generateRandToken(2);
+    return '#' + this.sessionToken + '-' + tools.generateRandToken(2);
   }
-
-  async sendRequestAddInFriends(webId: string): Promise<boolean> {
-    let host: string = $rdf.sym(webId).site().value;
-
-    return await this.sendMessage(host, 'requestInFriends', webId);
-  }
-
 
   async initializeStore(webId: string) {
     let host: string = $rdf.sym(webId).site().value;
 
     const response: SolidAPI.IResponce = await solid.auth.fetch(
-			host + this.appFolderPath + this.queueFile, 
+			host + this.appFolderPath + this.fileName, 
 			{
 				method: 'HEAD',
 				headers: { 
@@ -53,10 +44,11 @@ export class QueueService {
 				credentials: 'include',
 			}
     );
-
+    // If file not exist.
+    // Error 403 will tell us that file exist, but somebody have changed access rights for us ;)
     if (response.status == 404) {
       const createResponse: SolidAPI.IResponce = await solid.auth.fetch(
-        host + this.appFolderPath + this.queueFile, 
+        host + this.appFolderPath + this.fileName, 
         {
           method: 'PUT',
           headers: { 
@@ -72,10 +64,8 @@ export class QueueService {
         return;
       }
       let aclUrl:string = host + this.appFolderPath + linkHeaders.acl.href;
-      let requestBody:string = this.getACLRequestBody(host, host + this.appFolderPath + this.queueFile, webId);
-      // 
+      let requestBody:string = this.getACLRequestBody(host, host + this.appFolderPath + this.fileName, webId);
 
-      console.log('ACL URL: %s', aclUrl)
       const aclResponse: SolidAPI.IResponce = await solid.auth.fetch(
         aclUrl, 
         {
@@ -91,7 +81,7 @@ export class QueueService {
       console.log('aclResponse');
       console.dir(aclResponse);
       if (aclResponse.status > 299 || aclResponse.status < 200) {
-        console.warn('Can not create a `%s`', this.queueFile);
+        console.warn('Can not create a `%s`', this.fileName);
       }
     }
   }
@@ -110,29 +100,62 @@ export class QueueService {
     g.add(ownerSettings, WAC('mode'), WAC('Write'));
     g.add(ownerSettings, WAC('mode'), WAC('Control'));
 
-    g.add(publicSettings, RDF("type"), WAC("Authorization"));
-    g.add(publicSettings, WAC('agentClass'), FOAF('Agent'));
-    g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
-    g.add(publicSettings, WAC('mode'), WAC('Read'));
-    g.add(publicSettings, WAC('mode'), WAC('Append'));
-
-    // TODO add in report
-    // There are mistakes in documentation (https://www.w3.org/wiki/WebAccessControl#Agents_and_classes and https://github.com/solid/web-access-control-spec#public-access-all-agents):
-    // g.add(publicSettings, WAC('agentClass'), FOAF('Agent')); delegate write access only for authorized users. So it is working as WAC('AuthenticatedAgent') from documentation
-    // g.add(publicSettings, WAC('agentClass'), WAC('AuthenticatedAgent')); - The Inrupt solid server does not recognize that statement
+    // TODO configure access right for friends group
+    // g.add(publicSettings, RDF("type"), WAC("Authorization"));
+    // g.add(publicSettings, WAC('agentClass'), FOAF('Agent'));
+    // g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
+    // g.add(publicSettings, WAC('mode'), WAC('Read'));
+    // g.add(publicSettings, WAC('mode'), WAC('Append'));
 
     return new $rdf.Serializer(g).toN3(g);
   }
 
-  async sendMessage(host: string, type: string, data: string|Object): Promise<boolean> {
-    const id: string = this.generateDocumentUID();
+  public async addReview(review: Review):Promise<boolean> {
+    let host: string = $rdf.sym(review.author.webId).site().value;
+    
     const ns: RDF_API.Namespace = $rdf.Namespace(host);
-    const g:RDF_API.IGraph = this.transfromDataToGraph(ns('#' + id), type, data, new Date());
+
+    // TODO generate TTL
+/*
+    const query:string = `INSERT DATA {
+      @prefix schema: <https://schema.org/> .
+      @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+      @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+      <${review.id}> a schema:Review ;
+      foaf:maker <${review.author.webId}>;
+      schema:author ""^^xsd:string ;
+      schema:datePublished "${date_s}"^^schema:dateTime ;
+      schema:description """${this.escape4rdf(review.text)}"""^^xsd:string ;
+      schema:name """${this.escape4rdf(review.summary)}"""^^xsd:string ;
+      schema:reviewRating [
+        a schema:Rating ;
+        schema:bestRating "5"^^xsd:string ;
+        schema:ratingValue "${review.rating}"^^xsd:string ;
+        schema:worstRating "1"^^xsd:string
+      ] ;
+      schema:hotel [
+        a schema:Hotel ;
+        schema:name """${this.escape4rdf(review.property.name)}"""^^xsd:string ;
+        schema:identifier """${review.property.osm_id}"""^^xsd:string;
+        schema:address [
+          a schema:PostalAddress ;
+          schema:addressCountry "${this.escape4rdf(review.property.address.countryName)}"^^xsd:string ;
+          schema:addressLocality "${this.escape4rdf(review.property.address.locality)}"^^xsd:string ;
+          schema:addressRegion "${review.property.address.region}"^^xsd:string ;
+          schema:postalCode ""^^xsd:string ;
+          schema:streetAddress "${review.property.address.street}"^^xsd:string
+        ] ;
+      ] .
+    }`;
+
+
+    const g:RDF_API.IGraph = this.transfromDataToGraph(ns(this.generateDocumentUID()), type, data, new Date());
 
     let requestBody: string = new $rdf.Serializer(g).toN3(g);
 
     const response: SolidAPI.IResponce = await solid.auth.fetch(
-			host + this.appFolderPath + this.queueFile, 
+			host + this.appFolderPath + this.fileName, 
 			{
 				method: 'PATCH',
 				headers: { 
@@ -144,28 +167,9 @@ export class QueueService {
     );
 
     return response.status > 199 && response.status < 300;
-  }
+    */
+   return true;
+  } 
 
-  
-  private transfromDataToGraph(idUrl: string, type: string, data:string|Object, dateSent: Date):RDF_API.IGraph  {
-    const g:RDF_API.IGraph = $rdf.graph();
-        
-    let queueTerm: RDF_API.ITerm = $rdf.sym(idUrl);
 
-		g.add(queueTerm, RDF('type'), SCHEMA('Message'));
-    g.add(queueTerm, SCHEMA('identifier'), $rdf.term(type));
-    g.add(queueTerm, SCHEMA('dateSent'), $rdf.term(dateSent.toLocaleString()));
-    g.add(queueTerm, SCHEMA('text'), $rdf.term(typeof(data) != 'object' ? data: JSON.stringify(data)));
-
-    return g;
-  }
-
-  getNewRequestsInFriends() {
-
-  }
-
-  removeEntry (id) {
-
-  }  
-  
 }

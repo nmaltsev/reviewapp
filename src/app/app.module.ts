@@ -35,6 +35,7 @@ import { MultistepFormComponent } from './ui/create-review/multistep-form/multis
 import { ImagerrorDirective } from './directives/imagerror.directive';
 import { QueueService } from './services/queue/queue.service';
 import { take, tap } from 'rxjs/operators';
+import { PrivateStorageService } from './services/private-storage/private-storage.service';
 
 const routes: Routes = [
   {
@@ -120,7 +121,11 @@ const routes: Routes = [
   bootstrap: [AppComponent]
 })
 export class AppModule { 
-  constructor(private queue:QueueService, private auth: AuthService) {
+  constructor(
+    private queue:QueueService, 
+    private auth: AuthService,
+    private priavateStorage: PrivateStorageService
+  ) {
     this.initializeAppFiles();
   }
   private initializeAppFiles(): void {
@@ -129,6 +134,7 @@ export class AppModule {
         return; 
       }
       this.queue.initializeStore(session.webId);
+      this.priavateStorage.initializeStore(session.webId);
     });
   }
 }
