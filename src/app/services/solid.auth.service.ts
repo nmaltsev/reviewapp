@@ -31,7 +31,7 @@ export class AuthService {
   };
 
   constructor(
-    private router: Router, 
+    private router: Router,
     private rdf: RdfService,
     private reviewService: ReviewService
   ) {
