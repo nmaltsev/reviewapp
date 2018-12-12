@@ -230,48 +230,13 @@ export class ReviewService {
     }
   }
 
-  private escape4rdf(property: string): string {
-    console.log(property);
-		return property.replace(/\"/g, '\'');
-	}
-
   async saveReview(review: Review): Promise<SolidAPI.IResponce> {
     let reviewInstance: RDF.ITerm = await this.fetchPublicTypeIndex(review.author.webId, true);
 
     if (reviewInstance) { // else we have not got opportunity to save anything
       const date_s:string = new Date().toISOString();
       const source:string = reviewInstance.value;
-      const query:string = `INSERT DATA {
-        @prefix schema: <https://schema.org/> .
-        @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-        @prefix foaf: <http://xmlns.com/foaf/0.1/>.
-  
-        <${review.id}> a schema:Review ;
-        foaf:maker <${review.author.webId}>;
-        schema:author ""^^xsd:string ;
-        schema:datePublished "${date_s}"^^schema:dateTime ;
-        schema:description """${this.escape4rdf(review.text)}"""^^xsd:string ;
-        schema:name """${this.escape4rdf(review.summary)}"""^^xsd:string ;
-        schema:reviewRating [
-          a schema:Rating ;
-          schema:bestRating "5"^^xsd:string ;
-          schema:ratingValue "${review.rating}"^^xsd:string ;
-          schema:worstRating "1"^^xsd:string
-        ] ;
-        schema:hotel [
-          a schema:Hotel ;
-          schema:name """${this.escape4rdf(review.property.name)}"""^^xsd:string ;
-          schema:identifier """${review.property.osm_id}"""^^xsd:string;
-          schema:address [
-            a schema:PostalAddress ;
-            schema:addressCountry "${this.escape4rdf(review.property.address.countryName)}"^^xsd:string ;
-            schema:addressLocality "${this.escape4rdf(review.property.address.locality)}"^^xsd:string ;
-            schema:addressRegion "${review.property.address.region}"^^xsd:string ;
-            schema:postalCode ""^^xsd:string ;
-            schema:streetAddress "${review.property.address.street}"^^xsd:string
-          ] ;
-        ] .
-      }`;
+      const query:string = `INSERT DATA { ${review.toTTL(new Date())}}`;
       // Send a PATCH request to update the source
       return await solid.auth.fetch(source, {
         method: 'PATCH',
