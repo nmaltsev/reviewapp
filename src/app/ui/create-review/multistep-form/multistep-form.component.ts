@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {PhotonInterface} from '../../../models/photon-interface.model';
 
 @Component({
   selector: 'app-multistep-form',
@@ -6,28 +7,31 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./multistep-form.component.css']
 })
 export class MultistepFormComponent implements OnInit {
-  locationModel: any;
+  locationModel: PhotonInterface;
   showFindPlace = true;
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
-  locationChosen(res: any) {
+  locationChosen(res: PhotonInterface) {
     this.locationModel = res;
     this.showFindPlace = false;
   }
 
   goTo(step: number) {
     switch (step) {
-      case 0: this.showFindPlace = true; break;
-      case 1: {
+      case 0:
+        this.showFindPlace = true;
+        break;
+      case 1:
         if (this.locationModel) {
           this.showFindPlace = false;
         }
-      } break;
-      default: this.showFindPlace = true; break;
+        break;
+      default:
+        this.showFindPlace = true;
+        break;
     }
   }
 
