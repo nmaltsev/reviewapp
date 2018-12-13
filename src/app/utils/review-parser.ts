@@ -1,7 +1,7 @@
 import * as RDF from '../models/rdf.model';
 import * as SolidAPI from '../models/solid-api';
 import { SolidProfile } from '../models/solid-profile.model';
-import { Review } from '../models/review.model';
+import { Review, VisibilityTypes } from '../models/review.model';
 import { Property, PropertyType } from '../models/property.model';
 import { Address } from '../models/address.model';
 
@@ -15,7 +15,12 @@ function extractId(url: string) {
 
     return i > -1 ? url.substr(i + 1) : '';
 }
-export function reviewParser(graph: RDF.IGraph ,profile: SolidProfile, fileUrl?:string): Review[] {
+export function reviewParser(
+    graph: RDF.IGraph,
+    profile: SolidProfile, 
+    fileUrl:string,
+    visibilityType: VisibilityTypes
+): Review[] {
     const reviewStore: RDF.IState[] = graph.statementsMatching(
         null, RDFns('type'), SCHEMAORG('Review'), fileUrl ? $rdf.sym(fileUrl): null);
 
@@ -36,6 +41,7 @@ export function reviewParser(graph: RDF.IGraph ,profile: SolidProfile, fileUrl?:
             .setAuthor(profile)
             .setSubject(subject)
             .setCreation(datePublished.value ? new Date(datePublished.value) : null);
+        review.visibilityType = visibilityType;
         // TODO change to something more general
         const isHotel = graph.any(subject, SCHEMAORG('hotel'));
         const buildingInstance: RDF.ITerm = isHotel ?

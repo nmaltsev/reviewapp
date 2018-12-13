@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {Review} from '../../../models/review.model';
+import {Review, VisibilityTypes} from '../../../models/review.model';
 import {SolidProfile} from '../../../models/solid-profile.model';
 import {RdfService} from '../../../services/rdf.service';
 import {Property, PropertyType} from '../../../models/property.model';
@@ -13,11 +13,6 @@ import {Subscription} from 'rxjs';
 import {PhotonInterface} from '../../../models/photon-interface.model';
 import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
 import { uid } from 'src/app/utils/tools';
-
-enum VisibilityTypes {
-  public,
-  friends
-}
 
 interface IVisibilityOption {
   id: VisibilityTypes;
@@ -95,21 +90,13 @@ export class NewReviewComponent implements OnInit {
     if (this.selectedVisibility == VisibilityTypes.public) {
       this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {
         if (e.status == 200) {
-          f.resetForm();
-
           this.router.navigate(['/usertimeline']);
-          /*this.popupService.confirm('Review was saved. Open the review list?', () => {
+          /*
+          f.resetForm();
+          this.popupService.confirm('Review was saved. Open the review list?', () => {
             this.router.navigate(['/usertimeline']);
           });*/
           // TODO
-        } else if (e.status == 401) { // You are not authorized
-          // Strange: when I have caught that error, the application after reloding did not show me authorization page
-          // So, that behaviour must be rechecked
-          alert('Look in dev console');
-          console.warn('You have caught 401 error');
-          console.dir(e);
-          alert('continue');
-          this.router.navigate(['/login']);
         } else {
           console.warn('You have another troubles');
           console.dir(e);
@@ -119,6 +106,7 @@ export class NewReviewComponent implements OnInit {
       // TODO save review in private storage
       this.privateStorage.addReview(review).then((status: boolean) => {
         console.log('Save in Private storage %s', status);
+        this.router.navigate(['/usertimeline']);
       });
     }
   }

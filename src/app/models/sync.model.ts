@@ -14,33 +14,26 @@ export class GraphSync {
     }
     // load data from POD
     public async load(): Promise<RDF_API.IGraph> {
-        let response: SolidAPI.IResponce;
+        return solid.auth.fetch(this.url, { 
+            method: 'GET',
+            headers: { 
+            'Content-Type': 'text/turtle',
+            },
+            credentials: 'include',
+        }).then(async (response: SolidAPI.IResponce) => {
+            let contentType:string = response.headers.get('Content-Type')
+            let unparsedText:string = await response.text();
+            this.g = $rdf.graph();
 
-        try {
-            response = await solid.auth.fetch(this.url, { 
-                method: 'GET',
-                headers: { 
-                'Content-Type': 'text/turtle',
-                },
-                credentials: 'include',
-            });
-        } catch(e) {
-            console.warn('Can`t download from private storage');
-            console.dir(e)
-            return null;
-        }
-        
-        let contentType:string = response.headers.get('Content-Type')
-        let unparsedText:string = await response.text();
-        this.g = $rdf.graph();
-
-        // 'text/n3'
-        let r = $rdf.parse(unparsedText, this.g, this.url, contentType);
-        
-        console.log('Parse result');
-        console.dir(r)
-        return this.g;
+            // Possible content type is 'text/n3'
+            let r = $rdf.parse(unparsedText, this.g, this.url, contentType);
+            
+            console.log('Parse result');
+            console.dir(r)
+            return this.g;
+        });
     }
+
     // upload updated graph in POD
     public async update(): Promise<boolean> {
         const requestBody: string = (<RDF_API.ISerialize>new $rdf.Serializer(this.g)).toN3(this.g);

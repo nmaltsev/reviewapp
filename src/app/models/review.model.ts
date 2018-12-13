@@ -2,6 +2,11 @@ import {Property, PropertyType} from './property.model';
 import {SolidProfile} from './solid-profile.model';
 import {ITerm} from './rdf.model';
 
+export enum VisibilityTypes {
+    public,
+    friends
+}
+
 export class Review {
     summary: string;
     text: string;
@@ -11,6 +16,7 @@ export class Review {
     rating = 0;
     creationDate: Date;
     subject: ITerm;
+    visibilityType: VisibilityTypes;
 
     constructor (id: string) {
         this.id = id;

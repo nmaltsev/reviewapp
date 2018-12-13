@@ -28,12 +28,6 @@ export class DashboardComponent implements OnInit {
   reviews: Review[] = [];
   filterQuery:string = '';
 
-  private recommendedList: string[] = [
-    // 'https://ruben.verborgh.org/profile/#me',
-    // 'https://www.w3.org/People/Berners-Lee/card#i',
-    // 'https://nmaltsev.inrupt.net/profile/card#me'
-  ];
-
   constructor(
     private auth: AuthService,
     private route: ActivatedRoute,
@@ -46,10 +40,7 @@ export class DashboardComponent implements OnInit {
 
     if (session) {
       this.authId = session.webId;
-      let profileLinks: string[] = tools.joinLeft(
-        await this.rdfService.getFriendsOf(session.webId),
-        this.recommendedList
-      );
+      let profileLinks: string[] = [session.webId].concat(await this.rdfService.getFriendsOf(session.webId))
 
       this.profileLinks = profileLinks.map(encodeURIComponent);
       this.handleOfParams();

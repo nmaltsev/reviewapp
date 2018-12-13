@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
 import {RdfService} from './rdf.service';
-import {Review} from '../models/review.model';
+import {Review, VisibilityTypes} from '../models/review.model';
 import * as RDF from '../models/rdf.model';
 import * as SolidAPI from '../models/solid-api';
 import {IHttpError} from '../models/exception.model';
 import { GraphSync } from '../models/sync.model';
 import { reviewParser } from '../utils/review-parser';
+import { PrivateStorageService } from './private-storage/private-storage.service';
 
 declare let $rdf: RDF.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
@@ -30,8 +31,12 @@ export class ReviewService {
   private graph: RDF.IGraph = $rdf.graph();
   private fetcher: RDF.IFetcher;
   private store: IHash<GraphSync> = {};
+  private selfPrivateStore:GraphSync;
 
-  constructor(private rdf: RdfService) {
+  constructor(
+    private rdf: RdfService,
+    private privateStorage: PrivateStorageService
+  ) {
     this.fetcher = new $rdf.Fetcher(this.graph, {});
     this.rdf.getSession();
 
@@ -100,29 +105,53 @@ export class ReviewService {
     });
   }
 
-  private async fetchReviews2(webId: string, resourceUrl: string): Promise<Review[]> {
-    let gsync:GraphSync = this.store[webId] = new GraphSync(resourceUrl);
+  // Fetch public reviews
+  private async fetchReviews2(
+    webId: string, 
+    publicResourceUrl:string, 
+    privateResourceUrl: string
+  ): Promise<Review[]> {
+    let gsync:GraphSync = this.store[webId] = new GraphSync(publicResourceUrl);
+    let privateSync:GraphSync = new GraphSync(privateResourceUrl);
+    const isSelfProfile: boolean = this.rdf.session && this.rdf.session.webId == webId;
+
+    if (isSelfProfile) {
+      this.selfPrivateStore = privateSync
+    }
 
     return Promise.all([
-      this.rdf.collectProfileData(webId), // get profile info
-      gsync.load() // download public review.ttl file 
-    ]).then(([profile, graph]) => { // ;) TScript does not support type definition in destructors
-      return this.reviews[webId] = reviewParser(graph, profile, resourceUrl).sort(
+      // get profile info:
+      this.rdf.collectProfileData(webId), 
+      // get public reviews:
+      publicResourceUrl ? 
+        gsync.load().catch(async (error) => {
+          // Attention: there is strange backend behaviour. File may exists in the public index, but it doesn't exist on file system.
+          if ((<IHttpError<SolidAPI.IResponce>>error).status == 404) {
+            // Viewed profile does not have a review file
+          } else if (isSelfProfile) {
+            await solid.auth.fetch(publicResourceUrl, {
+              method: 'PATCH',
+              headers: {'content-type': 'application/sparql-update'},
+              body: ''
+            });
+          }
+          return null;
+        }) 
+        : Promise.resolve(null), 
+      // get private reviews:
+      privateResourceUrl ? 
+        privateSync.load().catch((error) => {return null;})
+        : Promise.resolve(null), 
+    ]).then(([profile, publicGraph, privateGraph]) => { // ;) TScript does not support type definition in destructors
+      let reviews: Review[] = [];
+      
+      return this.reviews[webId] = reviews.concat(
+        publicGraph ? reviewParser(publicGraph, profile, publicResourceUrl, VisibilityTypes.public) : [],
+        privateGraph ? reviewParser(privateGraph, profile, privateResourceUrl, VisibilityTypes.friends) : [],
+      ).sort(
         (a: Review, b: Review) =>
           a.creationDate > b.creationDate ? -1 : a.creationDate < b.creationDate ? 1 : 0
       );
-    }).catch(async (error) => {
-      // Attention: there is strange backend behaviour. File may exists in the public index, but it doesn't exist on file system.
-      if ((<IHttpError<SolidAPI.IResponce>>error).status == 404) {
-        // Viewed profile does not have a review file
-      } else if (this.rdf.session && this.rdf.session.webId == webId) {
-        await solid.auth.fetch(resourceUrl, {
-          method: 'PATCH',
-          headers: {'content-type': 'application/sparql-update'},
-          body: ''
-        });
-      }
-      return this.reviews[webId] = [];
     });
   }
 
@@ -130,16 +159,10 @@ export class ReviewService {
     if (
       !this.reviews[webId] || !this.publicTypeIndex[webId] || isForce
     ) {
-      let publicFile: RDF.ITerm;
-      if (publicFile = await this.fetchPublicTypeIndex(webId, isForce)) {
-        console.log('P');
-        console.dir(publicFile);
-
-        // return await this.fetchReviews(webId, true);
-        return await this.fetchReviews2(webId, publicFile && publicFile.value);
-      } else {
-        return [];
-      }
+      let publicFile: RDF.ITerm = await this.fetchPublicTypeIndex(webId, isForce);
+      let privateFile: string = this.privateStorage.getUrl(webId);
+      
+      return await this.fetchReviews2(webId, publicFile && publicFile.value, privateFile);
     } else {
       return this.reviews[webId];
     }
@@ -167,14 +190,18 @@ export class ReviewService {
 
   async removeReview(review: Review): Promise<void> {
     const webId: string = review.author.webId;
-    const store: GraphSync = this.store[review.author.webId];
+    const store: GraphSync = 
+      review.visibilityType == VisibilityTypes.public ? 
+        this.store[review.author.webId] : this.selfPrivateStore;
 
+    // Removing review from 
     if (store) {
       let n = store.removeEntry(review.id);  
       console.log('Removed', n);
       await store.update();
     }
 
+    // Removing review from UI
     if (this.reviews[webId]) {
       let pos: number = this.reviews[webId].indexOf(review);
 
