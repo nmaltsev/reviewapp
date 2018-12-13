@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from "@angular/router";
+import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription} from 'rxjs';
 import { RdfService } from '../../services/rdf.service';
 import { SolidProfile } from '../../models/solid-profile.model';
@@ -28,7 +28,7 @@ export class LegendComponent implements OnInit {
     private reviewService: ReviewService,
   ) {}
 
-  
+
   ngOnInit() {
     // Extract WebId from url query http://localhost:4200/usertimeline?webId=https%3A%2F%2Fnmaltsev.inrupt.net%2Fprofile%2Fcard%23me
     this.sub = this.route
@@ -48,23 +48,23 @@ export class LegendComponent implements OnInit {
     this.sub.unsubscribe();
   }
 
-  private async keepOn(webId: string):Promise<void> {
-    if (!webId) return;
+  private async keepOn(webId: string): Promise<void> {
+    if (!webId) { return; }
     this.webId = webId;
     this.profileIsLoaded = true;
 
     this.profileData = await this.rdfService.collectProfileData(this.webId);
     this.reviewsAreLoading = true;
-    
+
     try {
       this.reviews = await this.reviewService.getReviews(this.webId, true);
-    } catch(e) {
+    } catch (e) {
       console.log('Failed to load reviews');
       console.dir(e);
     } finally {
       this.reviewsAreLoading = false;
     }
-    
+
   }
 
 }
