@@ -83,6 +83,7 @@ export class NewReviewComponent implements OnInit {
             case 'restaurant': this.placeType = PropertyType.restaurant; break;
             default: this.placeType = PropertyType.hotel; break;
           }
+          console.log(this.placeType);
         });
   }
 

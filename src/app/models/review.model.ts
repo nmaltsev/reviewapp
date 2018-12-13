@@ -1,6 +1,6 @@
-import { Property } from './property.model';
-import { SolidProfile } from './solid-profile.model';
-import { ITerm }  from './rdf.model';
+import {Property, PropertyType} from './property.model';
+import {SolidProfile} from './solid-profile.model';
+import {ITerm} from './rdf.model';
 
 export class Review {
     summary: string;
@@ -66,8 +66,8 @@ export class Review {
             schema:ratingValue "${this.rating}"^^xsd:string ;
             schema:worstRating "1"^^xsd:string
         ] ;
-        schema:hotel [
-            a schema:Hotel ;
+        schema:${this.property.type === PropertyType.hotel ? 'hotel' : 'restaurant'} [
+            a schema:${this.property.type === PropertyType.hotel ? 'Hotel' : 'Restaurant'} ;
             schema:name """${this.escape4rdf(this.property.name)}"""^^xsd:string ;
             schema:identifier """${this.property.osm_id}"""^^xsd:string;
             schema:address [
