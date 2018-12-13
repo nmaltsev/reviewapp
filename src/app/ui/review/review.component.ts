@@ -12,7 +12,7 @@ import { ReviewService } from 'src/app/services/review.service';
 export class ReviewComponent implements OnInit {
   authUser: SolidProfile;
   @Input() model: Review;
-  constructor( 
+  constructor(
     private rdfService: RdfService,
     private reviewService: ReviewService
   ) { }

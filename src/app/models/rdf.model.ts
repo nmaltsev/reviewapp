@@ -33,7 +33,7 @@ export interface IFetcherProperties {
 }
 export interface IFetcher {
     //  Load data from POD
-    load(resource: string | ITerm, p?:IFetcherProperties): Promise<void>;
+    load(resource: string | ITerm, p?: IFetcherProperties): Promise<void>;
     store: IGraph;
 };
 export interface IUpdateManager {
