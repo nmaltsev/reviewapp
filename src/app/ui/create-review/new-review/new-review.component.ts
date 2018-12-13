@@ -12,6 +12,7 @@ import { PopupService } from 'src/app/services/popup.service';
 import {Subscription} from 'rxjs';
 import {PhotonInterface} from '../../../models/photon-interface.model';
 import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
+import { uid } from 'src/app/utils/tools';
 
 enum VisibilityTypes {
   public,
@@ -89,7 +90,7 @@ export class NewReviewComponent implements OnInit {
 
   onSubmit(f: NgForm): void {
     // We need clone() method, because resetForm() will reset this.newReview
-    const review: Review = this.newReview.clone(this.reviewService.generateDocumentUID());
+    const review: Review = this.newReview.clone(uid.generateDocumentUID());
     
     if (this.selectedVisibility == VisibilityTypes.public) {
       this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {

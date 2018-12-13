@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import * as SolidAPI  from '../../models/solid-api';
 import * as RDF_API from '../../models/rdf.model';
 import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-parser';
-import { tools } from '../../utils/tools';
+import { tools, uid } from '../../utils/tools';
 
 declare let $rdf: RDF_API.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
@@ -22,16 +22,7 @@ export class QueueService {
   queueFile: string = 'queue.ttl';
   appFolderPath: string = '/test23.app.review.social-app/';
   
-  private sessionToken: number;
-  
-  constructor () {
-    this.sessionToken = tools.generateRandToken(3);
-
-  }
-
-  private generateDocumentUID(): string {
-    return this.sessionToken + '-' + tools.generateRandToken(2);
-  }
+  constructor () {}
 
   async sendRequestAddInFriends(webId: string): Promise<boolean> {
     let host: string = $rdf.sym(webId).site().value;
@@ -129,7 +120,7 @@ export class QueueService {
   }
 
   async sendMessage(host: string, type: string, data: string|Object): Promise<boolean> {
-    const id: string = this.generateDocumentUID();
+    const id: string = uid.generateDocumentUID();
     const ns: RDF_API.Namespace = $rdf.Namespace(host);
     const g:RDF_API.IGraph = this.transfromDataToGraph(ns('#' + id), type, data, new Date());
 

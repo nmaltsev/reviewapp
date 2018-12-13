@@ -21,14 +21,8 @@ export class PrivateStorageService {
   fileName: string = 'reviews4friends.ttl';
   // Attention: all root folders/files starts with first slash! 
   appFolderPath: string = '/' + 'test23.app.review.social-app/';
-  private sessionToken: number;
 
   constructor() {
-    this.sessionToken = tools.generateRandToken(3);
-  }
-
-  private generateDocumentUID(): string {
-    return '#' + this.sessionToken + '-' + tools.generateRandToken(2);
   }
 
   async initializeStore(webId: string) {

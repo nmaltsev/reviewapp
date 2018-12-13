@@ -1,3 +1,4 @@
+
 const tools = {
     flatten: <Type>(list: Type[][]):Type[] => {
         return list.reduce(
@@ -16,9 +17,21 @@ const tools = {
 
         return left;
     },
-    generateRandToken(n: number): number {
-		return ~~((1 << n *10) * Math.random());
-    },
 };
+const uid = (function(){
+    function _generateRandToken(n: number): number {
+        return ~~((1 << n *10) * Math.random());
+    }
+    let _sessionToken: number = _generateRandToken(2); 
 
-export {tools};
+    return {
+        generateDocumentUID: (): string => {
+            return '#' + _sessionToken + '-' + _generateRandToken(2);
+        },
+    };
+}()); 
+
+export {
+    tools,
+    uid
+};

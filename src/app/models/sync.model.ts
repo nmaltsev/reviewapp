@@ -13,7 +13,7 @@ export class GraphSync {
 
     }
     // load data from POD
-    public async load(): Promise<boolean> {
+    public async load(): Promise<RDF_API.IGraph> {
         let response: SolidAPI.IResponce;
 
         try {
@@ -27,7 +27,7 @@ export class GraphSync {
         } catch(e) {
             console.warn('Can`t download from private storage');
             console.dir(e)
-            return false;
+            return null;
         }
         
         let contentType:string = response.headers.get('Content-Type')
@@ -39,18 +39,14 @@ export class GraphSync {
         
         console.log('Parse result');
         console.dir(r)
-        return true;
+        return this.g;
     }
     // upload updated graph in POD
     public async update(): Promise<boolean> {
-        let requestBody = new $rdf.Serializer(this.g).toN3(this.g);
+        const requestBody: string = (<RDF_API.ISerialize>new $rdf.Serializer(this.g)).toN3(this.g);
 		
-		console.log('[requestBody]');
-        console.dir(requestBody);
-        let response: SolidAPI.IResponce;
-
         try {
-            response = await solid.auth.fetch(
+            await solid.auth.fetch(
                 this.url, 
                 {
                     method: 'PUT',
@@ -67,13 +63,24 @@ export class GraphSync {
         }
     }
 
-    public removeEntry(entryId: string): void {
-        // TODO
-        
-        // this.g.removeMany(review.subject);
+    private recursiveRemove(t: RDF_API.ITerm) {
+        let results: RDF_API.IState[] = this.g.statementsMatching(t);
 
-        // - delete some statements
-        // kb.removeMany(me, FOAF('mbox'));
-        // acl.g.removeMany($rdf.sym('https://nmaltsev.inrupt.net/#public')
+        let i: number = results.length;
+
+        while (i-- > 0) {
+            if (results[i].object.termType == 'BlankNode') {
+                this.recursiveRemove(results[i].object);
+            }
+        }
+        this.g.removeMany(t);
+    }
+    // Return number of removed triples
+    public removeEntry(entryId: string): number {
+        let initSize:number = this.g.statements.length;
+        
+        this.recursiveRemove($rdf.sym(this.url + '#' + entryId));
+        
+        return initSize - this.g.statements.length;
     }
 }
