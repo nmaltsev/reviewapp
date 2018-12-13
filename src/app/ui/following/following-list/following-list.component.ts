@@ -3,7 +3,6 @@ import {SolidProfile} from '../../../models/solid-profile.model';
 import {RdfService} from '../../../services/rdf.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
-import { QueueService } from 'src/app/services/queue/queue.service';
 
 @Component({
   selector: 'app-following-list',
@@ -23,8 +22,7 @@ export class FollowingListComponent implements OnInit {
   q: string;
   constructor(
     private rdfService: RdfService, 
-    private router: Router,
-    private queueServide: QueueService
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -78,10 +76,4 @@ export class FollowingListComponent implements OnInit {
     }
 
   }
-
-  async test () {
-    // await this.queueServide.initializeStore(this.authUser.webId);
-    await this.queueServide.initializeStore('https://myosotis.inrupt.net/profile/card#me');
-  }
-
 }
