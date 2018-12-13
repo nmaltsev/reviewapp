@@ -128,5 +128,9 @@ export class PrivateStorageService {
     return response.status > 199 && response.status < 300;
   } 
 
-
+  // Get URL of source
+  public getUrl(webId: string): string {
+    let host: string = $rdf.sym(webId).site().value;
+    return host + this.appFolderPath + this.fileName;
+  }
 }

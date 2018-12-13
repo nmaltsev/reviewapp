@@ -39,6 +39,10 @@ export class QueueService {
     return await this.sendMessage(host, 'requestInFriends', webId);
   }
 
+  public getUrl(webId: string): string {
+    let host: string = $rdf.sym(webId).site().value;
+    return host + this.appFolderPath + this.queueFile;
+  }
 
   async initializeStore(webId: string) {
     let host: string = $rdf.sym(webId).site().value;
@@ -160,12 +164,8 @@ export class QueueService {
     return g;
   }
 
-  getNewRequestsInFriends() {
-
-  }
-
-  removeEntry (id) {
-
-  }  
+  // TODO all managing operation realize throught SyncModel.ts 
+  // getNewRequestsInFriends() {}
+  // removeEntry (id) {}  
   
 }
