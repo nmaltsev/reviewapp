@@ -22,10 +22,6 @@
                 <label for="role">Role</label>
                 <input type="text" id="role" class="form-control" name="role" placeholder="ROLE" [(ngModel)]="profile.role" />
               </div>
-              <div class="form-group">
-                <label for="organization">Organization</label>
-                <input type="text" id="organization" class="form-control" name="company" placeholder="ORGANIZATION" [(ngModel)]="profile.company" />
-              </div>
             </div>
             <div class="col-sm-6">
               <div class="form-group">
@@ -36,9 +32,13 @@
                 <label for="email">Email</label>
                 <input type="email" id="email" class="form-control" name="email" placeholder="EMAIL" [(ngModel)]="profile.email"  />
               </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <div class="form-group">
-                <label for="address">Address</label>
-                <input type="text" id="address" class="form-control" name="address" placeholder="ADDRESS" [(ngModel)]="profile.address.street" />
+                <label for="organization">Organization</label>
+                <input type="text" id="organization" class="form-control" name="company" placeholder="ORGANIZATION" [(ngModel)]="profile.company" />
               </div>
             </div>
           </div>
