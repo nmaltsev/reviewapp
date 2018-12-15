@@ -15,10 +15,10 @@
         <div class="review-action mb-3">
           <a [routerLink]="'/usertimeline'" [queryParams]="{webId: model.author.webId }">{{ model.author.fn }}</a>
           <span class="review-object">
-            rated <a [routerLink]="['/generaltimeline']"
+            rated <a [routerLink]="['/reviews']"
                                         [queryParams]="{query: model.property.name}">
             {{model.property.name}}</a>
-            <span *ngIf="model.property.address"> in <a [routerLink]="['/generaltimeline']"
+            <span *ngIf="model.property.address"> in <a [routerLink]="['/reviews']"
             [queryParams]="{ query: model.property.address.getLocality()}">
             {{model.property.address.getLocality()}}</a></span>
           </span>

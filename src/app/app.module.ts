@@ -53,7 +53,7 @@ const routes: Routes = [
     component: LoginPopupComponent
   },
   {
-    path: 'generaltimeline',
+    path: 'reviews',
     component: DashboardComponent,
     canActivate: [AuthGuard]
   },
