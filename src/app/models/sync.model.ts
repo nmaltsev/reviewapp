@@ -26,10 +26,8 @@ export class GraphSync {
             this.g = $rdf.graph();
 
             // Possible content type is 'text/n3'
-            let r = $rdf.parse(unparsedText, this.g, this.url, contentType);
-            
-            console.log('Parse result');
-            console.dir(r)
+            $rdf.parse(unparsedText, this.g, this.url, contentType);
+ 
             return this.g;
         });
     }
@@ -69,10 +67,10 @@ export class GraphSync {
         this.g.removeMany(t);
     }
     // Return number of removed triples
-    public removeEntry(entryId: string): number {
+    public removeEntry(entryId: string, isAbsolute:boolean = false): number {
         let initSize:number = this.g.statements.length;
         
-        this.recursiveRemove($rdf.sym(this.url + '#' + entryId));
+        this.recursiveRemove($rdf.sym(isAbsolute ? entryId : this.url + '#' + entryId));
         
         return initSize - this.g.statements.length;
     }

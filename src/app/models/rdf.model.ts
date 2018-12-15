@@ -67,5 +67,5 @@ export interface IRDF {
     literal(a:string, b?:any): any; 
     Serializer: SerializerConstructor;
     term(a:Number|Boolean|String): IValue;
-    parse(content: string, graph: IGraph, host: string, contentType: string): any;
+    parse(content: string, graph: IGraph, host: string, contentType: string): void;
 }

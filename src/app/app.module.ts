@@ -36,6 +36,8 @@ import { ImagerrorDirective } from './directives/imagerror.directive';
 import { QueueService } from './services/queue/queue.service';
 import { take, tap } from 'rxjs/operators';
 import { PrivateStorageService } from './services/private-storage/private-storage.service';
+import { FriendListComponent } from './pages/friend-list/friend-list/friend-list.component';
+import { ProfileItemComponent } from './ui/profile-item/profile-item/profile-item.component';
 
 const routes: Routes = [
   {
@@ -78,6 +80,11 @@ const routes: Routes = [
     component: FollowingListComponent,
     canActivate: [AuthGuard],
   },
+  {
+    path: 'friends',
+    component: FriendListComponent,
+    canActivate: [AuthGuard],
+  },
   { path: '**', redirectTo: 'generaltimeline' } // fallback if page not found
 ];
 
@@ -102,7 +109,9 @@ const routes: Routes = [
     FollowingItemComponent,
     FindPlaceComponent,
     MultistepFormComponent,
-    ImagerrorDirective
+    ImagerrorDirective,
+    FriendListComponent,
+    ProfileItemComponent
   ],
   imports: [
     BrowserModule,

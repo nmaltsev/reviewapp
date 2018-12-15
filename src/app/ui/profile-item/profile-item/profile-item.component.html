@@ -1,0 +1,13 @@
+<div class="mb-3 user-item">
+  <div class="m3-flex-row">
+    <div class="m3-flex-row_full">
+      <a class="btn-sm m3-trim" 
+        [routerLink]="'/usertimeline'"
+        [queryParams]="{'webId' : _profile.webId}"
+      >{{ _profile.fn || _profile.webId}}</a>
+    </div>
+    <div class="m3-flex-row_size">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

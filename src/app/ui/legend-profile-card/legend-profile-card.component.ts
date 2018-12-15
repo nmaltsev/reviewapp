@@ -61,7 +61,10 @@ export class LegendProfileCardComponent implements OnInit {
 
   async friendToggle() {
     console.log('[Add in friend] %s', this._userProfile.webId);
-    let r: boolean = await this.queue.sendRequestAddInFriends(this._userProfile.webId);
+    let r: boolean = await this.queue.sendRequestAddInFriends(
+      this._userProfile.webId, 
+      this.authWebId
+    );
 
     if (!r) {
       alert('Sorry, but that user does not use our application. Please inform him about that opportunity.');

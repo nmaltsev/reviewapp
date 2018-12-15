@@ -4,6 +4,9 @@ import * as SolidAPI  from '../../models/solid-api';
 import * as RDF_API from '../../models/rdf.model';
 import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-parser';
 import { tools, uid } from '../../utils/tools';
+import { Message } from 'src/app/models/message.model';
+import { GraphSync } from 'src/app/models/sync.model';
+import { IHash } from '../review.service';
 
 declare let $rdf: RDF_API.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
@@ -21,13 +24,14 @@ const FOAF:RDF_API.Namespace = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 export class QueueService {
   queueFile: string = 'queue.ttl';
   appFolderPath: string = '/test23.app.review.social-app/';
+  private store:IHash<GraphSync> = {};
   
   constructor () {}
 
-  async sendRequestAddInFriends(webId: string): Promise<boolean> {
-    let host: string = $rdf.sym(webId).site().value;
-
-    return await this.sendMessage(host, 'requestInFriends', webId);
+  async sendRequestAddInFriends(webIdA:string, webIdB:string): Promise<boolean> {
+    let host: string = $rdf.sym(webIdA).site().value;
+    
+    return await this.sendMessage(host, 'requestInFriends', webIdB);
   }
 
   public getUrl(webId: string): string {
@@ -108,7 +112,7 @@ export class QueueService {
     g.add(publicSettings, RDF("type"), WAC("Authorization"));
     g.add(publicSettings, WAC('agentClass'), FOAF('Agent'));
     g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
-    g.add(publicSettings, WAC('mode'), WAC('Read'));
+    g.add(publicSettings, WAC('mode'), WAC('Read')); // ??? maybe better turn off that ability
     g.add(publicSettings, WAC('mode'), WAC('Append'));
 
     // TODO add in report
@@ -122,7 +126,7 @@ export class QueueService {
   async sendMessage(host: string, type: string, data: string|Object): Promise<boolean> {
     const id: string = uid.generateDocumentUID();
     const ns: RDF_API.Namespace = $rdf.Namespace(host);
-    const g:RDF_API.IGraph = this.transfromDataToGraph(ns('#' + id), type, data, new Date());
+    const g:RDF_API.IGraph = this.transfromDataToGraph(ns(id), type, data, new Date());
 
     let requestBody: string = new $rdf.Serializer(g).toN3(g);
 
@@ -149,14 +153,82 @@ export class QueueService {
 
 		g.add(queueTerm, RDF('type'), SCHEMA('Message'));
     g.add(queueTerm, SCHEMA('identifier'), $rdf.term(type));
-    g.add(queueTerm, SCHEMA('dateSent'), $rdf.term(dateSent.toLocaleString()));
+    g.add(queueTerm, SCHEMA('dateSent'), $rdf.term(dateSent.toISOString()));
     g.add(queueTerm, SCHEMA('text'), $rdf.term(typeof(data) != 'object' ? data: JSON.stringify(data)));
 
     return g;
   }
 
+  /*private async uploadData(url:string): Promise<RDF_API.IGraph> {
+    return solid.auth.fetch(
+			url,
+			{
+				method: 'GET',
+				headers: { 
+					'Content-Type': 'text/turtle',
+				},
+				credentials: 'include'
+			}
+    ).then(async (response: SolidAPI.IResponce) => {
+      let contentType:string = response.headers.get('Content-Type')
+      let unparsedText:string = await response.text();
+      let g:RDF_API.IGraph = $rdf.graph();
+
+      // Possible content type is 'text/n3'
+      $rdf.parse(unparsedText, g, url, contentType);
+
+      return g;
+    });
+  }*/
+
+  private parseMessages(g:RDF_API.IGraph):Message[] {
+    let statements:RDF_API.IState[] = g.statementsMatching(null, null, SCHEMA('Message'));
+    let i: number = statements.length;
+    let messages:Message[] = [];
+    let subject:RDF_API.ITerm;
+    let type:RDF_API.ITerm;
+    let date:RDF_API.ITerm;
+    let text:RDF_API.ITerm;
+
+    while (i-- > 0 ){
+      subject = statements[i].subject;
+      type = g.any(subject, SCHEMA('identifier'));
+      date = g.any(subject, SCHEMA('dateSent'));
+      text = g.any(subject, SCHEMA('text'));
+
+      messages.push(new Message(subject.value).init(
+        type ? type.value : null,
+        text ? text.value : null,
+        date ? new Date(date.value) : null,
+      ));
+    }
+
+    return messages;
+  }
+
   // TODO all managing operation realize throught SyncModel.ts 
-  // getNewRequestsInFriends() {}
-  // removeEntry (id) {}  
+  async getNewRequestsInFriends(webId: string): Promise<Message[]> {
+    let url:string = this.getUrl(webId);
+    this.store[webId] = new GraphSync(url);
+
+    // TODO refactor it
+    // let messages:Message[] = this.parseMessages(await this.uploadData(url))
+    let messages:Message[] = this.parseMessages(await this.store[webId].load());
+
+    return messages
+      .filter((message: Message) => message.type == 'requestInFriends');
+  }
+
+  async removeEntry (docUrl:string, webId:string): Promise<boolean> {
+    if (!this.store[webId]) {
+      return false;
+    }
+    let removed:number = this.store[webId].removeEntry(docUrl, true);
+
+    if (removed > 0) {
+      await this.store[webId].update();
+    }
+    return removed > 0;
+  }  
   
 }

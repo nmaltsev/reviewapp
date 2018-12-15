@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
   styleUrls: ['./following-list.component.css']
 })
 export class FollowingListComponent implements OnInit {
-  private USERTIMELINE = '/usertimeline';
+  private USERTIMELINE:string = '/usertimeline';
   authFollowingIds: string[];
   sugestedList: SolidProfile[];
   followingList: SolidProfile[];

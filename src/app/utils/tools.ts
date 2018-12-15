@@ -17,6 +17,11 @@ const tools = {
 
         return left;
     },
+    removeItem: <Type>(list:Type[], item:Type):Type[] => {
+        let pos: number = list.indexOf(item);
+
+        return pos > -1 ? list.splice(pos, 1) : list;
+    },
 };
 const uid = (function(){
     function _generateRandToken(n: number): number {

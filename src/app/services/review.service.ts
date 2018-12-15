@@ -7,11 +7,12 @@ import {IHttpError} from '../models/exception.model';
 import { GraphSync } from '../models/sync.model';
 import { reviewParser } from '../utils/review-parser';
 import { PrivateStorageService } from './private-storage/private-storage.service';
+import { tools } from '../utils/tools';
 
 declare let $rdf: RDF.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
 
-interface IHash<type> {
+export interface IHash<type> {
   [key: string]: type;
 }
 
@@ -203,9 +204,9 @@ export class ReviewService {
 
     // Removing review from UI
     if (this.reviews[webId]) {
-      let pos: number = this.reviews[webId].indexOf(review);
-
-      this.reviews[webId] = this.reviews[webId].splice(pos, 1);
+      // let pos: number = this.reviews[webId].indexOf(review);
+      // this.reviews[webId] = this.reviews[webId].splice(pos, 1);
+      this.reviews[webId] = tools.removeItem<Review>(this.reviews[webId], review);
     } else {
       console.warn('That author does not have reviews');
     }
