@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
   identityProviders: SolidProvider[];
   selectedProviderUrl: string;
   customProviderUrl: string;
-  private MAIN_PAGE: string = '/generaltimeline';
+  private MAIN_PAGE: string = '/reviews';
 
   ngOnInit() {
     // If we're authenticated, go to profile

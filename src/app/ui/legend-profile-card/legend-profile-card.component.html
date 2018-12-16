@@ -15,7 +15,7 @@
         <button class="btn btn-warning" [routerLink]="['/card']">
           <i class="fas fa-cogs"></i> Edit</button>
       </div>
-      <div>
+      <div class="btn-line">
         <button
             *ngIf="authWebId !== userProfile.webId && isFollowed"
             class="btn btn-warning"
@@ -30,6 +30,7 @@
             *ngIf="authWebId !== userProfile.webId && !isFriend"
             class="btn btn-success"
             (click)="friendToggle()"
+            title="Ask user to show you his/her private reviews"
         >Add in friend</button>
       </div>
     </div>

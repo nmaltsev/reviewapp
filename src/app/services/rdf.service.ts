@@ -44,7 +44,7 @@ export class RdfService {
    * upstream and downstream changes, and signaling any conflict between them.
    * @see http://linkeddata.github.io/rdflib.js/doc/UpdateManager.html
    */
-  updateManager: RDF.IUpdateManager/* = $rdf.UpdateManager*/;
+  updateManager: RDF.IUpdateManager;
 
   constructor (private toastr: ToastrService) {
     const fetcherOptions = {};

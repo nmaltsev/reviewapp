@@ -2,34 +2,31 @@ import { Injectable } from '@angular/core';
 import * as SolidAPI  from '../../models/solid-api';
 import * as RDF_API from '../../models/rdf.model';
 import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-parser';
-import { tools } from '../../utils/tools';
 import { Review } from 'src/app/models/review.model';
+import { BaseStorageService } from '../BaseStorageService';
 
 declare let $rdf: RDF_API.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
 
 const RDF:RDF_API.Namespace = $rdf.Namespace("http:/www.w3.org/1999/02/22-rdf-syntax-ns#");
-const SCHEMA:RDF_API.Namespace = $rdf.Namespace("https://schema.org/");
 const WAC:RDF_API.Namespace = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
-const FOAF:RDF_API.Namespace = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class PrivateStorageService {
-  fileName: string = 'reviews4friends.ttl';
+export class PrivateStorageService extends BaseStorageService {
+  protected fname:string = 'reviews4friends.ttl';
   // Attention: all root folders/files starts with first slash! 
-  appFolderPath: string = '/' + 'test23.app.review.social-app/';
+  // appFolderPath: string = '/' + 'test23.app.review.social-app/';
 
-  constructor() {
-  }
+  constructor() { super();}
 
   async initializeStore(webId: string) {
     let host: string = $rdf.sym(webId).site().value;
 
     const response: SolidAPI.IResponce = await solid.auth.fetch(
-			host + this.appFolderPath + this.fileName, 
+			host + this.appFolderPath + this.fname, 
 			{
 				method: 'HEAD',
 				headers: { 
@@ -42,7 +39,7 @@ export class PrivateStorageService {
     // Error 403 will tell us that file exist, but somebody have changed access rights for us ;)
     if (response.status == 404) {
       const createResponse: SolidAPI.IResponce = await solid.auth.fetch(
-        host + this.appFolderPath + this.fileName, 
+        host + this.appFolderPath + this.fname, 
         {
           method: 'PUT',
           headers: { 
@@ -58,7 +55,7 @@ export class PrivateStorageService {
         return;
       }
       let aclUrl:string = host + this.appFolderPath + linkHeaders.acl.href;
-      let requestBody:string = this.getACLRequestBody(host, host + this.appFolderPath + this.fileName, webId);
+      let requestBody:string = this.getACLRequestBody(host, host + this.appFolderPath + this.fname, webId);
 
       const aclResponse: SolidAPI.IResponce = await solid.auth.fetch(
         aclUrl, 
@@ -75,13 +72,14 @@ export class PrivateStorageService {
       console.log('aclResponse');
       console.dir(aclResponse);
       if (aclResponse.status > 299 || aclResponse.status < 200) {
-        console.warn('Can not create a `%s`', this.fileName);
+        console.warn('Can not create a `%s`', this.fname);
       }
     }
   }
 
   private getACLRequestBody(host: string, fileUrl:string, webId: string): string {
-    const ns: RDF_API.Namespace = $rdf.Namespace(host);
+    // const ns: RDF_API.Namespace = $rdf.Namespace(host);
+    const ns: RDF_API.Namespace = $rdf.Namespace(host + this.appFolderPath + this.fname);
     const g:RDF_API.IGraph = $rdf.graph();
 
     const publicSettings:RDF_API.ITerm = $rdf.sym(ns('#public'));
@@ -94,12 +92,10 @@ export class PrivateStorageService {
     g.add(ownerSettings, WAC('mode'), WAC('Write'));
     g.add(ownerSettings, WAC('mode'), WAC('Control'));
 
-    // TODO configure access right for friends group
-    // g.add(publicSettings, RDF("type"), WAC("Authorization"));
-    // g.add(publicSettings, WAC('agentClass'), FOAF('Agent'));
-    // g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
-    // g.add(publicSettings, WAC('mode'), WAC('Read'));
-    // g.add(publicSettings, WAC('mode'), WAC('Append'));
+    g.add(publicSettings, RDF("type"), WAC("Authorization"));
+    g.add(publicSettings, WAC('agentGroup'), $rdf.sym(host + this.appFolderPath + 'friends.ttl#friends'));
+    g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
+    g.add(publicSettings, WAC('mode'), WAC('Read'));
 
     return new $rdf.Serializer(g).toN3(g);
   }
@@ -108,7 +104,7 @@ export class PrivateStorageService {
     let host: string = $rdf.sym(review.author.webId).site().value;
     
     const response: SolidAPI.IResponce = await solid.auth.fetch(
-			host + this.appFolderPath + this.fileName, 
+			host + this.appFolderPath + this.fname, 
 			{
 				method: 'PATCH',
 				headers: { 
@@ -123,8 +119,8 @@ export class PrivateStorageService {
   } 
 
   // Get URL of source
-  public getUrl(webId: string): string {
-    let host: string = $rdf.sym(webId).site().value;
-    return host + this.appFolderPath + this.fileName;
-  }
+  // public getUrl(webId: string): string {
+  //   let host: string = $rdf.sym(webId).site().value;
+  //   return host + this.appFolderPath + this.fileName;
+  // }
 }

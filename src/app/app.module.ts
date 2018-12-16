@@ -38,6 +38,7 @@ import { take, tap } from 'rxjs/operators';
 import { PrivateStorageService } from './services/private-storage/private-storage.service';
 import { FriendListComponent } from './pages/friend-list/friend-list/friend-list.component';
 import { ProfileItemComponent } from './ui/profile-item/profile-item/profile-item.component';
+import { FriendListService } from './services/friend-list/friend-list.service';
 
 const routes: Routes = [
   {
@@ -85,7 +86,7 @@ const routes: Routes = [
     component: FriendListComponent,
     canActivate: [AuthGuard],
   },
-  { path: '**', redirectTo: 'generaltimeline' } // fallback if page not found
+  { path: '**', redirectTo: 'reviews' } // fallback if page not found
 ];
 
 @NgModule({
@@ -133,17 +134,19 @@ export class AppModule {
   constructor(
     private queue:QueueService, 
     private auth: AuthService,
-    private priavateStorage: PrivateStorageService
+    private priavateStorage: PrivateStorageService,
+    private friendList: FriendListService
   ) {
     this.initializeAppFiles();
   }
   private initializeAppFiles(): void {
-    this.auth.session.subscribe((session) => {
+    this.auth.session.subscribe(async(session) => {
       if (!session || !session.webId) { // User is logout
         return; 
       }
       this.queue.initializeStore(session.webId);
       this.priavateStorage.initializeStore(session.webId);
+      await this.friendList.init(session.webId);
     });
   }
 }

@@ -3,7 +3,7 @@
     <div class="col-md-6">
       <div class="card --card-sticky">
         <div class="card-body">
-          <h6 class="mb-3">Become friends with:</h6>
+          <h6 class="mb-3">Become friends with (Ask you to show them your private reviews):</h6>
           <app-profile-item *ngFor="let request of requestInFriends" [profile]="request.profile">
               <div class="btn-line">
                 <button class="btn btn-sm align-self-auto" (click)="addFriend(request)">Add</button>
@@ -16,7 +16,7 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-body">
-          <h6 class="mb-3">Your friends:</h6>
+          <h6 class="mb-3">Your friends (Who can show your private reviews): </h6>
           <p *ngIf="friendList.length==0">You have no friends (</p>
           <app-profile-item *ngFor="let profile of friendList" [profile]="profile">
               <button class="btn btn-sm align-self-auto" (click)="removeFriend(profile)">Remove</button>

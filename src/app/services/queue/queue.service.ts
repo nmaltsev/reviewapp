@@ -3,10 +3,11 @@ import { Injectable } from '@angular/core';
 import * as SolidAPI  from '../../models/solid-api';
 import * as RDF_API from '../../models/rdf.model';
 import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-parser';
-import { tools, uid } from '../../utils/tools';
+import { uid } from '../../utils/tools';
 import { Message } from 'src/app/models/message.model';
 import { GraphSync } from 'src/app/models/sync.model';
 import { IHash } from '../review.service';
+import { BaseStorageService } from '../BaseStorageService';
 
 declare let $rdf: RDF_API.IRDF;
 declare let solid: SolidAPI.ISolidRoot;
@@ -21,12 +22,12 @@ const FOAF:RDF_API.Namespace = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
 @Injectable({
   providedIn: 'root'
 })
-export class QueueService {
-  queueFile: string = 'queue.ttl';
-  appFolderPath: string = '/test23.app.review.social-app/';
+export class QueueService extends BaseStorageService {
+  protected fname:string = 'queue.ttl';
+  // appFolderPath: string = '/test23.app.review.social-app/';
   private store:IHash<GraphSync> = {};
   
-  constructor () {}
+  constructor () {super();}
 
   async sendRequestAddInFriends(webIdA:string, webIdB:string): Promise<boolean> {
     let host: string = $rdf.sym(webIdA).site().value;
@@ -34,16 +35,16 @@ export class QueueService {
     return await this.sendMessage(host, 'requestInFriends', webIdB);
   }
 
-  public getUrl(webId: string): string {
-    let host: string = $rdf.sym(webId).site().value;
-    return host + this.appFolderPath + this.queueFile;
-  }
+  // public getUrl(webId: string): string {
+  //   let host: string = $rdf.sym(webId).site().value;
+  //   return host + this.appFolderPath + this.queueFile;
+  // }
 
   async initializeStore(webId: string) {
     let host: string = $rdf.sym(webId).site().value;
 
     const response: SolidAPI.IResponce = await solid.auth.fetch(
-			host + this.appFolderPath + this.queueFile, 
+			host + this.appFolderPath + this.fname, 
 			{
 				method: 'HEAD',
 				headers: { 
@@ -55,7 +56,7 @@ export class QueueService {
 
     if (response.status == 404) {
       const createResponse: SolidAPI.IResponce = await solid.auth.fetch(
-        host + this.appFolderPath + this.queueFile, 
+        host + this.appFolderPath + this.fname, 
         {
           method: 'PUT',
           headers: { 
@@ -71,8 +72,7 @@ export class QueueService {
         return;
       }
       let aclUrl:string = host + this.appFolderPath + linkHeaders.acl.href;
-      let requestBody:string = this.getACLRequestBody(host, host + this.appFolderPath + this.queueFile, webId);
-      // 
+      let requestBody:string = this.getACLRequestBody(host, host + this.appFolderPath + this.fname, webId);
 
       console.log('ACL URL: %s', aclUrl)
       const aclResponse: SolidAPI.IResponce = await solid.auth.fetch(
@@ -90,7 +90,7 @@ export class QueueService {
       console.log('aclResponse');
       console.dir(aclResponse);
       if (aclResponse.status > 299 || aclResponse.status < 200) {
-        console.warn('Can not create a `%s`', this.queueFile);
+        console.warn('Can not create a `%s`', this.fname);
       }
     }
   }
@@ -112,7 +112,7 @@ export class QueueService {
     g.add(publicSettings, RDF("type"), WAC("Authorization"));
     g.add(publicSettings, WAC('agentClass'), FOAF('Agent'));
     g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
-    g.add(publicSettings, WAC('mode'), WAC('Read')); // ??? maybe better turn off that ability
+    // g.add(publicSettings, WAC('mode'), WAC('Read')); // ??? maybe better turn off that ability
     g.add(publicSettings, WAC('mode'), WAC('Append'));
 
     // TODO add in report
@@ -131,7 +131,7 @@ export class QueueService {
     let requestBody: string = new $rdf.Serializer(g).toN3(g);
 
     const response: SolidAPI.IResponce = await solid.auth.fetch(
-			host + this.appFolderPath + this.queueFile, 
+			host + this.appFolderPath + this.fname, 
 			{
 				method: 'PATCH',
 				headers: { 
@@ -158,28 +158,6 @@ export class QueueService {
 
     return g;
   }
-
-  /*private async uploadData(url:string): Promise<RDF_API.IGraph> {
-    return solid.auth.fetch(
-			url,
-			{
-				method: 'GET',
-				headers: { 
-					'Content-Type': 'text/turtle',
-				},
-				credentials: 'include'
-			}
-    ).then(async (response: SolidAPI.IResponce) => {
-      let contentType:string = response.headers.get('Content-Type')
-      let unparsedText:string = await response.text();
-      let g:RDF_API.IGraph = $rdf.graph();
-
-      // Possible content type is 'text/n3'
-      $rdf.parse(unparsedText, g, url, contentType);
-
-      return g;
-    });
-  }*/
 
   private parseMessages(g:RDF_API.IGraph):Message[] {
     let statements:RDF_API.IState[] = g.statementsMatching(null, null, SCHEMA('Message'));
@@ -210,9 +188,6 @@ export class QueueService {
   async getNewRequestsInFriends(webId: string): Promise<Message[]> {
     let url:string = this.getUrl(webId);
     this.store[webId] = new GraphSync(url);
-
-    // TODO refactor it
-    // let messages:Message[] = this.parseMessages(await this.uploadData(url))
     let messages:Message[] = this.parseMessages(await this.store[webId].load());
 
     return messages

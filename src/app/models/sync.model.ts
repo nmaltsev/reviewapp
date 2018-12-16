@@ -21,9 +21,14 @@ export class GraphSync {
             },
             credentials: 'include',
         }).then(async (response: SolidAPI.IResponce) => {
+            this.g = $rdf.graph();
+
+            if (response.status > 299 || response.status < 200) {
+                return null;
+            }
+
             let contentType:string = response.headers.get('Content-Type')
             let unparsedText:string = await response.text();
-            this.g = $rdf.graph();
 
             // Possible content type is 'text/n3'
             $rdf.parse(unparsedText, this.g, this.url, contentType);

@@ -5,6 +5,8 @@ import { RdfService } from 'src/app/services/rdf.service';
 import { SolidProfile } from 'src/app/models/solid-profile.model';
 import { SolidSession } from 'src/app/models/solid-session.model';
 import { tools } from 'src/app/utils/tools';
+import { FriendListService } from 'src/app/services/friend-list/friend-list.service';
+import { Subscription } from 'rxjs';
 
 interface IRequest {
   messageId: string;
@@ -21,9 +23,12 @@ export class FriendListComponent implements OnInit {
   public friendList: SolidProfile[] = [];
   public authWebId:string;
 
+  private subscription: Subscription;
+
   constructor(
     private queue:QueueService,
-    private rdf:RdfService
+    private rdf:RdfService,
+    private frindService:FriendListService
   ) { }
 
   async ngOnInit() {
@@ -32,6 +37,24 @@ export class FriendListComponent implements OnInit {
     if (session) {
       await this.initialize(session);
     }
+    this.populateFriendList(this.frindService.friends);
+    this.subscription = this.frindService.subscribeOnFriends().subscribe(async (f:string[]) => {
+      this.populateFriendList(f);
+    });
+    console.log('PAGE ONIT');
+    console.dir(this.frindService.subscribeOnFriends())
+  }
+
+  private async populateFriendList(friends:string[]):Promise<void>{
+    console.log('[TRIG subscription]');
+      console.dir(friends);
+    this.friendList = await Promise.all(
+      friends.map((webId: string) => this.rdf.collectProfileData(webId))
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   private async initialize(session:SolidSession):Promise<void> {
@@ -47,12 +70,12 @@ export class FriendListComponent implements OnInit {
       }))
     );
 
-    this.friendList = await Promise.all(
-      (await this.queue.getNewRequestsInFriends(
-        session.webId
-      ))
-      .map((message: Message) => this.rdf.collectProfileData(message.text))
-    );
+    // this.friendList = await Promise.all(
+    //   (await this.queue.getNewRequestsInFriends(
+    //     session.webId
+    //   ))
+    //   .map((message: Message) => this.rdf.collectProfileData(message.text))
+    // );
   }
 
   async test() {
@@ -71,14 +94,17 @@ export class FriendListComponent implements OnInit {
   async addFriend(request:IRequest) {
     console.log('[CALL addFriend]');
     console.dir(request);
+    await this.frindService.addInFriends(request.profile.webId);
     await this.removeRequest(request);
-    // TODO add in friendList
   }
 
   async removeFriend(profile:SolidProfile) {
     console.log('[CALL removeFriend]');
     console.dir(profile);
     // TODO remove in friendList
+
+    await this.frindService.removeFriend(profile.webId);
+    tools.removeItem<SolidProfile>(this.friendList, profile);
   }
 
   async rejectRequest(request:IRequest) {

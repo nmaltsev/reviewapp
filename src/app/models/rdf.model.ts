@@ -26,6 +26,7 @@ export interface IGraph {
     removeMany(ITerm): void;
     statements: ITerm[];
     add(a?:ITerm, b?:string, c?:string|ITerm|IValue);
+    removeMatches(a1?:ITerm, a2?:string, a3?:ITerm, a4?:ITerm):IGraph;
 }
 
 export interface IFetcherProperties {
