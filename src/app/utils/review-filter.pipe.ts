@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Review } from '../models/review.model';
+import { Review } from '../models/sdm/review.model';
 import { Search } from './search-engine';
 
 @Pipe({

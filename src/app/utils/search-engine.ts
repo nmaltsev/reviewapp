@@ -1,4 +1,4 @@
-import { Review } from "../models/review.model";
+import { Review } from "../models/sdm/review.model";
 
 export class Search {
     private lexems:string[];
@@ -23,9 +23,9 @@ export class Search {
             review.author.fn,
             review.summary,
             review.text,
-            review.property ? review.property.name : '',
-            review.property && review.property.address ? review.property && review.property.address.countryName : '',
-            review.property && review.property.address ? review.property && review.property.address.locality : '',
+            review.thing ? review.thing.name : '',
+            review.thing && review.thing.address ? review.thing && review.thing.address.country : '',
+            review.thing && review.thing.address ? review.thing && review.thing.address.locality : '',
         ];
 
         return testValues.reduce((c: number, testValue: string) => {

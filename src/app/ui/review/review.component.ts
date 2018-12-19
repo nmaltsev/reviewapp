@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Review } from 'src/app/models/review.model';
+import { Review } from 'src/app/models/sdm/review.model';
 import {RdfService} from '../../services/rdf.service';
 import {SolidProfile} from '../../models/solid-profile.model';
 import { ReviewService } from 'src/app/services/review.service';

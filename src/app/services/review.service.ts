@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {RdfService} from './rdf.service';
-import {Review, VisibilityTypes} from '../models/review.model';
+import {Review, VisibilityTypes} from '../models/sdm/review.model';
 import * as RDF from '../models/rdf.model';
 import * as SolidAPI from '../models/solid-api';
 import {IHttpError} from '../models/exception.model';

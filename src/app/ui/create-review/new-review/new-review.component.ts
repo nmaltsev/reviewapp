@@ -1,10 +1,10 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {Review, VisibilityTypes} from '../../../models/review.model';
+import {Review, VisibilityTypes} from '../../../models/sdm/review.model';
 import {SolidProfile} from '../../../models/solid-profile.model';
 import {RdfService} from '../../../services/rdf.service';
-import {Property, PropertyType} from '../../../models/property.model';
-import {Address} from '../../../models/address.model';
+import {Place} from '../../../models/sdm/place.model';
+import {AddressModel} from '../../../models/sdm/address.model';
 import { ReviewService } from 'src/app/services/review.service';
 import * as SolidAPI from '../../../models/solid-api';
 import {ActivatedRoute, Params, Router} from '@angular/router';
@@ -26,7 +26,7 @@ interface IVisibilityOption {
 })
 export class NewReviewComponent implements OnInit {
   private sub: Subscription;
-  placeType: PropertyType;
+  placeType: string;
   private _place: PhotonInterface;
   @Input()
       set place(place: PhotonInterface) {this._place = place; }
@@ -60,11 +60,12 @@ export class NewReviewComponent implements OnInit {
         {rate: 2, desc: 'Poor'},
         {rate: 1, desc: 'Terrible'},
     ];
-    
+    console.log(this.place);
     this.newReview = new Review('');
     const pl = this.place.properties;
-    const newProp = new Property(this.placeType, pl.name, new Address(pl.country, pl.city, pl.state, pl.street), pl.osm_id);
-    this.newReview.setProperty(newProp);
+    const newPlace = new Place(
+      this.placeType, pl.name, new AddressModel(pl.country, pl.city, pl.state, pl.street), pl.osm_id);
+    this.newReview.setThing(newPlace);
     this.authUser = await this.rdfService.getProfile();
     this.newReview.setAuthor(this.authUser);
   }
@@ -75,18 +76,17 @@ export class NewReviewComponent implements OnInit {
         .subscribe((params: Params) => {
           const rType = decodeURIComponent(params['type']);
           switch (rType) {
-            case 'hotel': this.placeType = PropertyType.hotel; break;
-            case 'restaurant': this.placeType = PropertyType.restaurant; break;
-            default: this.placeType = PropertyType.hotel; break;
+            case 'hotel': this.placeType = 'schema:Hotel'; break;
+            case 'restaurant': this.placeType = 'schema:Restaurant'; break;
+            default: this.placeType = 'schema:Hotel'; break;
           }
-          console.log(this.placeType);
         });
   }
 
   onSubmit(f: NgForm): void {
     // We need clone() method, because resetForm() will reset this.newReview
     const review: Review = this.newReview.clone(uid.generateDocumentUID());
-    
+
     if (this.selectedVisibility == VisibilityTypes.public) {
       this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {
         if (e.status == 200) {

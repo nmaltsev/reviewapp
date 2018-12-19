@@ -6,7 +6,7 @@ import { RdfService } from '../services/rdf.service';
 import { SolidSession } from '../models/solid-session.model';
 import {SolidProfile} from '../models/solid-profile.model';
 import { ReviewService } from '../services/review.service';
-import { Review } from '../models/review.model';
+import { Review } from '../models/sdm/review.model';
 import { tools } from '../utils/tools';
 import { IHttpError } from '../models/exception.model';
 import { IResponce } from '../models/solid-api';
