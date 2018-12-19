@@ -4,7 +4,7 @@ import { Subscription} from 'rxjs';
 import { RdfService } from '../../services/rdf.service';
 import { SolidProfile } from '../../models/solid-profile.model';
 import { ReviewService } from 'src/app/services/review.service';
-import { Review } from 'src/app/models/review.model';
+import { Review } from 'src/app/models/sdm/review.model';
 import { SolidSession } from 'src/app/models/solid-session.model';
 
 

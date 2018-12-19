@@ -16,11 +16,11 @@
           <a [routerLink]="'/usertimeline'" [queryParams]="{webId: model.author.webId }">{{ model.author.fn }}</a>
           <span class="review-object">
             rated <a [routerLink]="['/reviews']"
-                                        [queryParams]="{query: model.property.name}">
-            {{model.property.name}}</a>
-            <span *ngIf="model.property.address"> in <a [routerLink]="['/reviews']"
-            [queryParams]="{ query: model.property.address.getLocality()}">
-            {{model.property.address.getLocality()}}</a></span>
+                                        [queryParams]="{query: model.thing ? model.thing.name : ''}">
+            {{model.thing ? model.thing.name : ''}}</a>
+            <span *ngIf="model.thing"> in <a [routerLink]="['/reviews']"
+            [queryParams]="{ query: model.thing.address.getLocality()}">
+            {{model.thing.address.getLocality()}}</a></span>
           </span>
           <p class="small text-muted">{{model.creationDate | timePassed}}</p>
         </div>
@@ -47,5 +47,6 @@
       <div class="col-sm-6"><h6 class="text-danger m-sm-0">Average:</h6></div>
       <div class="col-sm-6"><h6 class="text-info text-sm-right m-sm-0">N friends were there</h6></div>
     </div>
+    <!--{{model | json: "\n"}}-->
   </div>
 </div>

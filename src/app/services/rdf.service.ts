@@ -6,12 +6,11 @@ import * as RDF from '../models/rdf.model';
 declare let solid: ISolidRoot;
 declare let $rdf: RDF.IRDF;
 
-
 // TODO: Remove any UI interaction from this service
 import { NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { SolidProfile } from '../models/solid-profile.model';
-import { IAddress } from '../models/address.model';
+import { AddressModel } from '../models/sdm/address.model';
 
 const VCARD: RDF.Namespace = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
 const FOAF: RDF.Namespace = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
@@ -130,13 +129,13 @@ export class RdfService {
   }
 
   private addNewLinkedField(field, insertions, predicate, fieldValue, why, me: any) {
-    //Generate a new ID. This id can be anything but needs to be unique.
+    // Generate a new ID. This id can be anything but needs to be unique.
     const newId = field + ':' + Date.now();
 
-    //Get a new subject, using the new ID
+    // Get a new subject, using the new ID
     const newSubject = $rdf.sym(this.session.webId.split('#')[0] + '#' + newId);
 
-    //Set new predicate, based on email or phone fields
+    // Set new predicate, based on email or phone fields
     const newPredicate = field === 'phone' ? $rdf.sym(VCARD('hasTelephone')) : $rdf.sym(VCARD('hasEmail'));
 
     //Add new phone or email to the pod
@@ -256,23 +255,20 @@ export class RdfService {
       });
     }
   }
-
-  getAddress(webId?: string): IAddress {
+  // TODO check usage of this method and change it
+  getAddress(webId?: string): AddressModel {
     const linkedUri = this.getValueFromVcard('hasAddress', webId);
-
     if (linkedUri) {
-      return {
-        locality: this.getValueFromVcard('locality', linkedUri),
-        countryName: this.getValueFromVcard('country-name', linkedUri),
-        region: this.getValueFromVcard('region', linkedUri),
-        street: this.getValueFromVcard('street-address', linkedUri),
-      };
+      return new AddressModel(
+        this.getValueFromVcard('country-name', linkedUri),
+        this.getValueFromVcard('locality', linkedUri),
+        this.getValueFromVcard('street-address', linkedUri)
+      );
     }
-
-    return {};
+    return null;
   }
 
-  //Function to get email. This returns only the first email, which is temporary
+  // Function to get email. This returns only the first email, which is temporary
   getEmail(webId?: string): string {
     const linkedUri = this.getValueFromVcard('hasEmail', webId);
 
@@ -283,7 +279,7 @@ export class RdfService {
     return '';
   }
 
-  //Function to get phone number. This returns only the first phone number, which is temporary. It also ignores the type.
+  // Function to get phone number. This returns only the first phone number, which is temporary. It also ignores the type.
   getPhone(webId?: string): string {
     const linkedUri = this.getValueFromVcard('hasTelephone', webId);
 
@@ -375,9 +371,9 @@ export class RdfService {
     return this.fetcher.load(webId).then(() => {
       return (this.getCollectionFromNamespace('knows', FOAF, webId, null,  $rdf.sym(webId).doc()) || []).
         map((item: RDF.ITerm) => item.value);
-    }).catch(function(){
+    }).catch(function() {
       return [];
-    })
+    });
   }
 
   public async updateFollowingList(follow: Array<string>, unfollow: Array<string>) {

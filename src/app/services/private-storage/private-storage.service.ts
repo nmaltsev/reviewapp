@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as SolidAPI  from '../../models/solid-api';
 import * as RDF_API from '../../models/rdf.model';
 import { parseLinkHeader, ISolidEntityLinkHeader } from 'src/app/utils/header-parser';
-import { Review } from 'src/app/models/review.model';
+import { Review } from 'src/app/models/sdm/review.model';
 import { BaseStorageService } from '../BaseStorageService';
 
 declare let $rdf: RDF_API.IRDF;
