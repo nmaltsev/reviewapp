@@ -56,7 +56,7 @@ export class LegendProfileCardComponent implements OnInit {
   }
 
   async followToggle() {
-      if (this.isFriend) {
+      if (!this.isFollowed) {
           await this.rdfService.updateFollowingList([this._userProfile.webId], []);
       } else {
           await this.rdfService.updateFollowingList([], [this._userProfile.webId]);
@@ -67,7 +67,7 @@ export class LegendProfileCardComponent implements OnInit {
   async friendToggle() {
     console.log('[Add in friend] %s', this._userProfile.webId);
 
-    if (this.friendList.isFriend(this.authWebId)) {
+    if (this.friendList.isMyFriend(this.authWebId)) {
       // TODO send message 'removeFromFriends'.
       // Also create list from whome Authorized user whant to get private reviews. (in friends.ttl)
     } else {

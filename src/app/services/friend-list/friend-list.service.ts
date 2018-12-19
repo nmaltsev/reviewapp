@@ -8,14 +8,15 @@ import { BaseStorageService } from '../BaseStorageService';
 declare let solid: ISolidRoot;
 declare let $rdf: RDF_API.IRDF;
 
-const FOAF:RDF_API.Namespace = $rdf.Namespace("http://xmlns.com/foaf/0.1/");
+const VCARD:RDF_API.Namespace = $rdf.Namespace('http://www.w3.org/2006/vcard/ns#');
+const WAC:RDF_API.Namespace = $rdf.Namespace("http://www.w3.org/ns/auth/acl#");
+const RDF:RDF_API.Namespace = $rdf.Namespace("http:/www.w3.org/1999/02/22-rdf-syntax-ns#");
 
 @Injectable({
   providedIn: 'root'
 })
 export class FriendListService extends BaseStorageService  {
   protected fname:string = 'friends.ttl';
-  // private appFolderPath: string = '/test23.app.review.social-app/';
 
   private url:string;
   private friendSym:RDF_API.ITerm;
@@ -44,10 +45,13 @@ export class FriendListService extends BaseStorageService  {
       .then((g:RDF_API.IGraph) => {
         if (g) {
           this.friends = this.parseFriendList(g);
-          console.log('After load read');
-          console.dir(this.friends);
           this.friendSubject.next(this.friends);
         } else {
+          const g:RDF_API.IGraph = $rdf.graph();
+
+          g.add($rdf.sym(this.url), RDF('type'), WAC('GroupListing'));
+          g.add(this.friendSym, RDF('type'), VCARD('Group'));
+
           return solid.auth.fetch(
             this.url, 
             {
@@ -56,7 +60,7 @@ export class FriendListService extends BaseStorageService  {
                 'Content-Type': 'text/turtle',
               },
               credentials: 'include',
-              body: ''
+              body: new $rdf.Serializer(g).toN3(g)
             }
           ).then(() => {
             this.friends = [];
@@ -70,23 +74,15 @@ export class FriendListService extends BaseStorageService  {
       });
   }
 
-  // public getUrl(webId: string): string {
-  //   let host:string = $rdf.sym(webId).site().value;
-  //   return host + this.appFolderPath + this.fname;
-  // }
 
   private parseFriendList(g:RDF_API.IGraph):string[] {
-    let states:RDF_API.IState[] = g.statementsMatching(null);
+    let states:RDF_API.IState[] = g.statementsMatching(null, VCARD('hasMember'));
 
     return states.map((state:RDF_API.IState) => state.object.value);
   } 
 
   public async addInFriends(webId:string) {
-    this.sync.g.add(
-      this.friendSym,
-      FOAF('member'),
-      $rdf.sym(webId)
-    );
+    this.sync.g.add(this.friendSym, VCARD('hasMember'), $rdf.sym(webId));
 
     await this.sync.update();
     this.friends = this.parseFriendList(this.sync.g);
@@ -94,16 +90,13 @@ export class FriendListService extends BaseStorageService  {
   }
 
   public async removeFriend(webId:string) {
-    this.sync.g.removeMatches(null, FOAF('member'), $rdf.sym(webId))
+    this.sync.g.removeMatches(null, VCARD('hasMember'), $rdf.sym(webId))
     await this.sync.update();
     this.friends = this.parseFriendList(this.sync.g);
     this.friendSubject.next(this.friends);
   }
 
-  public isFriend(webId:string): boolean {
-    console.log('CALL isFriend %s', webId);
-    console.dir(this.friends);
-    console.dir(this.friends.indexOf(webId) != -1);
+  public isMyFriend(webId:string): boolean {
     return this.friends.indexOf(webId) != -1;
   }
 }

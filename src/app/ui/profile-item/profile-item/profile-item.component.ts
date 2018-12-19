@@ -9,6 +9,8 @@ import { SolidProfile } from 'src/app/models/solid-profile.model';
 export class ProfileItemComponent implements OnInit {
   @Input() set profile(profile: SolidProfile) {
     this._profile = profile;
+    console.log('p');
+    console.dir(profile);
   }
   public _profile: SolidProfile;
 
