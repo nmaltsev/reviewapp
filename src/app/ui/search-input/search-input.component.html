@@ -1,5 +1,6 @@
 <div class="search-input" >
-  <input type="text" class="search-input_field" (input)="oninput($event)" #field/>
+  <input type="text" class="search-input_field" #field
+         [formControl]="searchField" />
   <div class="search-input_left"><i class="fas fa-search"></i><span class="search-input_placeholder">Search</span></div>
   <div class="search-input_right" (click)="clear()"><i class="fas fa-times"></i></div>
 </div>

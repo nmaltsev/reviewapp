@@ -1,5 +1,5 @@
 <div class="container">
-    <search-input  class="search-input_wrap" [query]="queryParam" (queryChange)="onquerychange($event)"></search-input>
+    <app-search-input  class="search-input_wrap" [query]="queryParam" (queryChange)="onquerychange($event)"></app-search-input>
     <h3 *ngIf="reviewsAreLoading">Loading...</h3>
     <!--REVIEW LIST GOES HERE-->
     <app-review *ngFor="let reviewModel of reviews | reviewFilter:filterQuery" [model]="reviewModel"></app-review>
