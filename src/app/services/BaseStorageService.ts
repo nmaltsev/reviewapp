@@ -3,7 +3,7 @@ declare let $rdf: RDF_API.IRDF;
 
 export abstract class BaseStorageService {
     // Attention: all root folders/files starts with first slash! 
-    protected appFolderPath: string = '/'+'test24.app.review.social-app/';
+    protected appFolderPath: string = '/'+'test25.app.review.social-app/';
     protected abstract fname:string;
 
     public getUrl(webId: string): string {
