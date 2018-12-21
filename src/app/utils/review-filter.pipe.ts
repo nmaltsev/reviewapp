@@ -6,9 +6,10 @@ import { Review } from '../models/sdm/review.model';
 })
 export class ReviewFilterPipe implements PipeTransform {
 
-  transform(reviews: Review[], queryIds?: string[]): Review[] {
-    let filtered = reviews;
-    if (queryIds.length > 0) {
+  transform(reviews: Review[], hasFilter: boolean, queryIds?: string[]): Review[] {
+    let filtered: Review[] = [];
+    if (!hasFilter) { filtered = reviews; } else if (queryIds.length > 0) {
+      console.log(queryIds);
       filtered = reviews.filter(review => {
         // TODO optimize and sort by relevance
         let isChosen = false;
