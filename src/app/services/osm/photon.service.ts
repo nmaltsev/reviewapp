@@ -15,14 +15,13 @@ export class PhotonService {
   ) { }
 
   findPlace(query, limit: number = 7): Observable<PhotonInterface[]> {
-    const tag = 'tourism';
+    // const tag = 'tourism';
     const params = new HttpParams()
         .set('q', query)
-        .set('osm_tag',tag)
+        // .set('osm_tag', tag)
         .set('limit', limit.toString());
     return this.http.get<IPhotonResponse>('https://photon.komoot.de/api/', {'params': params})
         .pipe(
-            // map(resp => {console.log(resp); return resp.features;})
             map(resp => resp.features)
         );
   }
