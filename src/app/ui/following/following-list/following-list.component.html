@@ -16,7 +16,12 @@
             </div>
           </form>
           <h6 class="mb-3">Suggested friends:</h6>
-          <app-following-item *ngFor="let item of sugestedList;" [profile]="item"></app-following-item>
+          <app-profile-item *ngFor="let item of sugestedList;" [profile]="item">
+            <button
+              class="btn btn-sm align-self-auto btn-success"
+              (click)="followUser(item)"
+            >Follow</button>
+          </app-profile-item>
         </div>
       </div>
     </div>
@@ -24,7 +29,19 @@
       <div class="card">
         <div class="card-body">
           <h6 class="mb-3">Following list:</h6>
-          <app-following-item *ngFor="let item of followingList;" [profile]="item"></app-following-item>
+          <app-profile-item *ngFor="let item of followingList;" [profile]="item">
+            <div class="btn-line">
+              <button 
+                *ngIf="isAbbleToSendRequest[item.webId]"
+                class="btn btn-sm align-self-auto btn-light" 
+                (click)="sendRequest(item)"
+              >Ask permission to read private reviews</button>
+              <button
+                class="btn btn-sm align-self-auto btn-light"
+                (click)="unFollowUser(item)"
+              >Unfollow</button>  
+            </div>
+          </app-profile-item>
         </div>
       </div>
     </div>

@@ -3,6 +3,9 @@ import {SolidProfile} from '../../../models/solid-profile.model';
 import {RdfService} from '../../../services/rdf.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
+import { FriendListService } from 'src/app/services/friend-list/friend-list.service';
+import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
+import { QueueService } from 'src/app/services/queue/queue.service';
 
 @Component({
   selector: 'app-following-list',
@@ -20,9 +23,13 @@ export class FollowingListComponent implements OnInit {
     webId: new FormControl()
   });
   q: string;
+  public isAbbleToSendRequest: {[key:string]: boolean}= {};
+
   constructor(
     private rdfService: RdfService, 
-    private router: Router
+    private router: Router,
+    private queue:QueueService,
+    private privateStorage:PrivateStorageService
   ) { }
 
   ngOnInit() {
@@ -34,9 +41,13 @@ export class FollowingListComponent implements OnInit {
     this.authUser = await this.rdfService.getProfile();
     this.authFollowingIds = await this.rdfService.getFriendsOf(this.authUser.webId);
     for (let i = 0; i < this.authFollowingIds.length; i++) {
-      const profile =  await this.rdfService.collectProfileData(this.authFollowingIds[i]);
+      const profile:SolidProfile =  await this.rdfService.collectProfileData(this.authFollowingIds[i]);
       if (profile) {
         this.followingList.push(profile);
+        // If request is returning 403 status code then user have created private file and not granted access to current authorized user  
+        this.privateStorage.isUserGrantedMeAccess(profile.webId).then((status: number) => {
+          this.isAbbleToSendRequest[profile.webId] = status == 403;
+        });
       }
     }
     this.suggFriends();
@@ -74,6 +85,28 @@ export class FollowingListComponent implements OnInit {
     } catch (e) {
       this.isBad = true;
     }
+  }
 
+  async followUser(user:SolidProfile): Promise<void> {
+    await this.rdfService.updateFollowingList([user.webId], []);
+  }
+  
+  async unFollowUser(user:SolidProfile): Promise<void> {
+    await this.rdfService.updateFollowingList([], [user.webId]);
+  }
+
+  async sendRequest(user:SolidProfile): Promise<void> {
+    if (!this.authUser) return;
+
+    let r: boolean = await this.queue.sendRequestAddInFriends(
+      user.webId, 
+      this.authUser.webId
+    );
+
+    if (!r) {
+      alert('Sorry, but that user does not use our application. Please inform him about that opportunity.');
+    } else {
+      alert(`${user.fn} will receive your request to grant you access to the private reviews` );
+    }
   }
 }

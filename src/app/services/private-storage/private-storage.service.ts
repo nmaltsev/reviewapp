@@ -30,7 +30,7 @@ export class PrivateStorageService extends BaseStorageService {
 			{
 				method: 'HEAD',
 				headers: { 
-					'Content-Type': 'application/sparql-update',
+					'Content-Type': 'text/turtle',
 				},
 				credentials: 'include',
 			}
@@ -118,9 +118,19 @@ export class PrivateStorageService extends BaseStorageService {
     return response.status > 199 && response.status < 300;
   } 
 
-  // Get URL of source
-  // public getUrl(webId: string): string {
-  //   let host: string = $rdf.sym(webId).site().value;
-  //   return host + this.appFolderPath + this.fileName;
-  // }
+  public async isUserGrantedMeAccess(webId:string): Promise<number> {
+    let url:string = this.getUrl(webId);
+
+    const response: SolidAPI.IResponce = await solid.auth.fetch(
+			url, 
+			{
+				method: 'HEAD',
+				headers: { 
+					'Content-Type': 'application/sparql-update',
+				},
+				credentials: 'include',
+			}
+    );
+    return response.status;
+  }
 }

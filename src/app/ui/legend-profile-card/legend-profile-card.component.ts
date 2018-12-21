@@ -4,6 +4,7 @@ import {RdfService} from '../../services/rdf.service';
 import { SolidSession } from 'src/app/models/solid-session.model';
 import { QueueService } from 'src/app/services/queue/queue.service';
 import { FriendListService } from 'src/app/services/friend-list/friend-list.service';
+import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
 
 @Component({
   selector: 'legend-profile-card',
@@ -30,7 +31,8 @@ export class LegendProfileCardComponent implements OnInit {
   constructor(
     private rdfService:RdfService,
     private queue:QueueService,
-    private friendList:FriendListService
+    private friendList:FriendListService,
+    private privateStorage:PrivateStorageService
   ) { }
 
   async ngOnInit() {
@@ -50,6 +52,9 @@ export class LegendProfileCardComponent implements OnInit {
       const friends: string[] = await this.rdfService.getFriendsOf(this.authWebId);
 
       this.isFollowed = friends.indexOf(this._userProfile.webId) !== -1;
+
+      let requestStatus:number = await this.privateStorage.isUserGrantedMeAccess(this._userProfile.webId)
+      this.isFriend = requestStatus > 199 && requestStatus < 300;
     } else {
       this.isFollowed = false;
     }
@@ -67,10 +72,10 @@ export class LegendProfileCardComponent implements OnInit {
   async friendToggle() {
     console.log('[Add in friend] %s', this._userProfile.webId);
 
-    if (this.friendList.isMyFriend(this.authWebId)) {
-      // TODO send message 'removeFromFriends'.
-      // Also create list from whome Authorized user whant to get private reviews. (in friends.ttl)
-    } else {
+    // TODO send message 'removeFromFriends'.
+    // Also create list from whome Authorized user whant to get private reviews. (in friends.ttl)
+    
+    if (!this.friendList.isMyFriend(this.authWebId)) {
       let r: boolean = await this.queue.sendRequestAddInFriends(
         this._userProfile.webId, 
         this.authWebId
@@ -78,8 +83,11 @@ export class LegendProfileCardComponent implements OnInit {
   
       if (!r) {
         alert('Sorry, but that user does not use our application. Please inform him about that opportunity.');
+      } else {
+        alert(`${this._userProfile.fn} will receive your request to grant you access to the private reviews` );
       }
-    }
+    } 
+    // else authorized user ask viewed user to remove him from his friendList 
     this.isFriend = !this.isFriend;
   }
 }
