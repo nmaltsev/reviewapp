@@ -10,6 +10,8 @@ import { Review } from '../models/sdm/review.model';
 import { tools } from '../utils/tools';
 import { IHttpError } from '../models/exception.model';
 import { IResponce } from '../models/solid-api';
+import {PhotonService} from '../services/osm/photon.service';
+import {map} from 'rxjs/operators';
 
 
 
@@ -20,19 +22,21 @@ import { IResponce } from '../models/solid-api';
 })
 export class DashboardComponent implements OnInit {
   profileLinks: string[];
-  queryParam: string = '';
+  queryParam: '';
+  queryIds: string[] = [];
   userProfile: SolidProfile;
   paramWebId: string;
   authId: string;
-  reviewsAreLoading:boolean = false;
+  reviewsAreLoading: false;
   reviews: Review[] = [];
-  filterQuery:string = '';
+  filterQuery: '';
 
   constructor(
     private auth: AuthService,
     private route: ActivatedRoute,
     private rdfService: RdfService,
-    private reviewService:ReviewService
+    private reviewService: ReviewService,
+    private photonService: PhotonService
   ) {}
 
   async ngOnInit() {
@@ -40,7 +44,7 @@ export class DashboardComponent implements OnInit {
 
     if (session) {
       this.authId = session.webId;
-      let profileLinks: string[] = [session.webId].concat(await this.rdfService.getFriendsOf(session.webId))
+      const profileLinks: string[] = [session.webId].concat(await this.rdfService.getFriendsOf(session.webId));
 
       this.profileLinks = profileLinks.map(encodeURIComponent);
       this.handleOfParams();
@@ -60,11 +64,7 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  onSignOut = () => {
-    this.auth.solidSignOut();
-  }
-
-  private async loadReviews(profiles: string[]):Promise<Review[]> {
+  private async loadReviews(profiles: string[]): Promise<Review[]> {
     return Promise
       .all(profiles.map((webId: string) => this.reviewService.getReviews(webId).catch((e: IHttpError<IResponce>) => {
         return null;
@@ -76,8 +76,11 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  onquerychange(query: string): void {
-    this.filterQuery = query;
+  async onQueryChange(query: string): Promise<void> {
+    this.queryParam = query;
+    this.photonService.findPlace(query, 100).pipe(
+      map (val => val.map(obj => obj.properties.osm_id.toString()))
+    ).subscribe(val => this.queryIds = val);
   }
 
 }

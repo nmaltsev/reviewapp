@@ -1,19 +1,21 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Review } from '../models/sdm/review.model';
-import { Search } from './search-engine';
 
 @Pipe({
   name: 'reviewFilter'
 })
 export class ReviewFilterPipe implements PipeTransform {
 
-  transform(reviews: Review[], query?: string): Review[] {
-    if (query.length > 2) {
-      let search:Search = new Search(query);
-      
-      return reviews.filter((review: Review) => search.compare(review) > 0);
+  transform(reviews: Review[], queryIds?: string[]): Review[] {
+    let filtered = reviews;
+    if (queryIds.length > 0) {
+      filtered = reviews.filter(review => {
+        if (review.thing && review.thing.globalIdentifier) {
+          return queryIds.indexOf(review.thing.globalIdentifier) !== -1;
+        }
+      });
     }
-    return reviews;
+    return filtered;
   }
 
 }
