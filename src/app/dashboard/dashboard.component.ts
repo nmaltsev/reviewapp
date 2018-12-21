@@ -22,14 +22,14 @@ import {map} from 'rxjs/operators';
 })
 export class DashboardComponent implements OnInit {
   profileLinks: string[];
-  queryParam: '';
+  queryParam = '';
   queryIds: string[] = [];
   userProfile: SolidProfile;
   paramWebId: string;
   authId: string;
-  reviewsAreLoading: false;
+  reviewsAreLoading = false;
   reviews: Review[] = [];
-  filterQuery: '';
+  filterQuery = '';
 
   constructor(
     private auth: AuthService,
@@ -69,8 +69,8 @@ export class DashboardComponent implements OnInit {
       .all(profiles.map((webId: string) => this.reviewService.getReviews(webId).catch((e: IHttpError<IResponce>) => {
         return null;
       })))
-      .then((rewiews: Review[][]) => {
-        return tools.flatten(rewiews).sort(
+      .then((reviews: Review[][]) => {
+        return tools.flatten(reviews).sort(
           (a: Review, b: Review) => a.creationDate > b.creationDate ? -1 : a.creationDate < b.creationDate ? 1 : 0
         );
       });

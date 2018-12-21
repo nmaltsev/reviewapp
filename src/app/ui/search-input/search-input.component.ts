@@ -44,4 +44,8 @@ export class SearchInputComponent implements OnInit {
     }
   }
 
+  public clear(): void {
+    this.updateQuery('');
+  }
+
 }
