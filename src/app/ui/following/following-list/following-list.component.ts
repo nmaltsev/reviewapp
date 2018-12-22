@@ -3,9 +3,9 @@ import {SolidProfile} from '../../../models/solid-profile.model';
 import {RdfService} from '../../../services/rdf.service';
 import {FormControl, FormGroup} from '@angular/forms';
 import {Router} from '@angular/router';
-import { FriendListService } from 'src/app/services/friend-list/friend-list.service';
 import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
 import { QueueService } from 'src/app/services/queue/queue.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-following-list',
@@ -29,7 +29,8 @@ export class FollowingListComponent implements OnInit {
     private rdfService: RdfService, 
     private router: Router,
     private queue:QueueService,
-    private privateStorage:PrivateStorageService
+    private privateStorage:PrivateStorageService,
+    private toastr: ToastrService
   ) { }
 
   async ngOnInit() {
@@ -108,9 +109,9 @@ export class FollowingListComponent implements OnInit {
     );
 
     if (!r) {
-      alert('Sorry, but that user does not use our application. Please inform him about that opportunity.');
+      this.toastr.error(`Sorry, but ${user.fn} does not use our application. Please inform him about that opportunity.`, 'Can not send a request');
     } else {
-      alert(`${user.fn} will receive your request to grant you access to the private reviews` );
+      this.toastr.success(`${user.fn} will receive your request to grant you an access to the private reviews`, 'Request is sended');
     }
   }
 }

@@ -5,6 +5,7 @@ import { SolidSession } from 'src/app/models/solid-session.model';
 import { QueueService } from 'src/app/services/queue/queue.service';
 import { FriendListService } from 'src/app/services/friend-list/friend-list.service';
 import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'legend-profile-card',
@@ -32,7 +33,8 @@ export class LegendProfileCardComponent implements OnInit {
     private rdfService:RdfService,
     private queue:QueueService,
     private friendList:FriendListService,
-    private privateStorage:PrivateStorageService
+    private privateStorage:PrivateStorageService,
+    private toastr: ToastrService
   ) { }
 
   async ngOnInit() {
@@ -40,9 +42,6 @@ export class LegendProfileCardComponent implements OnInit {
       if (session) {
         this.authWebId = session.webId;
         await this.checkFollowing();
-        // this.isFriend = this.friendList.isFriend(this._userProfile.webId);
-        // TODO send HEAD request to this._userProfile.webId private storage file 
-        // if you get 200 status code - you are a friend
       }
     });
   }
@@ -53,7 +52,8 @@ export class LegendProfileCardComponent implements OnInit {
 
       this.isFollowed = friends.indexOf(this._userProfile.webId) !== -1;
 
-      let requestStatus:number = await this.privateStorage.isUserGrantedMeAccess(this._userProfile.webId)
+      let requestStatus:number = await this.privateStorage.isUserGrantedMeAccess(this._userProfile.webId);
+      // if you get 200 status code - you are a friend
       this.isFriend = requestStatus > 199 && requestStatus < 300;
     } else {
       this.isFollowed = false;
@@ -70,11 +70,6 @@ export class LegendProfileCardComponent implements OnInit {
   }
 
   async friendToggle() {
-    console.log('[Add in friend] %s', this._userProfile.webId);
-
-    // TODO send message 'removeFromFriends'.
-    // Also create list from whome Authorized user whant to get private reviews. (in friends.ttl)
-    
     if (!this.friendList.isMyFriend(this.authWebId)) {
       let r: boolean = await this.queue.sendRequestAddInFriends(
         this._userProfile.webId, 
@@ -82,9 +77,9 @@ export class LegendProfileCardComponent implements OnInit {
       );
   
       if (!r) {
-        alert('Sorry, but that user does not use our application. Please inform him about that opportunity.');
+        this.toastr.error(`Sorry, but ${this._userProfile.fn} does not use our application. Please inform him about that opportunity.`, 'Can not send a request');
       } else {
-        alert(`${this._userProfile.fn} will receive your request to grant you access to the private reviews` );
+        this.toastr.success(`${this._userProfile.fn} will receive your request to grant you an access to the private reviews`, 'Request is sended');
       }
     } 
     // else authorized user ask viewed user to remove him from his friendList 
