@@ -2,5 +2,8 @@
     <app-search-input  class="search-input_wrap" [query]="queryParam" (queryChange)="onQueryChange($event)"></app-search-input>
     <h3 *ngIf="reviewsAreLoading">Loading...</h3>
     <!--REVIEW LIST GOES HERE-->
-    <app-review *ngFor="let reviewModel of reviews | reviewFilter:queryParam.length > 0:queryIds" [model]="reviewModel"></app-review>
+    <app-review 
+        *ngFor="let reviewModel of reviews | reviewFilter:photonResults.length > 0:photonResults" 
+        [model]="reviewModel"
+    ></app-review>
 </div>

@@ -22,8 +22,9 @@ export class PhotonService {
         .set('limit', limit.toString());
     return this.http.get<IPhotonResponse>('https://photon.komoot.de/api/', {'params': params})
         .pipe(
-            map(resp => resp.features)
+            map((resp: IPhotonResponse) => resp.features)
         );
+    
   }
 
 }

@@ -29,7 +29,11 @@ export class NewReviewComponent implements OnInit {
   placeType: string;
   private _place: PhotonInterface;
   @Input()
-      set place(place: PhotonInterface) {this._place = place; }
+      set place(place: PhotonInterface) {
+        console.log('Place');
+        console.dir(place);
+        this._place = place; 
+      }
       get place(): PhotonInterface {return this._place; }
     authUser: SolidProfile;
     newReview: Review;
@@ -63,8 +67,13 @@ export class NewReviewComponent implements OnInit {
     console.log(this.place);
     this.newReview = new Review('');
     const pl = this.place.properties;
+
+    // Attention: pl.city property have only hotels or restaurants, villages and cities have names and value types
+    let locality:string = pl.city || 
+      (pl.osm_value == 'village' || pl.osm_value == 'city' ? pl.name : null); 
+
     const newPlace = new Place(
-      this.placeType, pl.name, new AddressModel(pl.country, pl.city, pl.state, pl.street), pl.osm_id);
+      this.placeType, pl.name, new AddressModel(pl.country, locality, pl.state, pl.street), pl.osm_id);
     this.newReview.setThing(newPlace);
     this.authUser = await this.rdfService.getProfile();
     this.newReview.setAuthor(this.authUser);

@@ -11,7 +11,7 @@ import { tools } from '../utils/tools';
 import { IHttpError } from '../models/exception.model';
 import { IResponce } from '../models/solid-api';
 import {PhotonService} from '../services/osm/photon.service';
-import {map} from 'rxjs/operators';
+import { PhotonInterface } from '../models/photon-interface.model';
 
 
 
@@ -23,7 +23,7 @@ import {map} from 'rxjs/operators';
 export class DashboardComponent implements OnInit {
   profileLinks: string[];
   queryParam = '';
-  queryIds: string[] = [];
+  photonResults:PhotonInterface[] = [];
   userProfile: SolidProfile;
   paramWebId: string;
   authId: string;
@@ -78,9 +78,8 @@ export class DashboardComponent implements OnInit {
 
   async onQueryChange(query: string): Promise<void> {
     this.queryParam = query;
-    this.photonService.findPlace(query, 100).pipe(
-      map (val => val.map(obj => obj.properties.osm_id.toString()))
-    ).subscribe(val => this.queryIds = val);
+    this.photonService
+      .findPlace(query, 100)
+      .subscribe((photonResults: PhotonInterface[]) => this.photonResults = photonResults);
   }
-
 }
