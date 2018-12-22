@@ -7,6 +7,7 @@ import { SolidSession } from 'src/app/models/solid-session.model';
 import { tools } from 'src/app/utils/tools';
 import { FriendListService } from 'src/app/services/friend-list/friend-list.service';
 import { Subscription } from 'rxjs';
+import { PopupService } from 'src/app/services/popup.service';
 
 interface IRequest {
   messageId: string;
@@ -27,7 +28,8 @@ export class FriendListComponent implements OnInit {
   constructor(
     private queue:QueueService,
     private rdf:RdfService,
-    private frindService:FriendListService
+    private frindService:FriendListService,
+    private popupService: PopupService
   ) { }
 
   async ngOnInit() {
@@ -71,9 +73,13 @@ export class FriendListComponent implements OnInit {
     await this.removeRequest(request);
   }
 
-  async removeFriend(profile:SolidProfile) {
-    await this.frindService.removeFriend(profile.webId);
-    tools.removeItem<SolidProfile>(this.friendList, profile);
+  removeFriend(profile:SolidProfile) {
+    this.popupService.confirm(
+      `Do you want cancel access rights to read your private reviews for ${profile.fn}?`, 
+      async () => {
+        await this.frindService.removeFriend(profile.webId);
+        tools.removeItem<SolidProfile>(this.friendList, profile);
+      });
   }
 
   async rejectRequest(request:IRequest) {

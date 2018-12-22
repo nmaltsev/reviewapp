@@ -8,7 +8,6 @@ import {AddressModel} from '../../../models/sdm/address.model';
 import { ReviewService } from 'src/app/services/review.service';
 import * as SolidAPI from '../../../models/solid-api';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import { PopupService } from 'src/app/services/popup.service';
 import {Subscription} from 'rxjs';
 import {PhotonInterface} from '../../../models/photon-interface.model';
 import { PrivateStorageService } from 'src/app/services/private-storage/private-storage.service';
@@ -50,7 +49,6 @@ export class NewReviewComponent implements OnInit {
     private reviewService: ReviewService,
     private router: Router,
     private route: ActivatedRoute,
-    private popupService: PopupService,
     private privateStorage: PrivateStorageService
   ) { }
 
@@ -100,12 +98,6 @@ export class NewReviewComponent implements OnInit {
       this.reviewService.saveReview(review).then((e: SolidAPI.IResponce) => {
         if (e.status == 200) {
           this.router.navigate(['/usertimeline']);
-          /*
-          f.resetForm();
-          this.popupService.confirm('Review was saved. Open the review list?', () => {
-            this.router.navigate(['/usertimeline']);
-          });*/
-          // TODO
         } else {
           console.warn('You have another troubles');
           console.dir(e);
