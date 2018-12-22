@@ -16,7 +16,7 @@ export class FollowingListComponent implements OnInit {
   private USERTIMELINE:string = '/usertimeline';
   authFollowingIds: string[];
   sugestedList: SolidProfile[];
-  followingList: SolidProfile[];
+  followingList: SolidProfile[] = [];
   authUser: SolidProfile;
   isBad = false;
   findForm = new FormGroup({
@@ -32,25 +32,27 @@ export class FollowingListComponent implements OnInit {
     private privateStorage:PrivateStorageService
   ) { }
 
-  ngOnInit() {
-    this.getProfiles();
+  async ngOnInit() {
+    await this.getFollowers();
+    await this.suggFriends();
   }
 
-  async getProfiles() {
-    this.followingList = [];
+  async getFollowers(isForce:boolean = false) {
+    const followingList:SolidProfile[] = [];
     this.authUser = await this.rdfService.getProfile();
-    this.authFollowingIds = await this.rdfService.getFriendsOf(this.authUser.webId);
+    this.authFollowingIds = await this.rdfService.getFriendsOf(this.authUser.webId, isForce);
+
     for (let i = 0; i < this.authFollowingIds.length; i++) {
       const profile:SolidProfile =  await this.rdfService.collectProfileData(this.authFollowingIds[i]);
       if (profile) {
-        this.followingList.push(profile);
+        followingList.push(profile);
         // If request is returning 403 status code then user have created private file and not granted access to current authorized user  
         this.privateStorage.isUserGrantedMeAccess(profile.webId).then((status: number) => {
           this.isAbbleToSendRequest[profile.webId] = status == 403;
         });
       }
     }
-    this.suggFriends();
+    this.followingList = followingList;
   }
 
   async suggFriends(limit = 5) {
@@ -89,10 +91,12 @@ export class FollowingListComponent implements OnInit {
 
   async followUser(user:SolidProfile): Promise<void> {
     await this.rdfService.updateFollowingList([user.webId], []);
+    await this.getFollowers(true);
   }
   
   async unFollowUser(user:SolidProfile): Promise<void> {
     await this.rdfService.updateFollowingList([], [user.webId]);
+    await this.getFollowers(true);
   }
 
   async sendRequest(user:SolidProfile): Promise<void> {

@@ -367,10 +367,12 @@ export class RdfService {
     return list;
   }
 
-  public getFriendsOf(webId: string): Promise<string[]> {
-    return this.fetcher.load(webId).then(() => {
-      return (this.getCollectionFromNamespace('knows', FOAF, webId, null,  $rdf.sym(webId).doc()) || []).
-        map((item: RDF.ITerm) => item.value);
+  public getFriendsOf(webId: string, isForce?:boolean): Promise<string[]> {
+    return this.fetcher.load(webId, {force: isForce}).then(() => {
+      return (
+        this.getCollectionFromNamespace('knows', FOAF, webId, null,  $rdf.sym(webId).doc()) 
+        || []
+      ).map((item: RDF.ITerm) => item.value);
     }).catch(function() {
       return [];
     });
