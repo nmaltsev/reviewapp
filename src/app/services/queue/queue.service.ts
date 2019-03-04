@@ -112,7 +112,6 @@ export class QueueService extends BaseStorageService {
     g.add(publicSettings, RDF("type"), WAC("Authorization"));
     g.add(publicSettings, WAC('agentClass'), FOAF('Agent'));
     g.add(publicSettings, WAC("accessTo"), $rdf.sym(fileUrl));
-    // g.add(publicSettings, WAC('mode'), WAC('Read')); // ??? maybe better turn off that ability
     g.add(publicSettings, WAC('mode'), WAC('Append'));
 
     // TODO add in report

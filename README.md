@@ -1,6 +1,16 @@
 # Review App
 
-PFE project "A Privacy-Preserving Social Networking Application"
+## The final education project "A Privacy-Preserving Social Networking Application"
+
+This repository stores a single page application built in the scope of this project. The aim of this project is to create social privacy-preserving application on top of [SOLID platform](https://solid.mit.edu/). We have used [SOLID POD's](https://solid.inrupt.com/get-a-solid-pod) as distributed data storage for storing users data. Solid network is consist of independent web servers that provides authorized access to the users data. All user's resources have unique url address and can be accessed by HTTP requests.  
+
+The application provides to user ability:
+- to share reviews about visited places (hotels and restaurants);
+- to choose who can read their reviews. 
+
+### Achievements
+- It uses OpenSreetMap web service to find place that was entered in search field.
+- I have tested a new approach of dynamic creation modal dialogs.
 
 
 ## Development server
