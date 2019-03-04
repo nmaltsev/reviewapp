@@ -12,6 +12,8 @@ The application provides to user ability:
 - It uses OpenSreetMap web service to find place that was entered in search field.
 - I have tested a new approach of dynamic creation modal dialogs.
 
+[Presentation from  defence](https://github.com/nmalcev/reviewapp/blob/gh-pages/defence.pdf)
+
 
 ## Development server
 
