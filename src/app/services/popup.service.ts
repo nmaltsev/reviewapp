@@ -9,7 +9,6 @@ import {
   ElementRef,
 } from '@angular/core';
 
-// import { AppComponent } from '../app.component';
 import { BrowserModule } from '@angular/platform-browser';
 
 @Injectable({
@@ -71,7 +70,7 @@ export class PopupService {
       </dialog>`
     }) class PopupComponent implements OnInit{
       constructor() {}
-      @ViewChild('root') dialog: ElementRef;
+      @ViewChild('root', {static: false}) dialog: ElementRef;
       _self: any;
       ngOnInit() { }
       onsubmit(e) {

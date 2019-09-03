@@ -15,7 +15,7 @@ import { PopupService } from 'src/app/services/popup.service';
   encapsulation: ViewEncapsulation.None
 })
 export class PopupRootComponent implements OnInit, AfterViewInit {
-  @ViewChild('host', { read: ViewContainerRef }) viewContainerRef: ViewContainerRef
+  @ViewChild('host', { read: ViewContainerRef, static: true }) viewContainerRef: ViewContainerRef
   constructor(private popupService: PopupService) { }
 
   ngOnInit() {}

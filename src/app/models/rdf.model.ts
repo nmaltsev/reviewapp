@@ -1,4 +1,4 @@
-import { stringify } from "@angular/core/src/util";
+//import { stringify } from "@angular/core/src/util";
 
 // Definition of $rdf lib.
 // TODO to develop it

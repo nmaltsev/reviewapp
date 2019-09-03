@@ -37,7 +37,7 @@ export class NewReviewComponent implements OnInit {
     authUser: SolidProfile;
     newReview: Review;
     rates = [];
-    @ViewChild('frm') reviewForm: NgForm;
+    @ViewChild('frm', { static: false }) reviewForm: NgForm;
   public visibilityOptions: IVisibilityOption[] = [
     {id: VisibilityTypes.public, label: 'For public'},
     {id: VisibilityTypes.friends, label: 'For friends'}

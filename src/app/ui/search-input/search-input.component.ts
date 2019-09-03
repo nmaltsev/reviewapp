@@ -10,7 +10,7 @@ import {FormControl} from '@angular/forms';
 export class SearchInputComponent implements OnInit {
   public visibleValue = '';
   public searchField: FormControl;
-  @ViewChild('field') field: ElementRef;
+  @ViewChild('field', { static: true }) field: ElementRef;
 
   @Input()
   set query(value: string) {
