@@ -3,7 +3,7 @@ import { Directive, ElementRef, OnInit } from '@angular/core';
 @Directive({
   selector: '[default-image]'
 })
-export class ImagerrorDirective {
+export class ImgErrorDirective implements OnInit{
 
   private element: HTMLImageElement;
 

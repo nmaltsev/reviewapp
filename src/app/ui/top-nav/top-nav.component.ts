@@ -33,9 +33,9 @@ export class TopNavComponent implements OnInit {
     this.show = !this.show;
   }
 
-    // Example of logout functionality. Normally wouldn't be triggered by clicking the profile picture.
-    logout() {
-        this.auth.solidSignOut();
-    }
+  // Example of logout functionality. Normally wouldn't be triggered by clicking the profile picture.
+  logout() {
+      this.auth.solidSignOut();
+  }
 
 }

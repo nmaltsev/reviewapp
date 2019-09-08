@@ -5,6 +5,7 @@ import * as RDF from '../models/rdf.model';
 
 declare let solid: ISolidRoot;
 declare let $rdf: RDF.IRDF;
+console.log(typeof($rdf));
 
 // TODO: Remove any UI interaction from this service
 import { NgForm } from '@angular/forms';
