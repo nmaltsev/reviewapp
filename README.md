@@ -1,16 +1,14 @@
-# Review App
-
-## 1 About the final education project "A Privacy-Preserving Social Networking Application"
+# The final education project "A Privacy-Preserving Social Networking Application"
 
 This repository stores a single page application built in the scope of this project. The aim of this project is to create social privacy-preserving application on top of [Solid platform](https://solid.mit.edu/). 
+The project has beed done by me and @Cristian Grigoriu. [PDF presentation of the project](https://github.com/nmalcev/reviewapp/blob/gh-pages/defence.pdf)
 
-[Presentation from  defence](https://github.com/nmalcev/reviewapp/blob/gh-pages/defence.pdf)
 
-### 1.1. About Solid
+### 1.1. Solid
 
 We have used [Solid POD's](https://solid.inrupt.com/get-a-solid-pod) as distributed data storage for storing users data. Solid network is consist of independent web servers that provides authorized access to the user's data. All user's resources have unique url address and can be accessed by HTTP requests.  
 
-### 1.2. About Reviewapp
+### 1.2. Reviewapp application
 
 Reviewapp is a multi-functional social application on top of Solid conventions and tools.
 This privacy-preserving web application allows users to manage a list of reviews and to share it with any registered users in a decentralized manner. The application preserves user privacy by separating application from data such that each user stores personal data on it's own Pod.
